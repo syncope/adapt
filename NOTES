@@ -1,0 +1,38 @@
+configuration files:
+ - everything section name == process name MUST be lower key
+ - sections name a process
+ - special section: globals 
+ - lists must be stated as "[]"
+ - all line breaks and white spaces are ignored (!)
+ 
+ - there is one specific reader that is the data source for the iteration ("stdreader")
+ 
+ - are the global data specific keywords??
+ 
+ 
+ 
+ process definition:
+  - needs more thought!
+  problem: a config object is "strings only", optional postprocessing limited to list-finding (via regex)
+  
+  - a process is defined by its parameters, in terms of type and value
+  - this has to be part of the process definition: 
+    at start: a name and a type, no value -> own object type
+
+  - when the process is fetched by its typename, THEN
+        - a list of parameter objects should be requested
+        - this list holds the "NAME" -> if not found in cfgObject: RAISE
+        - the value of the configobject entry will then be cast to the respective type -> if not possible: RAISE
+        
+    LAYOUT: processListBuilder finds the right type of process 
+            - given by the type attribute of the configObject
+            then the process.create(cfgObj) method will be called
+                -> iterates over the required parameters and casts them accordingly
+
+
+ARGH. i'm still missing the central point with the parameters.
+i want: to set the format and a name for the parameters in the process definition
+ --> static description
+
+when i instantiate the process i want to cast the given config value to the given type
+
