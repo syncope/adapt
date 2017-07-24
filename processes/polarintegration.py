@@ -19,7 +19,7 @@
 # this is a first shot at an azimuthal integrator based on pyFAI
 
 import pyFAI
-from core import iProcess
+from adapt import iProcess
 
 
 class polarintegrationdef(iProcess.IProcessDefinition):

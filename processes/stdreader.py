@@ -21,7 +21,7 @@
 # it is an implementation of the iProcess
 
 import dataHandler
-from core import iProcess
+from adapt import iProcess
 
 
 class stdreaderdef(iProcess.IProcessDefinition):

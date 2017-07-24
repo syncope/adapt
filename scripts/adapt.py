@@ -7,9 +7,9 @@ args = parser.parse_args()
 print(args)
 
 
-from core import configParserFileAccess
-from core import processListBuilder
-from core import serialExecutor
+from adapt import configParserFileAccess
+from adapt import processListBuilder
+from adapt import serialExecutor
 
 
 #~ configfilename = ""

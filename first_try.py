@@ -23,18 +23,17 @@
 
 def parseConfig(filename):
     try:
-        import core.configFileParser as cfgparser
-    except:
-        print("ConfigFileParser not found. Exiting.")
+        import adapt.configFileParserAccess as cfgparser
+    except ImportError("ConfigFileParser not found. Exiting."):
         exit()
 
-    parser = cfgparser.ConfigFileParser()
+    parser = cfgparser.ConfigParserFileAccess()
     return parser.readConfigObjects(filename)
 
 
 def createProcesses(cfgObjDict):
     try:
-        import core.processListBuilder as processbuilder
+        import adapt.processListBuilder as processbuilder
     except:
         print("ProcessListBuilder not found. Exiting.")
         exit()
@@ -45,7 +44,7 @@ def createProcesses(cfgObjDict):
 
 def executeSerially(orderedProcessList, procData):
     try:
-        import core.serialExecutor as serialexecute
+        import adapt.serialExecutor as serialexecute
     except:
         print("SerialExecutor not found. Exiting.")
         exit()

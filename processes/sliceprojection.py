@@ -19,7 +19,7 @@
 # this is a first shot at a "line integration" tool
 
 import numpy as np
-from core import iProcess
+from adapt import iProcess
 
 
 class sliceprojectiondef(iProcess.IProcessDefinition):
