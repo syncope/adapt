@@ -40,16 +40,15 @@ class stdreader(iProcess.IProcess):
         super(stdreader, self).__init__(procDef)
 
     def initialize(self, data):
-        dHandler = dataHandler.DataHandler()
         if(self.parameter("path")):
             try:
-                self.dataIterator = dHandler.create_reader(
+                self.dataIterator = dataHandler.DataHandler(
                     self.parameter("input"), self.parameter("path"),
                     self.parameter("attribute"))
             except:
                 raise("Can't open file, maybe a path is set, but it's not needed?!")
         else:
-            self.dataIterator = dHandler.create_reader(self.parameter("input"))
+            self.dataIterator = dataHandler.DataHandler(self.parameter("input"))
 
     def execute(self, data):
         try:
