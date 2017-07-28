@@ -20,7 +20,7 @@
 # it uses the psio library
 # it is an implementation of the iProcess
 
-import dataHandler
+from psio import dataHandler
 from adapt import iProcess
 
 
