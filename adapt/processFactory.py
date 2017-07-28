@@ -18,7 +18,7 @@
 
 # the factory that can create process
 
-import processes
+from . import processes
 
 
 class ProcessFactory():

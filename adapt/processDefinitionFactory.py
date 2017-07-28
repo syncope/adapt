@@ -18,7 +18,7 @@
 
 # the factory that can create process definitions
 
-import processes
+from . import processes
 
 
 class ProcessDefinitionFactory():

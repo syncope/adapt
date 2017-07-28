@@ -19,6 +19,8 @@
 # this is the actual implementation of config file persistency
 # it is based on the built-in config file parser of python3
 
+from __future__ import absolute_import
+
 from configparser import ConfigParser
 
 from . import utilities
@@ -55,9 +57,13 @@ class ConfigParserFileAccess(iConfigFileAccess.IConfigFileAccess):
         # create a map of maps/dict of dicts:
         # [ sectionname: [ sectiondictionary] ]
         dictOfSectionDicts = {}
-        executionOrder = utilities.castValueToType(
-            self.parser["processlist"]["execute"],
-            "STRINGLIST")
+        try:
+            executionOrder = utilities.castValueToType(
+                self.parser["processlist"]["execute"],
+                "STRINGLIST")
+        except KeyError:
+            print(' The [processlist] entry MUST exist, is it missing? ')
+            exit()
         # now iterate over the sections; section is the given name
         for section in self.parser.sections():
             # skip the steering part

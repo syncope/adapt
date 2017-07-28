@@ -23,43 +23,40 @@
 
 def parseConfig(filename):
     try:
-        import adapt.configFileParserAccess as cfgparser
+        from adapt import configParserFileAccess as cfgparser
     except ImportError("ConfigFileParser not found. Exiting."):
         exit()
 
     parser = cfgparser.ConfigParserFileAccess()
-    return parser.readConfigObjects(filename)
+    return parser.read(filename)
 
 
 def createProcesses(cfgObjDict):
     try:
-        import adapt.processListBuilder as processbuilder
+        from  adapt import processListBuilder as processbuilder
     except:
         print("ProcessListBuilder not found. Exiting.")
         exit()
 
     builder = processbuilder.ProcessListBuilder()
-    return builder.buildProcessList(cfgObjDict)
+    return builder.createProcessList(cfgObjDict)
 
 
-def executeSerially(orderedProcessList, procData):
+def executeSerially(orderedProcessList):
     try:
         import adapt.serialExecutor as serialexecute
     except:
         print("SerialExecutor not found. Exiting.")
         exit()
 
-    executor = serialexecute.SerialExecutor(procData)
+    executor = serialexecute.SerialExecutor()
 
-    executor.setProcesses(orderedProcessList)
-    executor.runInitialization()
-    executor.runLoop()
-    executor.runFinalization()
+    executor.run(orderedProcessList)
 
 
 if __name__ == "__main__":
-    a = parseConfig("test.ini")
+    a = parseConfig("adapt/test.ini")
 #    a = parseConfig("longtest.ini")
 
-    b, c = createProcesses(a)
-    executeSerially(b,c)
+    b = createProcesses(a)
+    executeSerially(b)
