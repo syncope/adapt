@@ -101,13 +101,11 @@ class polarintegration(iProcess.IProcess):
                              
                              # correctSolidAngle=True, # correct for solid angle of each pixel if True
                              # variance=None, # array containing the variance of the data. If not available, no error propagation is done
-                             # error_model="poisson", # When the variance is unknown, an error model can be given: “poisson” (variance = I), “azimuthal” (variance = (I-<I>)^2)
                              # radial_range=(self.getOptionalParameterValue("radiallowlim"), self.getOptionalParameterValue("radialhighlim")), # The lower and upper range of the radial unit. If not provided, range is simply (data.min(), data.max()). Values outside the range are ignored.
                              # azimuth_range=(self.getOptionalParameterValue("azimlowlim"), self.getOptionalParameterValue("azimhighlim")), # The lower and upper range of the azimuthal angle in degree. If not provided, range is simply (data.min(), data.max()). Values outside the range are ignored.
                              # mask=self.getOptionalParameterValue("custommask"), # array (same size as image) with 1 for masked pixels, and 0 for valid pixels
-                             # polarization_factor (float) – polarization factor between -1 (vertical) and +1 (horizontal). 0 for circular polarization or random, None for no correction
-                             method=self._method, # # can be “numpy”, “cython”, “BBox” or “splitpixel”, “lut”, “csr”, “nosplit_csr”, “full_csr”, “lut_ocl” and “csr_ocl” if you want to go on GPU. To Specify the device: “csr_ocl_1,2”
-                             unit=self._unit # Output units, can be “q_nm^-1”, “q_A^-1”, “2th_deg”,
+                             method=self._method, 
+                             unit=self._unit
                              )
 
     def finalize(self, data):
