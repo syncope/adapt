@@ -1,0 +1,45 @@
+#!/usr/bin/python3
+
+# Copyright (C) 2017  Christoph Rosemann, DESY, Notkestr. 85, D-22607 Hamburg
+# email contact: christoph.rosemann@desy.de
+
+# adapt is a A Data Processing Toolkit, primarily aimed at data analysis at PETRA, DESY, Hamburg
+# the project central page is: https://github.com/syncope/adapt
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+import sys, getopt
+
+import adapt
+
+# get first optional argument -> the config file
+
+def main(argv):
+   inputfile = ''
+   try:
+      opts, args = getopt.getopt(argv,"hi",["cfgfile="])
+   except getopt.GetoptError:
+      print 'adapt -i <config file>'
+      sys.exit(2)
+   for opt, arg in opts:
+      if opt == '-h':
+         print 'adapt -i <config file>'
+         sys.exit()
+      elif opt in ("-i", "--cfgfile"):
+         inputfile = arg
+   print 'Input file is ', inputfile
+
+if __name__ == "__main__":
+   main(sys.argv[1:])
