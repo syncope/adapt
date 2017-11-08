@@ -16,36 +16,51 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor,
 # Boston, MA  02110-1301, USA.
 
-# minimal template example
+# perform trapezoidal integration on the given dataset
 
 from adapt import iProcess
+import numpy as np
+import scipy.interpolate
 
-
-class $NAMEdef(iProcess.IProcessDefinition):
+class trapezoidintegrationdef(iProcess.IProcessDefinition):
 
     def __init__(self):
-        super($NAMEdef, self).__init__()
-        self._ptype = "$NAME"
-        #~ self.createParameter("@@@@@@@", "STRING")
-        #~ self.createParameter("@@@@@@@", "INT")
-        #~ self.createParameter("@@@@@@@", "FLOAT")
-        #~ self.createParameter("@@@@@@@", "BOOL")
-        #~ self.createParameter("@@@@@@@", "STRINGLIST")
-        #~ self.createParameter("@@@@@@@", "INTLIST")
-        #~ self.createParameter("@@@@@@@", "FLOATLIST")
-        #~ self.createParameter("@@@@@@@", "BOOLLIST")
-        #~ self.createParameter("@@@@@@@", "STRING", optional=True)
+        super(trapezoidintegrationdef, self).__init__()
+        self._ptype = "trapezoidintegration"
+        self.createParameter("motor", "STRING")
+        self.createParameter("observable", "STRING")
+        self.createParameter("output", "STRING")
 
-class $NAME(iProcess.IProcess):
+class trapezoidintegration(iProcess.IProcess):
 
     def __init__(self, procDef):
-        super($NAME, self).__init__(procDef)
+        super(trapezoidintegration, self).__init__(procDef)
+        self._observable = self._parameters["observable"]
+        self._independentvar = self._parameters["motor"]
+        self._output = self._parameters["output"]
 
     def initialize(self, data):
         pass
 
     def execute(self, data):
-        pass
+        motor = data.getData(self._independentvar)
+        observable = data.getData(self._observable)
+
+        # calculate trapezoid sum
+        integral=0
+        for point in range(0,len(motor)-1):
+            integral=integral+0.5*(observable[point+1]+observable[point])*fabs(motor[point+1]-motor[point])
+        
+        #  estimate error bar
+        fn10 = scipy.interp1d(motor, observable, kind='cubic')
+        xnew = np.linspace(motor[0], motor[len(motor)-1], 10*len(motor))
+        fnew = fn10(xnew)
+        integraln10=0
+        for p in range(0,len(xnew)-1):
+            integraln10=integraln10+0.5*(fnew[p+1]+fnew[p])*fabs(xnew[p+1]-xnew[p])
+        integral_stderr=integraln10-integral
+        	
+        data.addData(self._output, [integral, integral_stderr])
 
     def finalize(self, data):
         pass

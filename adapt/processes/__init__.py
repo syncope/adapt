@@ -4,3 +4,6 @@ from . import specfilereader
 from . import polarintegration
 from . import sliceprojection
 from . import iintdefinition
+from . import filter1d
+from . import backgroundsubtraction
+from . import trapezoidintegration

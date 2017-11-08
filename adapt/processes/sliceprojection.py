@@ -45,13 +45,13 @@ class sliceprojection(iProcess.IProcess):
         super(sliceprojection, self).__init__(pparameters)
 
     def initialize(self, data):
-        self._input = self.getParameterValue("input")
-        self._dataname = self.getParameterValue("dataname")
-        self._xmin = self.getParameterValue("fastmin")
-        self._xmax = self.getParameterValue("fastmax")
-        self._ymin = self.getParameterValue("slowmin")
-        self._ymax = self.getParameterValue("slowmax")
-        if(self.getParameterValue("horizontal")):
+        self._input = self.parameterValue("input")
+        self._dataname = self.parameterValue("dataname")
+        self._xmin = self.parameterValue("fastmin")
+        self._xmax = self.parameterValue("fastmax")
+        self._ymin = self.parameterValue("slowmin")
+        self._ymax = self.parameterValue("slowmax")
+        if(self.parameterValue("horizontal")):
             self._axis = 0
         else:
             self._axis = 1

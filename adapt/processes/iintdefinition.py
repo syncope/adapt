@@ -16,10 +16,10 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor,
 # Boston, MA  02110-1301, USA.
 
-# minimal template example
+# create the observable for the integrated intensity
 
 from adapt import iProcess
-
+import numpy as np
 
 class iintdefinitiondef(iProcess.IProcessDefinition):
 
@@ -40,13 +40,13 @@ class iintdefinition(iProcess.IProcess):
         super(iintdefinition, self).__init__(procDef)
 
     def initialize(self, data):
-        self._input = self.getParameterValue("input")
-        self._output = self.getParameterValue("output")
-        self._motor = self.getParameterValue("motor_colName")
-        self._detector = self.getParameterValue("detector_colName")
-        self._monitor = self.getParameterValue("monitor_colName")
-        self._exposure_time = self.getParameterValue("exposureTime_colName")
-        self._attfac = self.getParameterValue("attenuationFactor_colName")
+        self._input = self._parameters["input"]
+        self._output = self._parameters["output"]
+        self._motor = self._parameters["motor_colName"]
+        self._detector = self._parameters["detector_colName"]
+        self._monitor = self._parameters["monitor_colName"]
+        self._exposure_time = self._parameters["exposureTime_colName"]
+        self._attfac = self._parameters["attenuationFactor_colName"]
 
     def execute(self, data):
         datum = data.getData(self._input)
@@ -59,7 +59,7 @@ class iintdefinition(iProcess.IProcess):
             attenfac = datum.getArray(self._attfac) 
         else:
             attenfac = 1.
-        
+
         observable = detector*mean_monitor*attenfac/monitor/time
         data.addData(self._output, observable)
 
@@ -68,3 +68,21 @@ class iintdefinition(iProcess.IProcess):
 
     def check(self, data):
         pass
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
