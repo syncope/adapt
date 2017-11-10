@@ -70,10 +70,7 @@ class curvefitting(iProcess.IProcess):
         independentVariable = data.getData(self._xdata)
         dependentVariable = data.getData(self._ydata)
         self._result = self._model.fit(dependentVariable, x=independentVariable)
-        
         data.addData(self._resultsname, self._result)
-        
-        data.info()
 
     def finalize(self, data):
         pass
