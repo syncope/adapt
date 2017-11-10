@@ -20,6 +20,7 @@
 
 from adapt import iProcess
 
+import numpy as np
 
 class curvefittingdef(iProcess.IProcessDefinition):
 
@@ -29,23 +30,24 @@ class curvefittingdef(iProcess.IProcessDefinition):
         self.createParameter("xdata", "STRING")
         self.createParameter("ydata", "STRING")
         self.createParameter("model", "STRING", optional=True)
-        self.createParameter("results", "STRING")
+        self.createParameter("result", "STRING")
         self.createParameter("bkgmodel", "STRING", optional=True)
         self.createParameter("onlybkg", "BOOL", optional=True)
+        self.createParameter("tryguessing", "BOOL", optional=True)
 
 class curvefitting(iProcess.IProcess):
 
     def __init__(self, procDef):
         super(curvefitting, self).__init__(procDef)
-
-    def initialize(self, data):
         self._xdata = self._parameters["xdata"]
         self._ydata = self._parameters["ydata"]
         self._fitmodel = self._parameters["model"]
         self._bkgonly = self._parameters["onlybkg"]
         self._bkgmodel = self._parameters["bkgmodel"]
-        self._resultsname = self._parameters["results"]
-        
+        self._resultsname = self._parameters["result"]
+        self._trytoguess = self._parameters["tryguessing"]
+
+    def initialize(self, data):
         if self._fitmodel:
             try:
                 self._model = fitModels[self._fitmodel]
@@ -64,14 +66,26 @@ class curvefitting(iProcess.IProcess):
         if not self._bkgonly and self._bkgmodel:
             self._fitmodel += self._bkgmodel
 
-        self_fitparameters = self._model.make_params()
+        self._fitparameters = self._model.make_params()
 
     def execute(self, data):
         independentVariable = data.getData(self._xdata)
         dependentVariable = data.getData(self._ydata)
+        if self._trytoguess:
+            if 0: #self._fitmodel == "gaussianModel":
+                meanval = np.mean(independentVariable)
+                amp_obs = np.amax(dependentVariable)
+                self._model.set_param_hint("g_center", value=meanval)
+                self._model.set_param_hint("g_amplitude", value=amp_obs)
+            else:
+                try:
+                    self._fitparameters = self._model.guess(data=[independentVariable, dependentVariable])
+                except NotImplementedError:
+                    print("[curvefitting] Guessing is not implemented for " + str(self._model) + ".")
+
         self._result = self._model.fit(dependentVariable, x=independentVariable)
         data.addData(self._resultsname, self._result)
-
+        
     def finalize(self, data):
         pass
 
