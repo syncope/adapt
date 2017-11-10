@@ -28,3 +28,4 @@ from . import subsequenceselection
 from . import backgroundsubtraction
 from . import curvefitting
 from . import trapezoidintegration
+from . import gendatafromfunction
