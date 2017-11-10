@@ -19,8 +19,10 @@
 # perform trapezoidal integration on the given dataset
 
 from adapt import iProcess
+
 import numpy as np
-import scipy.interpolate
+from math import fabs
+from scipy.interpolate import interp1d
 
 class trapezoidintegrationdef(iProcess.IProcessDefinition):
 
@@ -52,7 +54,7 @@ class trapezoidintegration(iProcess.IProcess):
             integral=integral+0.5*(observable[point+1]+observable[point])*fabs(motor[point+1]-motor[point])
         
         #  estimate error bar
-        fn10 = scipy.interp1d(motor, observable, kind='cubic')
+        fn10 = interp1d(motor, observable, kind='cubic')
         xnew = np.linspace(motor[0], motor[len(motor)-1], 10*len(motor))
         fnew = fn10(xnew)
         integraln10=0
