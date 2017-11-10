@@ -19,7 +19,7 @@
 # implement subsequence selections, needs an interface: func(seq, ...)
 
 from adapt import iProcess
-
+import numpy as np
 
 class subsequenceselectiondef(iProcess.IProcessDefinition):
 
@@ -67,14 +67,19 @@ class subsequenceselection(iProcess.IProcess):
         # outer loop: over the inputs
         for index in range(len(self._inputs)):
             sequence = data.getData(self._inputs[index])
-            out = []
+            tempout = []
             if "selectfromstart" in self._selectionmethods:
-                out.append(self._selectFromStart(sequence, self._startpoints)
+                tmp = self._selectFromStart(sequence, self._startpoints)
+                tempout.append(self._selectFromStart(sequence, self._startpoints))
             if "selectfromend" in self._selectionmethods:
-                out.append(self._selectFromEnd(sequence, self._endpoints)
+                tmp = self._selectFromEnd(sequence, self._endpoints)
+                tempout.append(self._selectFromEnd(sequence, self._endpoints))
             if "selectSection" in self._selectionmethods:
-                out.append(self._selectSection(sequence, self._startendindices)
-            
+                tempout.append(self._selectSection(sequence, self._startendindices))
+            out = tempout[0]
+            for elem in tempout[1:]:
+                out = np.concatenate((out, elem))
+            data.addData(self._output[index], out)
 
     def finalize(self, data):
         pass
@@ -82,13 +87,13 @@ class subsequenceselection(iProcess.IProcess):
     def check(self, data):
         pass
 
-    def _selectFromStart(self, seq, num=-1):
+    def _selectFromStart(self, seq, num):
         '''create a subsequence that only has the first num elements of seq'''
         return seq[:num]
 
-    def _selectFromEnd(self, seq, num=0):
+    def _selectFromEnd(self, seq, num):
         '''create a subsequence that only has the last num elements of seq'''
-        return seq[num:]
+        return seq[(-1)*num:]
     
     def _selectSection(self, seq, indices=[0,-1]):
         return seq[indices[0]:indices[1]]
