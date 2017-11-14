@@ -20,26 +20,27 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-import sys, getopt
-
+import argparse
 import adapt
 
-# get first optional argument -> the config file
 
 def main(argv):
    inputfile = ''
    try:
       opts, args = getopt.getopt(argv,"hi",["cfgfile="])
    except getopt.GetoptError:
-      print 'adapt -i <config file>'
+      print("adapt -i <config file>")
       sys.exit(2)
    for opt, arg in opts:
       if opt == '-h':
-         print 'adapt -i <config file>'
+         print("adapt -i <config file>")
          sys.exit()
       elif opt in ("-i", "--cfgfile"):
          inputfile = arg
-   print 'Input file is ', inputfile
+   print("Input file is " + inputfile)
 
 if __name__ == "__main__":
-   main(sys.argv[1:])
+    parser = argparse.ArgumentParser()
+    parser.add_argument("config_file", help="a configuration file that contains the process list and its parameters")
+    parser.parse_args()
+    #main(sys.argv[1:])

@@ -77,8 +77,72 @@ class iintfinalization(iProcess.IProcess):
 		#~ param61=float(result.params['wid1'].value)
 		#~ param62=float(result.params['wid1'].stderr)
 		#~ fitresults=[scan_start, track1, track1err, track2, track2err, track3, track3err, pr1chi_value, pr2chi_value, ptth_value, peta_value, integral, integral_stderr, param11, param12, param21, param22, param31, param32, param41, param42, param51, param52, param61, param62]
-		#~ fitresultsarray=np.asarray(fitresults)
-	#~ b = np.row_stack( (myarray,fitresultsarray) )
-    #~ output=filename_out+'.iint'
+		
+        
+fitresults // for double peak fit functions
+            =[ scan_start # scan number
+            track1, 
+            track1err, 
+            track2, 
+            track2err, 
+            track3, 
+            track3err, 
+            pr1chi_value, 
+            pr2chi_value, 
+            ptth_value, 
+            peta_value, 
+            integral, 
+            integral_stderr, 
+            param11, 
+            param12, 
+            param21, 
+            param22, 
+            param31, 
+            param32, 
+            param41, 
+            param42, 
+            param51, 
+            param52, 
+            param61, 
+            param62]
+
+/// single peaks
+fitresults= [scan_start  # scan number
+ track1 # mean val of first "monitored" column
+ track1err # error of -> std. dev of first column
+ track2 # mean val of second "monitored" column
+ track2err # error of -> std. dev of second column
+ track3 # mean val of third "monitored" column
+ track3err # error of -> std. dev of third column
+ pr1chi_value # no idea yet
+ pr2chi_value # no idea yet
+ ptth_value # no idea yet 
+ peta_value # no idea yet
+ integral # trapezoid integral val
+ integral_stderr # trapezoid integral difference to spline fit
+ param11 # area of first fit function
+ param12 # std err of above
+ param21 # central val of fit function
+ param22 # and its std err
+ param31 # width of fit function
+ param32] # and its std. error
+
+# several steps: 
+# final command:
 #~ np.savetxt(output, b[1:imax+1], fmt='%14.4f')
+# where:
+    #~ output=filename_out+'.iint' \\ it's the file name
+
+    #~ b = np.row_stack( (myarray,fitresultsarray) ) \\ myarray and fitsresultsarray are (at least) 2d arrays 
+    # where:
+    		#~ fitresultsarray=np.asarray(fitresults) \\ see values from above
+
+
+example:
+scan_nr   mean1stcol   stderr1.c      mean2ndcol     stderr2.c      mean3rdcol     stderr3.col
+699.0000  100.0810     0.1277         3.9622         0.0057         2.4989         0.0078        
+    pr1chi_val      pr2chi_value  ptth_value      peta_value
+    90.0000         0.0000        92.1517         0.0000      7391.8494         0.2909      7209.3458       170.7618        45.3166         0.0020         0.0730         0.0020
+
+
 #~ d = np.loadtxt(output, skiprows=0, unpack=True)
