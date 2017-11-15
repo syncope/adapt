@@ -42,7 +42,7 @@ class ProcessData():
     def addGlobalData(self, name, data):
         if name in self.globaldata:
             raise RuntimeError("Error: a process tried to"
-                               + " overwrite global data!")
+                               + " overwrite global data of name " + str(name) + "!")
         else:
             self.globaldata[name] = data
 
