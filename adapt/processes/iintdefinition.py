@@ -26,17 +26,16 @@ class iintdefinitiondef(iProcess.IProcessDefinition):
     def __init__(self):
         super(iintdefinitiondef, self).__init__()
         self._ptype = "iintdefinition"
+        self.createParameter("input", "STRING")
         self.createParameter("motor_column", "STRING")
         self.createParameter("detector_column", "STRING")
         self.createParameter("monitor_column", "STRING")
         self.createParameter("exposureTime_column", "STRING")
         self.createParameter("attenuationFactor_column", "STRING", optional=True)
-        self.createParameter("monitored_columns", "STRINGLIST")
-        self.createParameter("input", "STRING")
+        self.createParameter("tracked_columns", "STRINGLIST")
+        self.createParameter("tracked_headers", "STRINGLIST")
         self.createParameter("observableoutput", "STRING")
-        self.createParameter("monitored_output", "STRINGLIST")
-        self.createParameter("motoroutput", "STRING")
-        
+        self.createParameter("motoroutput", "STRING")        
 
 class iintdefinition(iProcess.IProcess):
 
@@ -45,15 +44,15 @@ class iintdefinition(iProcess.IProcess):
 
     def initialize(self, data):
         self._input = self._parameters["input"]
-        self._observableoutput = self._parameters["observableoutput"]
         self._motor = self._parameters["motor_column"]
         self._detector = self._parameters["detector_column"]
         self._monitor = self._parameters["monitor_column"]
         self._exposure_time = self._parameters["exposureTime_column"]
         self._attfac = self._parameters["attenuationFactor_column"]
+        self._trackedstuff = self._parameters["tracked_columns"]
+        self._tracked_headers = self._parameters["tracked_headers"]
+        self._observableoutput = self._parameters["observableoutput"]
         self._motorOut = self._parameters["motoroutput"]
-        self._monitoredstuff = self._parameters["monitored_columns"]
-        self._monitornames = self._parameters["monitored_output"]
 
     def execute(self, data):
         datum = data.getData(self._input)
@@ -67,12 +66,15 @@ class iintdefinition(iProcess.IProcess):
         else:
             attenfac = 1.
 
-        monitored = [ datum.getArray(name) for name in self._monitoredstuff ]
         observable = detector*mean_monitor*attenfac/monitor/time
         data.addData(self._observableoutput, observable)
         data.addData(self._motorOut, motor)
-        for index in range(len(monitored)):
-            data.addData(self._monitornames[index], monitored[index])
+        trackedcolumns = [ datum.getArray(name) for name in self._trackedstuff ]
+
+        for key in self._trackedstuff:
+            data.addData(key, datum.getArray(key))
+        for key in self._tracked_headers:
+            data.addData(key, datum.getCustomVar(key))
 
     def finalize(self, data):
         pass

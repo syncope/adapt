@@ -34,8 +34,8 @@ class ProcessData():
 
     def addData(self, name, data):
         if name in self.currentdata:
-            raise RuntimeError("Error: A process tried to"
-                               + " overwrite existing data!")
+            raise RuntimeError("[ProcessData] Error: A process tried to"
+                               + " overwrite existing data of name " + str(name) + "!")
         else:
             self.currentdata[name] = data
 

@@ -55,8 +55,8 @@ def executeSerially(orderedProcessList):
 
 
 if __name__ == "__main__":
-    #~ a = parseConfig("adapt/test.ini")
-    a = parseConfig("adapt/test2.ini")
+    #~ a = parseConfig("test.ini")
+    a = parseConfig("test2.ini")
 #    a = parseConfig("longtest.ini")
 
     b = createProcesses(a)

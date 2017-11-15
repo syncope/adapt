@@ -223,6 +223,12 @@ class SpecFileScanData():
     def getArray(self, key):
         return self._dataDict[key]
 
+    def getCustomKeys(self):
+        return self._customdata.keys()
+    
+    def getCustomVar(self, key):
+        return self._customdata[key]
+
     def setStartline(self, sl):
         self._startline = sl
         self.setScanNumber(int(sl[0]))
