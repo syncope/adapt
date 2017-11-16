@@ -36,6 +36,7 @@ class iintdefinitiondef(iProcess.IProcessDefinition):
         self.createParameter("headers_log", "STRINGLIST")
         self.createParameter("observableoutput", "STRING")
         self.createParameter("motoroutput", "STRING")        
+        self.createParameter("id","STRING")
 
 class iintdefinition(iProcess.IProcess):
 
@@ -53,6 +54,7 @@ class iintdefinition(iProcess.IProcess):
         self._tracked_headers = self._parameters["headers_log"]
         self._observableoutput = self._parameters["observableoutput"]
         self._motorOut = self._parameters["motoroutput"]
+        self._id = self._parameters["id"]
 
     def execute(self, data):
         datum = data.getData(self._input)
@@ -75,6 +77,10 @@ class iintdefinition(iProcess.IProcess):
             data.addData(key, datum.getArray(key))
         for key in self._tracked_headers:
             data.addData(key, datum.getCustomVar(key))
+        if self._id == "scannumber":
+            data.addData(self._id, datum.getScanNumber())
+        else:
+            data.addData(self._id, data.getCustomVar(self._id))
 
     def finalize(self, data):
         pass
