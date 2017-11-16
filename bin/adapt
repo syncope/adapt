@@ -21,26 +21,27 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 import argparse
-import adapt
+try:
+    from adapt import configParserFileAccess as cfgparser
+    from  adapt import processListBuilder as processbuilder
+    import adapt.serialExecutor as serialexecute
+except ImportError("[adapt] library not found. Exiting!"):
+    exit()
 
+def serialExecution(filename):
+    # create the objects
+    iniparser = cfgparser.ConfigParserFileAccess()
+    procbuilder = processbuilder.ProcessListBuilder()
+    serexecutor = serialexecute.SerialExecutor()
+    
+    # parse the config file
+    cfgObjDict = iniparser.read(filename)
+    #~ ordProcList = procbuilder.createProcessList(cfgObjDict)
+    #~ serexecutor.run(ordProcList)
 
-def main(argv):
-   inputfile = ''
-   try:
-      opts, args = getopt.getopt(argv,"hi",["cfgfile="])
-   except getopt.GetoptError:
-      print("adapt -i <config file>")
-      sys.exit(2)
-   for opt, arg in opts:
-      if opt == '-h':
-         print("adapt -i <config file>")
-         sys.exit()
-      elif opt in ("-i", "--cfgfile"):
-         inputfile = arg
-   print("Input file is " + inputfile)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("config_file", help="a configuration file that contains the process list and its parameters")
-    parser.parse_args()
-    #main(sys.argv[1:])
+    args = parser.parse_args()
+    serialExecution(args.config_file)
