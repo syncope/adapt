@@ -1,4 +1,5 @@
 # Copyright (C) 2017  Christoph Rosemann, DESY, Notkestr. 85, D-22607 Hamburg
+# additional author: S. Francoual, DESY,
 # email contact: christoph.rosemann@desy.de
 #
 # This program is free software; you can redistribute it and/or
@@ -20,9 +21,10 @@
 
 from adapt import iProcess
 import scipy.signal
+import numpy as np
 
 def medianfilter1d(data):
-    return scipy.signal.medfilt(data,kernel_size=3)
+    return scipy.signal.medfilt(data, kernel_size=3)
 
 
 class filter1ddef(iProcess.IProcessDefinition):
@@ -34,13 +36,14 @@ class filter1ddef(iProcess.IProcessDefinition):
         self.createParameter("input", "STRING")
         self.createParameter("output", "STRING")
 
+
 class filter1d(iProcess.IProcess):
 
     def __init__(self, procDef):
         super(filter1d, self).__init__(procDef)
         self._input = self._parameters["input"]
         self._output = self._parameters["output"]
-        self._methods = ["medianFilter",]
+        self._methods = ["medianFilter", "p09despiking"]
         self._method = self._parameters["method"]
 
     def initialize(self, data):
@@ -50,8 +53,11 @@ class filter1d(iProcess.IProcess):
             raise NameError("Unknown method in filter1d process.")
 
     def execute(self, data):
+        values = data.getData(self._input)
         if self._method == "medianFilter":
-            data.addData(self._output, medianfilter1d(data.getData(self._input)))
+            data.addData(self._output, medianfilter1d(values))
+        elif self._method == "p09despiking":
+            data.addData(self._output, self._p09despiking(values))
         else:
             raise NameError("Some wrong method is used in filtering.")
 
@@ -60,3 +66,47 @@ class filter1d(iProcess.IProcess):
 
     def check(self, data):
         pass
+
+    def _p09rolling_window(self, data, window):
+        shape = data.shape[:-1] + (data.shape[-1] - window + 1, window)
+        strides = data.strides + (data.strides[-1],)
+        return np.lib.stride_tricks.as_strided(data, shape=shape, strides=strides)
+
+    def _testp09despiker(self, arr):
+        n1 = 1
+        n2 = 1
+        block = 6
+        data = np.copy(arr)
+        roll = self._p09rolling_window(data, block)
+        roll = np.ma.masked_invalid(roll)
+        std = n1 * roll.std(axis=1)
+        mean = roll.mean(axis=1)
+        # Use the last value to fill-up
+        std = np.r_[std, np.tile(std[-1], block - 1)]
+        mean = np.r_[mean, np.tile(mean[-1], block - 1)]
+        mask = (np.abs(data - mean.filled(fill_value=np.NaN))
+                > std.filled(fill_value=np.NaN))
+        data[mask] = np.NaN
+        # Pass two: recompute the mean and std without the flagged values from pass
+        # one now removing the flagged data
+        roll = self._p09rolling_window(data, block)
+        roll = np.ma.masked_invalid(roll)
+        std = n2 * roll.std(axis=1)
+        mean = roll.mean(axis=1)
+        # Use the last value to fill-up.
+        std = np.r_[std, np.tile(std[-1], block - 1)]
+        mean = np.r_[mean, np.tile(mean[-1], block - 1)]
+        mask = (np.abs(arr - mean.filled(fill_value=np.NaN))
+                > std.filled(fill_value=np.NaN))
+        # arr[mask] = np.NaN
+        return mask
+
+    def _p09despiking(self, inputarr):
+        # routine from S. Francoual, DESY,
+        derivative = np.diff(inputarr, n=1)
+        maskeddata = self._testp09despiker(derivative)
+
+        if len(np.where(maskeddata)) == 0:
+            return inputarr
+        else:
+            return medianfilter1d(inputarr)
