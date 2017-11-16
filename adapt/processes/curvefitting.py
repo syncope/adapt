@@ -72,11 +72,13 @@ class curvefitting(iProcess.IProcess):
         independentVariable = data.getData(self._xdata)
         dependentVariable = data.getData(self._ydata)
         if self._trytoguess:
-            if 0: #self._fitmodel == "gaussianModel":
+            if self._fitmodel == "gaussianModel":
                 meanval = np.mean(independentVariable)
                 amp_obs = np.amax(dependentVariable)
+                stderr_obs = np.std(independentVariable)
                 self._model.set_param_hint("g_center", value=meanval)
                 self._model.set_param_hint("g_amplitude", value=amp_obs)
+                self._model.set_param_hint("g_sigma", value=stderr_obs)
             else:
                 try:
                     self._fitparameters = self._model.guess(data=[independentVariable, dependentVariable])
