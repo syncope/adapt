@@ -16,7 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor,
 # Boston, MA  02110-1301, USA.
 
-# minimal template example
+# one of the most simple process: subtract two np.ndarrays, store result
 
 from adapt import iProcess
 
@@ -25,10 +25,10 @@ class backgroundsubtractiondef(iProcess.IProcessDefinition):
 
     def __init__(self):
         super(backgroundsubtractiondef, self).__init__()
-        self._ptype = "backgroundSubtraction"
+        self._ptype = "backgroundsubtraction"
         self.createParameter("input", "STRING")
         self.createParameter("output", "STRING")
-        self.createParameter("backgroundName", "STRING")
+        self.createParameter("background", "STRING")
 
 class backgroundsubtraction(iProcess.IProcess):
 
@@ -36,7 +36,7 @@ class backgroundsubtraction(iProcess.IProcess):
         super(backgroundsubtraction, self).__init__(procDef)
         self._input = self._parameters["input"]
         self._output = self._parameters["output"]
-        self._background = self._parameters["backgroundName"]
+        self._background = self._parameters["background"]
 
     def initialize(self, data):
         pass
