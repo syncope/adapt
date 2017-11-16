@@ -172,7 +172,7 @@ class _rawScan():
                     if w != '':
                         rawValues.append(w)
 
-        sd.addCustomdataDict({rawKeys[i]: rawValues[i] for i in range(len(rawValues))})
+        sd.addCustomdataDict({rawKeys[i]: float(rawValues[i]) for i in range(len(rawValues))})
 
         # check if everything is there
         if not sd.checkSanity():
