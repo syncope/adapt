@@ -22,8 +22,8 @@
 
 import argparse
 try:
-    from adapt import configParserFileAccess as cfgparser
-    from  adapt import processListBuilder as processbuilder
+    import adapt.configParserFileAccess as cfgparser
+    import adapt.processListBuilder as processbuilder
     import adapt.serialExecutor as serialexecute
 except ImportError("[adapt] library not found. Exiting!"):
     exit()
