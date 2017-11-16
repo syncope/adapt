@@ -20,7 +20,12 @@
 # it uses the psio library
 # it is an implementation of the iProcess
 
-from psio import dataHandler
+try:
+    from psio import dataHandler
+except ImportError:
+    print("[proc:stdreader] library psio not found; it will not be available!")
+    pass
+
 from adapt import iProcess
 
 
