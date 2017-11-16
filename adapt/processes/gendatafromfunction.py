@@ -44,10 +44,7 @@ class gendatafromfunction(iProcess.IProcess):
     def execute(self, data):
         fitresult = data.getData(self._fitresult)
         xdata = data.getData(self._xdata)
-
-        # TODO: this doesn't evaluate at all data points!
-        # TODO: it still uses only the data points from fit time
-        data.addData(self._output, fitresult.eval(data=xdata))
+        data.addData(self._output, fitresult.eval(x=xdata))
         
     def finalize(self, data):
         pass

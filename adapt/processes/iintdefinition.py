@@ -32,8 +32,8 @@ class iintdefinitiondef(iProcess.IProcessDefinition):
         self.createParameter("monitor_column", "STRING")
         self.createParameter("exposureTime_column", "STRING")
         self.createParameter("attenuationFactor_column", "STRING", optional=True)
-        self.createParameter("tracked_columns", "STRINGLIST")
-        self.createParameter("tracked_headers", "STRINGLIST")
+        self.createParameter("columns_log", "STRINGLIST")
+        self.createParameter("headers_log", "STRINGLIST")
         self.createParameter("observableoutput", "STRING")
         self.createParameter("motoroutput", "STRING")        
 
@@ -49,8 +49,8 @@ class iintdefinition(iProcess.IProcess):
         self._monitor = self._parameters["monitor_column"]
         self._exposure_time = self._parameters["exposureTime_column"]
         self._attfac = self._parameters["attenuationFactor_column"]
-        self._trackedstuff = self._parameters["tracked_columns"]
-        self._tracked_headers = self._parameters["tracked_headers"]
+        self._trackedstuff = self._parameters["columns_log"]
+        self._tracked_headers = self._parameters["headers_log"]
         self._observableoutput = self._parameters["observableoutput"]
         self._motorOut = self._parameters["motoroutput"]
 
