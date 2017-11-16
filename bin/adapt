@@ -36,8 +36,8 @@ def serialExecution(filename):
     
     # parse the config file
     cfgObjDict = iniparser.read(filename)
-    #~ ordProcList = procbuilder.createProcessList(cfgObjDict)
-    #~ serexecutor.run(ordProcList)
+    ordProcList = procbuilder.createProcessList(cfgObjDict)
+    serexecutor.run(ordProcList)
 
 
 if __name__ == "__main__":
