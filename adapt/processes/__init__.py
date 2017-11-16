@@ -23,6 +23,7 @@ from . import specfilereader
 from . import polarintegration
 from . import sliceprojection
 from . import iintdefinition
+from . import iintfinalization
 from . import filter1d
 from . import subsequenceselection
 from . import backgroundsubtraction

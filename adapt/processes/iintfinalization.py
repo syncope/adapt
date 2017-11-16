@@ -16,9 +16,12 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor,
 # Boston, MA  02110-1301, USA.
 
-# minimal template example
+# special for p09: collect and output results
 
 from adapt import iProcess
+
+import numpy as np
+import lmfit
 
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
@@ -29,25 +32,53 @@ class iintfinalizationdef(iProcess.IProcessDefinition):
     def __init__(self):
         super(iintfinalizationdef, self).__init__()
         self._ptype = "iintfinalization"
-        self.createParameter("outputcolumnnames", "STRINGLIST")
-        self.createParameter("outputcolumnlist", "STRINGLIST")
-        self.createParameter("outputfilename", "STRING")
+        self.createParameter("outputs", "STRINGLIST")
+        self.createParameter("outfilename", "STRING")
         self.createParameter("pdffilename", "STRING")
 
 class iintfinalization(iProcess.IProcess):
 
     def __init__(self, procDef):
         super(iintfinalization, self).__init__(procDef)
-        self._header = self._parameters["outputcolumnnames"]
-        self._names = self._parameters["outputcolumnlist"]
-        self._outfilename = self._parameters["outputfilename"]
+        self._names = self._parameters["outputs"]
+        self._outfilename = self._parameters["outfilename"]
         self._pdfoutfilename = self._parameters["pdffilename"]
+        self._headers = []
+        self._values = []
 
     def initialize(self, data):
         self._pdfoutfile = PdfPages(self._pdfoutfilename + ".pdf")
 
-
     def execute(self, data):
+        skip = False
+        tmpValues = []
+        if len(self._headers) > 0:
+            skip = True
+        for name in self._names:
+            datum = data.getData(name)
+            if isinstance(datum, np.ndarray):
+                tmpValues.append(np.mean(datum))
+                tmpValues.append(np.std(datum))
+                if not skip:
+                    self._headers.append("mean_"+name)
+                    self._headers.append("stderr_"+name)
+            elif isinstance(datum, lmfit.model.ModelFit):
+                pars = datum.params
+                for parameter in pars:
+                    pname = pars[parameter].name
+                    pval = pars[parameter].value
+                    perr = pars[parameter].stderr
+                    tmpValues.append(pval)
+                    tmpValues.append(perr)
+                    if not skip:
+                        self._headers.append(pname)
+                        self._headers.append(pname + "_stderr")
+            else:
+                tmpValues.append(datum)
+                if not skip:
+                    self._headers.append(name)
+        self._values.append(tmpValues)
+        
         # plotting
         #~ plt.plot(motor, observable,         'bo')
         #~ plt.plot(motor, result.best_fit, 'r-')
@@ -55,94 +86,13 @@ class iintfinalization(iProcess.IProcess):
         #~ plt.close()
 
     def finalize(self, data):
+        header = ''
+        for elem in self._headers:
+            header += str(elem)
+            header += "\t"
+        valuearray = np.asarray(self._values)
+        np.savetxt(self._outfilename, valuearray, header=header, fmt='%14.4f')
         self._pdfoutfile.close()
 
     def check(self, data):
         pass
-
-#~ 
-	#~ if str(fittingfunction) == 'twogaussian' or str(fittingfunction) == 'twolorentzian' or str(fittingfunction) == 'twogaussianfixedcen':
-		#~ result = gmod.fit(iintnorm_bckgcorr, x=motor, area=float(parini[0]), cen=float(parini[1]), wid=float(parini[2]),area1=float(parini[3]), cen1=float(parini[4]), wid1=float(parini[5]))
-		#~ print(result.fit_report())
-		#~ param11=float(result.params['area'].value)
-		#~ param12=float(result.params['area'].stderr)	
-		#~ param21=float(result.params['cen'].value)
-		#~ param22=float(result.params['cen'].stderr)	
-		#~ param31=float(result.params['wid'].value)
-		#~ param32=float(result.params['wid'].stderr)
-		#~ param41=float(result.params['area1'].value)
-		#~ param42=float(result.params['area1'].stderr)	
-		#~ param51=float(result.params['cen1'].value)
-		#~ param52=float(result.params['cen1'].stderr)	
-		#~ param61=float(result.params['wid1'].value)
-		#~ param62=float(result.params['wid1'].stderr)
-		#~ fitresults=[scan_start, track1, track1err, track2, track2err, track3, track3err, pr1chi_value, pr2chi_value, ptth_value, peta_value, integral, integral_stderr, param11, param12, param21, param22, param31, param32, param41, param42, param51, param52, param61, param62]
-		
-        
-fitresults // for double peak fit functions
-            =[ scan_start # scan number
-            track1, 
-            track1err, 
-            track2, 
-            track2err, 
-            track3, 
-            track3err, 
-            pr1chi_value, 
-            pr2chi_value, 
-            ptth_value, 
-            peta_value, 
-            integral, 
-            integral_stderr, 
-            param11, 
-            param12, 
-            param21, 
-            param22, 
-            param31, 
-            param32, 
-            param41, 
-            param42, 
-            param51, 
-            param52, 
-            param61, 
-            param62]
-
-/// single peaks
-fitresults= [scan_start  # scan number
- track1 # mean val of first "monitored" column
- track1err # error of -> std. dev of first column
- track2 # mean val of second "monitored" column
- track2err # error of -> std. dev of second column
- track3 # mean val of third "monitored" column
- track3err # error of -> std. dev of third column
- pr1chi_value # no idea yet
- pr2chi_value # no idea yet
- ptth_value # no idea yet 
- peta_value # no idea yet
- integral # trapezoid integral val
- integral_stderr # trapezoid integral difference to spline fit
- param11 # area of first fit function
- param12 # std err of above
- param21 # central val of fit function
- param22 # and its std err
- param31 # width of fit function
- param32] # and its std. error
-
-# several steps: 
-# final command:
-#~ np.savetxt(output, b[1:imax+1], fmt='%14.4f')
-# where:
-    #~ output=filename_out+'.iint' \\ it's the file name
-
-    #~ b = np.row_stack( (myarray,fitresultsarray) ) \\ myarray and fitsresultsarray are (at least) 2d arrays 
-    # where:
-    		#~ fitresultsarray=np.asarray(fitresults) \\ see values from above
-
-
-example:
-scan_nr   mean1stcol   stderr1.c      mean2ndcol     stderr2.c      mean3rdcol     stderr3.col
-699.0000  100.0810     0.1277         3.9622         0.0057         2.4989         0.0078        
-    pr1chi_val      pr2chi_value  ptth_value      peta_value
-    90.0000         0.0000        92.1517         0.0000      7391.8494         0.2909      7209.3458       170.7618        45.3166         0.0020         0.0730         0.0020
-
-
-#~ d = np.loadtxt(output, skiprows=0, unpack=True)
