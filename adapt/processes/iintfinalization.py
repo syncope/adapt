@@ -35,6 +35,9 @@ class iintfinalizationdef(iProcess.IProcessDefinition):
         self.createParameter("outputs", "STRINGLIST")
         self.createParameter("outfilename", "STRING")
         self.createParameter("pdffilename", "STRING")
+        self.createParameter("motor", "STRING")
+        self.createParameter("observable", "STRING")
+        self.createParameter("fitresult", "STRING")
 
 class iintfinalization(iProcess.IProcess):
 
@@ -43,6 +46,9 @@ class iintfinalization(iProcess.IProcess):
         self._names = self._parameters["outputs"]
         self._outfilename = self._parameters["outfilename"]
         self._pdfoutfilename = self._parameters["pdffilename"]
+        self._pdfmotor = self._parameters["motor"]
+        self._pdfobservable = self._parameters["observable"]
+        self._pdffitresult = self._parameters["fitresult"]
         self._headers = []
         self._values = []
 
@@ -52,10 +58,13 @@ class iintfinalization(iProcess.IProcess):
     def execute(self, data):
         skip = False
         tmpValues = []
+        scannumber = None
         if len(self._headers) > 0:
             skip = True
         for name in self._names:
             datum = data.getData(name)
+            if name == "scannumber":
+                scannumber = int(datum)
             if isinstance(datum, np.ndarray):
                 tmpValues.append(np.mean(datum))
                 tmpValues.append(np.std(datum))
@@ -78,12 +87,16 @@ class iintfinalization(iProcess.IProcess):
                 if not skip:
                     self._headers.append(name)
         self._values.append(tmpValues)
-        
-        # plotting
-        #~ plt.plot(motor, observable,         'bo')
-        #~ plt.plot(motor, result.best_fit, 'r-')
-        #~ self._pdfoutfile.savefig()
-        #~ plt.close()
+
+        # plotstuff
+        obs = data.getData(self._pdfobservable)
+        mot = data.getData(self._pdfmotor)
+        fr = data.getData(self._pdffitresult)
+        plt.plot(mot,obs,'bo')
+        plt.plot(mot, fr.best_fit, 'r-')
+        plt.title("Scan: " + str(scannumber))
+        self._pdfoutfile.savefig()
+        plt.close()
 
     def finalize(self, data):
         header = ''
