@@ -1,4 +1,9 @@
+! multiple gaussian / multiple peak fitting needs interaction
 
-!! test the write functionality for good 
+! change pdf plotting to subplotting: 3x4 -> 12 plots per page
 
----> this needs further input from Eugen
+! more output to the command line/call window
+
+! background subtraction -> normalization
+
+! add/mark the points that are moved by the despiking routine

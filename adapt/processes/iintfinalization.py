@@ -51,6 +51,7 @@ class iintfinalization(iProcess.IProcess):
         self._pdffitresult = self._parameters["fitresult"]
         self._headers = []
         self._values = []
+        self._plots = []
 
     def initialize(self, data):
         self._pdfoutfile = PdfPages(self._pdfoutfilename + ".pdf")
