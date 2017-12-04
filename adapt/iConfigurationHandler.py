@@ -1,4 +1,4 @@
-# Copyright (C) 2016-7  Christoph Rosemann, DESY, Notkestr. 85, D-22607 Hamburg
+# Copyright (C) 2016-17  Christoph Rosemann, DESY, Notkestr. 85, D-22607 Hamburg
 # email contact: christoph.rosemann@desy.de
 #
 # This program is free software; you can redistribute it and/or
@@ -16,38 +16,14 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor,
 # Boston, MA  02110-1301, USA.
 
-from . import processData
+# this is the abstract definition of the persistency of configuration
+# currently only one method is foreseen, but maybe this wil change
 
 
-'''This is the abstract base class of a user programmable process.
-It defines functions that have to be present in any derived process.
-These are the functions, by which the framework executes actual work.'''
+class IConfigurationHandler():
 
-class IProcessSchema():
-
-    def __init__(self):
-        self._ptype = ""
-
-    def type(self):
-        return self._ptype
-
-
-class IProcess():
-
-    def __init__(self, processSchema):
-        self._schema = processSchema
-
-    def getSchema(self):
-        return self._schema
-
-    def initialize(self, data):
+    def loadConfig(self, filename):
         pass
 
-    def execute(self, data):
-        pass
-
-    def finalize(self, data):
-        pass
-
-    def check(self, data):
+    def writeConfig(self, filename, config):
         pass

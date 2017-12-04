@@ -1,4 +1,4 @@
-# Copyright (C) 2016  Christoph Rosemann, DESY, Notkestr. 85, D-22607 Hamburg
+# Copyright (C) 2017  Christoph Rosemann, DESY, Notkestr. 85, D-22607 Hamburg
 # email contact: christoph.rosemann@desy.de
 #
 # This program is free software; you can redistribute it and/or
@@ -19,11 +19,13 @@
 # this is the abstract definition of the persistency of configuration
 # currently only one method is foreseen, but maybe this wil change
 
+import iConfigurationHandler
 
-class IConfigFileAccess():
 
-    def read(self, filename):
+class ConfigurationHandler(iConfigurationHandler.IConfigurationHandler):
+
+    def loadConfig(self, filename):
         pass
 
-    def write(self, filename, config):
+    def writeConfig(self, filename, config):
         pass
