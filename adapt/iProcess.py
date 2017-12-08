@@ -1,4 +1,4 @@
-# Copyright (C) 2016-7  Christoph Rosemann, DESY, Notkestr. 85, D-22607 Hamburg
+# Copyright (C) 2016-17  Christoph Rosemann, DESY, Notkestr. 85, D-22607 Hamburg
 # email contact: christoph.rosemann@desy.de
 #
 # This program is free software; you can redistribute it and/or
@@ -23,7 +23,10 @@ from . import processData
 It defines functions that have to be present in any derived process.
 These are the functions, by which the framework executes actual work.'''
 
-class IProcessSchema():
+class IProcessParameterSchema():
+    '''A process has a unique type, each instance a unique name.
+       A process is defined from the outside by its parameters.
+       These parameters are typed and may be further specified.'''
 
     def __init__(self):
         self._ptype = ""
@@ -34,11 +37,11 @@ class IProcessSchema():
 
 class IProcess():
 
-    def __init__(self, processSchema):
-        self._schema = processSchema
+    def __init__(self, parameterSchema):
+        self._paramschema = parameterSchema
 
     def getSchema(self):
-        return self._schema
+        return self._paramschema
 
     def initialize(self, data):
         pass
