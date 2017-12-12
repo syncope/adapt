@@ -16,3 +16,20 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor,
 # Boston, MA  02110-1301, USA.
 
+# a builder that can creates processes from their definition/parameters
+
+
+from . import processes
+
+
+class ProcessBuilder():
+
+    def __init__(self):
+        pass
+
+    def createProcessFromDefinition(self, procdef):
+        try:
+            processType = procdef.getProcessType()
+        except:
+            print("[ProcessBuilder] Cannot build the specified type of process for: \n" + str(procdef))
+        return getattr(getattr(processes, processType), processType)(procdef)
