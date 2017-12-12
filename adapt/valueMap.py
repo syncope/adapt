@@ -16,3 +16,24 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor,
 # Boston, MA  02110-1301, USA.
 
+# a simple representation of a map -- a dictionary
+# exchange object for persistency
+
+class ValueMap():
+    '''A simple exchange object, basically a dictionary'''
+    
+    def __init__(self):
+        self._map = {}
+
+    def add(self, key, val):
+        self._map[key] = val
+
+    def get(self, key):
+        try:
+            return self._map[key]
+        except KeyError("[ValueMap] Cannot retrieve value for invalid key " + str(key) + "."):
+            exit()
+
+    def numberOfElements(self):
+        return len(self._map)
+
