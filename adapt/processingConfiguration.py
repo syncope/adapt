@@ -16,8 +16,9 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor,
 # Boston, MA  02110-1301, USA.
 
-# simple data holding class
-# needed for exchange to persistency
+# a simple abstract definition for the core processing model:
+#  - an execution ordered list holding names
+#  - a map of processes, defined by name, type its associated values
 
 
 class ProcessingConfiguration():
@@ -32,6 +33,14 @@ class ProcessingConfiguration():
 
     def addProcessDefinition(self, pDefDict):
         self._definitionDict = pDefDict
+
+    def addSingleProcessDefinition(self, name, process):
+        self._definitionDict[name] = process
+        self._executionOrder.append(name)
+
+    def removeProcess(self, name):
+        self._definitionDict.pop(name)
+        self._executionOder.remove(name)
 
     def getProcessDefinitions(self):
         return self._definitionDict
