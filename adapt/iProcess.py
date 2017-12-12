@@ -40,9 +40,6 @@ class IProcess():
     def __init__(self, parameterSchema):
         self._paramschema = parameterSchema
 
-    def getSchema(self):
-        return self._paramschema
-
     def initialize(self, data):
         pass
 
