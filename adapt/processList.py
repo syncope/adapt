@@ -16,15 +16,36 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor,
 # Boston, MA  02110-1301, USA.
 
+# potentially the central control class
+# it instantiates processes, keeps the master list of execution
+# and owns the central instance of the data object (!)
+# maybe presumably it needs a better name
+
+
 from . import iProcess
 from . import processData
-
+from . import constructionDelegator
 
 class ProcessList():
 
     def __init__(self, procList):
+        self._delegator = constructionDelegator.ConstructionDelegator() 
         self._data = processData.ProcessData()
-        self._processList = procList
+        self._masterExecutionlist = None
+
+    def build(self, processConfig):
+        # this is a potentially raw object
+        # dismantle and check before instantiating anything!
+ 
+        pDefs = self._procConf.getProcessDefinitions()
+
+        self._masterExecutionlist = []
+        for pname in self._procConf.getOrderOfExecution():
+            self._masterExecutionlist.append(
+                processFactory.ProcessFactory(
+                ).createProcessFromDefinition(
+                    pDefs[
+                        pname]))
 
     def execute(self):
         self._runInitialization()

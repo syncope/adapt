@@ -16,3 +16,14 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor,
 # Boston, MA  02110-1301, USA.
 
+import processGUIBuilder
+import processBuilder
+
+
+class ConstructionDelegator():
+
+    def __init__(self):
+        self._guibuilder = processGUIBuilder.ProcessGUIBuilder()
+        self._procbuilder = processBuilder.ProcessBuilder()
+
+    

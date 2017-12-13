@@ -42,12 +42,3 @@ class ProcessListBuilder():
                     pDefs[
                         pname]))
         return executionList
-
-if __name__ == "__main__":
-    from . import configParserFileAccess
-    processingConfig = configParserFileAccess.ConfigParserFileAccess().read(
-        "test.ini")
-    plb = ProcessListBuilder()
-    pList = plb.createProcessList(processingConfig)
-    print(" created a process list that can be executed: ")
-    print(repr(pList))
