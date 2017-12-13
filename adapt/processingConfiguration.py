@@ -36,7 +36,6 @@ class ProcessingConfiguration():
 
     def addSingleProcessDefinition(self, name, process):
         self._definitionDict[name] = process
-        self._executionOrder.append(name)
 
     def removeProcess(self, name):
         self._definitionDict.pop(name)
