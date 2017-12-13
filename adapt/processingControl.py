@@ -26,7 +26,7 @@ from . import iProcess
 from . import processData
 from . import constructionDelegator
 
-class ProcessList():
+class ProcessingControl():
 
     def __init__(self, procList):
         self._delegator = constructionDelegator.ConstructionDelegator() 
