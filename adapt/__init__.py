@@ -21,7 +21,8 @@ from . import configurationHandler
 from . import iProcess
 from . import processData
 from . import processDefinitionFactory
-from . import processFactory
+from . import processBuilder
 from . import processingConfiguration
-from . import processListBuilder
-from . import processList
+from . import processGUIBuilder
+from . import processingControl
+from . import valueMap
