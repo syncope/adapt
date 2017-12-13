@@ -36,4 +36,3 @@ class ValueMap():
 
     def numberOfElements(self):
         return len(self._map)
-
