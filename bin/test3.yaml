@@ -1,6 +1,6 @@
 #$## !!!!!!! EVERYTHING IS A STRING -- DON"T USE ANY QUOTAS
 
-execlist: [ "read" ]
+execlist: [ read, observable ]
 
 read:
     type: specfilereader
@@ -8,21 +8,21 @@ read:
     endScan: 740
     filename: "/home/rosem/iintplus/MnCo15.spc"
     outputdata: "data"
-#~ 
-#~ [observable]
-#~ type = iintdefinition
-#~ motor_column = pth
-#~ detector_column = exp_c01
-#~ monitor_column = sumvfcs_counts
-#~ exposureTime_column = exp_t01
-#~ # attenuationFactor_column
-#~ input = data
-#~ observableoutput = observable
-#~ columns_log = [ petra_beamcurrent, lks340_outputchannela, lks340_outputchannelb ]
-#~ headers_log = [ pr1chi, pr2chi, ptth, peta ]
-#~ id = scannumber
-#~ motoroutput = pth
-#~ 
+
+observable:
+    type: iintdefinition
+    motor_column: pth
+    detector_column: exp_c01
+    monitor_column: sumvfcs_counts
+    exposureTime_column: exp_t01
+    # attenuationFactor_column
+    input: data
+    observableoutput: observable
+    columns_log: [ petra_beamcurrent, lks340_outputchannela, lks340_outputchannelb ]
+    headers_log: [ pr1chi, pr2chi, ptth, peta ]
+    id: scannumber
+    motoroutput: pth
+
 #~ [despike]
 #~ type = filter1d
 #~ method = p09despiking
