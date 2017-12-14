@@ -18,19 +18,13 @@
 
 # minimalistic: print out data info after each iteration
 
-from adapt import iProcess
+from adapt.iProcess import *
 
 
-class datainfodef(iProcess.IProcessDefinition):
+class datainfo(IProcess):
 
-    def __init__(self):
-        super(datainfodef, self).__init__()
-        self._ptype = "datainfo"
-
-class datainfo(iProcess.IProcess):
-
-    def __init__(self, procDef):
-        super(datainfo, self).__init__(procDef)
+    def __init__(self, ptype="datainfo"):
+        super(datainfo, self).__init__(ptype)
 
     def initialize(self, data):
         pass

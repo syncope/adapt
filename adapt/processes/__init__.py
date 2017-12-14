@@ -17,7 +17,7 @@
 # Boston, MA  02110-1301, USA.
 
 #~ from . import globaldata
-#~ from . import datainfo
+from . import datainfo
 #~ from . import stdreader
 from . import specfilereader
 #~ from . import polarintegration
@@ -25,7 +25,7 @@ from . import specfilereader
 from . import iintdefinition
 #~ from . import iintfinalization
 #~ from . import p09polarization
-#~ from . import filter1d
+from . import filter1d
 #~ from . import subsequenceselection
 #~ from . import backgroundsubtraction
 #~ from . import curvefitting
