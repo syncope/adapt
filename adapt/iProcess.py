@@ -17,29 +17,24 @@
 # Boston, MA  02110-1301, USA.
 
 from . import processData
-
+from . import processParameters
 
 '''This is the abstract base class of a user programmable process.
 It defines functions that have to be present in any derived process.
 These are the functions, by which the framework executes actual work.'''
 
-class IProcessParameterSchema():
-    '''A process has a unique type, each instance a unique name.
-       A process is defined from the outside by its parameters.
-       These parameters are typed and may be further specified.'''
-
-    def __init__(self):
-        self._ptype = ""
-
-    def type(self):
-        return self._ptype
-
-
 class IProcess():
 
-    def __init__(self, parameterSchema):
-        self._paramschema = parameterSchema
+    def __init__(self, ptype):
+        self._ptype = ptype
+        self._parameters = ProcessParameters()
+    
+    def getProcessParameters(self):
+        return self._parameters
 
+    def getConfigGUI(self):
+        pass
+        
     def initialize(self, data):
         pass
 

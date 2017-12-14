@@ -20,6 +20,7 @@ from . import iConfigurationHandler
 from . import configurationHandler
 from . import iProcess
 from . import processData
+from . import processParameter
 from . import processDefinitionFactory
 from . import processBuilder
 from . import processingConfiguration
