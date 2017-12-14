@@ -34,12 +34,13 @@ class IProcess():
     def getProcessParameters(self):
         return self._parameters
 
-    def setParameterValues(self, pparams):
-        for pp in self._parameters.values():
+    def setParameterValues(self, someDict):
+        '''Set the values of the parameters by a dictionary.'''
+        for pname, pparam in self._parameters.items():
             try:
-                pp.set(pparams[pp.name])
+                pparam.set(someDict[pname])
             except KeyError:
-                if pp.isOptional:
+                if pparam.isOptional:
                     continue
                 else:
                     raise ValueError("Can't set process parameters, value of name " + str(pp.name) + " is missing.")

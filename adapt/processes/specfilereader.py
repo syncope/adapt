@@ -45,35 +45,32 @@ class specfilereader(IProcess):
         self._out = ProcessParameter("outputdata", str)
         self._startScan = ProcessParameter("startScan", int)
         self._endScan = ProcessParameter("endScan", int)
-        self._stride = ProcessParameter("stride", int, optional=True)
+        self._stride = ProcessParameter("stride", int, 1, optional=True)
         self._parameters.add(self._in)
         self._parameters.add(self._out)
         self._parameters.add(self._startScan)
         self._parameters.add(self._endScan)
         self._parameters.add(self._stride)
-        print(" >>> ASDASDA <<<< " )
 
     def initialize(self, data):
-        self.sfr = SpecFileReader(self._in)
-        if self.parameter("stride"):
-            self.scandata = self.sfr.read(self.parameter("startScan"),
-                                          self.parameter("endScan"),
-                                          self.parameter("stride"))
+        self.sfr = SpecFileReader(self._in.get())
+        if self._stride != 1:
+            self.scandata = self.sfr.read(self._startScan.get(),
+                                          self._endScan.get(),
+                                          self._stride.get())
         else:
-            self.scandata = self.sfr.read(self.parameter("startScan"),
-                                          self.parameter("endScan"))
+            self.scandata = self.sfr.read(self._startScan.get(),
+                                          self._endScan.get())
         self.dataIterator = iter(self.scandata)
-        print("SCHOMOMOSS")
 
     def execute(self, data):
         # read next entry from spec file, 
         # put scandata object to common memory
         try:
-            data.addData(self.parameter("output"), next(self.dataIterator))
+            data.addData(self._out.get(), next(self.dataIterator))
         except StopIteration:
             print("---End of procesing ---")
             raise StopIteration
-        self.dataIterator.dump()
 
     def finalize(self, data):
         pass

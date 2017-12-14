@@ -35,5 +35,5 @@ class Steering():
         self._cfghandler.writeConfig(filename, self._processingConfig)
 
     def process(self):
-        if self._control.build(self._processingConfig):
-            self._control.execute()
+        self._control.build(self._processingConfig)
+        self._control.execute()
