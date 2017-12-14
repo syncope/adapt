@@ -1,6 +1,6 @@
 #$## !!!!!!! EVERYTHING IS A STRING -- DON"T USE ANY QUOTAS
 
-execlist: [ read, observable ]
+execlist: [ read, observable,despike ]
 
 read:
     type: specfilereader
@@ -23,12 +23,12 @@ observable:
     id: scannumber
     motoroutput: pth
 
-#~ [despike]
-#~ type = filter1d
-#~ method = p09despiking
-#~ input = observable
-#~ output = despikedObservable
-#~ 
+despike:
+    type: filter1d
+    method: p09despiking
+    input: observable
+    output: despikedObservable
+
 #~ [trapintegrate]
 #~ type = trapezoidintegration
 #~ motor = pth
@@ -82,5 +82,5 @@ observable:
 #~ [polarizationanalysis]
 #~ type = p09polarization
 #~ 
-#~ [info]
-#~ type = datainfo
+info:
+    type: datainfo

@@ -19,34 +19,33 @@
 
 # 1d filtering process -- signal shaping
 
-from adapt import iProcess
 import scipy.signal
 import numpy as np
+
+from adapt.iProcess import *
+
 
 def medianfilter1d(data):
     return scipy.signal.medfilt(data, kernel_size=3)
 
 
-class filter1ddef(iProcess.IProcessDefinition):
+class filter1d(IProcess):
 
-    def __init__(self):
-        super(filter1ddef, self).__init__()
-        self._ptype = "filter1d"
-        self.createParameter("method", "STRING")
-        self.createParameter("input", "STRING")
-        self.createParameter("output", "STRING")
+    def __init__(self, ptype="filter1d"):
+        super(filter1d, self).__init__(ptype)
+        self._inputPar = ProcessParameter("input", str)
+        self._outputPar = ProcessParameter("output", str)
+        self._methodPar = ProcessParameter("method", str)
+        self._parameters.add(self._inputPar)
+        self._parameters.add(self._outputPar)
+        self._parameters.add(self._methodPar)
 
-
-class filter1d(iProcess.IProcess):
-
-    def __init__(self, procDef):
-        super(filter1d, self).__init__(procDef)
-        self._input = self._parameters["input"]
-        self._output = self._parameters["output"]
         self._methods = ["medianFilter", "p09despiking"]
-        self._method = self._parameters["method"]
 
     def initialize(self, data):
+        self._input = self._inputPar.get()
+        self._output = self._outputPar.get()
+        self._method = self._methodPar.get()
         if self._method in self._methods:
             return True
         else:
