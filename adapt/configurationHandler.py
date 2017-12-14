@@ -21,8 +21,8 @@
 
 import yaml
 
-import iConfigurationHandler
-import processingConfiguration
+from . import iConfigurationHandler
+from . import processingConfiguration
 
 
 class ConfigurationHandler(iConfigurationHandler.IConfigurationHandler):
@@ -48,11 +48,12 @@ class ConfigurationHandler(iConfigurationHandler.IConfigurationHandler):
 
     def _serialize(self):
         try:
-            self._procConfig.setOrderOfExecution(self._datablob["execlist"])
+            execlist = self._datablob["execlist"]
+            self._procConfig.setOrderOfExecution(execlist)
         except KeyError("No [execlist] item in config. Exiting."):
             exit()
         try:
-            for procname in self._execList:
+            for procname in execlist:
                 self._procConfig.addSingleProcessDefinition(procname, self._datablob[procname])
         except KeyError("Item in execlist has no corresponding entry."):
             exit()

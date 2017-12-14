@@ -21,10 +21,11 @@
 class ProcessParameter():
     '''An object to hold all information needed for parameters.'''
 
-    def __init__(self, name=None, ptype=None, defval=None):
+    def __init__(self, name=None, ptype=None, defval=None, optional=False):
         self.name = name
         self._type = ptype
         self.value = defval
+        self.optional = optional
 
     def typecheck(self, val):
         if type(val) is self._type:
@@ -41,20 +42,13 @@ class ProcessParameter():
     def get(self):
         return self.value
 
-class ProcessParameters():
-    def __init__(self):
-        self._dict = {}
+    def isOptional(self):
+        return self.optional
+
+class ProcessParameters(dict):
+    
+    def __init__(self,*arg,**kw):
+        super(ProcessParameters, self).__init__(*arg, **kw)
 
     def add(self, pp : ProcessParameter):
-        self._dict[pp.name] = pp
-
-    def __getitem__(self, key):
-        return self._dict[key].value
-
-
-if __name__ == "__main__":
-    pps = ProcessParameters()
-    a = ProcessParameter('name', str)
-    a.set('asdasd')
-    pps.add(a)
-    print(str(pps[a.name]))
+        self[pp.name] = pp

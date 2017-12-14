@@ -22,23 +22,16 @@
 
 import argparse
 try:
-    import adapt.configParserFileAccess as cfgparser
-    import adapt.processListBuilder as processbuilder
-    import adapt.serialExecutor as serialexecute
+    import adapt.steering as controller
 except ImportError("[adapt] library not found. Exiting!"):
     exit()
 
 def serialExecution(filename):
-    # create the objects
-    iniparser = cfgparser.ConfigParserFileAccess()
-    procbuilder = processbuilder.ProcessListBuilder()
-    serexecutor = serialexecute.SerialExecutor()
+    control = controller.Steering()
     
     # parse the config file
-    cfgObjDict = iniparser.read(filename)
-    ordProcList = procbuilder.createProcessList(cfgObjDict)
-    serexecutor.run(ordProcList)
-
+    control.load(filename)
+    control.process()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

@@ -16,14 +16,24 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor,
 # Boston, MA  02110-1301, USA.
 
-import processGUIBuilder
-import processBuilder
+# the entry point of the calling external binary
 
+from . import configurationHandler
+from . import processingControl
 
-class ConstructionDelegator():
+class Steering():
 
     def __init__(self):
-        self._guibuilder = processGUIBuilder.ProcessGUIBuilder()
-        self._procbuilder = processBuilder.ProcessBuilder()
+        self._cfghandler = configurationHandler.ConfigurationHandler()
+        self._control = processingControl.ProcessingControl()
+        self._processingConfig = None
 
-    
+    def load(self, filename):
+        self._processingConfig = self._cfghandler.loadConfig(filename)
+
+    def write(self, filename):
+        self._cfghandler.writeConfig(filename, self._processingConfig)
+
+    def process(self):
+        if self._control.build(self._processingConfig):
+            self._control.execute()

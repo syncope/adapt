@@ -16,36 +16,32 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor,
 # Boston, MA  02110-1301, USA.
 
-# one of the most simple process: subtract two np.ndarrays, store result
+# one of the most simple processes subtract two np.ndarrays, store result
 
 from adapt import iProcess
 
-
-class backgroundsubtractiondef(iProcess.IProcessDefinition):
-
-    def __init__(self):
-        super(backgroundsubtractiondef, self).__init__()
-        self._ptype = "backgroundsubtraction"
-        self.createParameter("input", "STRING")
-        self.createParameter("output", "STRING")
-        self.createParameter("background", "STRING")
-
 class backgroundsubtraction(iProcess.IProcess):
 
-    def __init__(self, procDef):
-        super(backgroundsubtraction, self).__init__(procDef)
-        self._input = self._parameters["input"]
-        self._output = self._parameters["output"]
-        self._background = self._parameters["background"]
+    def __init__(self, ptype="backgroundsubtraction"):
+        super(backgroundsubtraction, self).__init__(ptype)
+        
+        self._in = ProcessParameter("input", str)
+        self._out = ProcessParameter("output", str)
+        self._bkg = ProcessParameter("background", str)
+
+        self._parameters.add(self._in)
+        self._parameters.add(self._out)
+        self._parameters.add(self._bkg)
+
 
     def initialize(self, data):
         pass
 
     def execute(self, data):
-        element = data.getData(self._input)
-        background = data.getData(self._background)
+        element = data.getData(self._in)
+        background = data.getData(self._bkg)
         
-        data.addData(self._output, (element - background))
+        data.addData(self._out, (element - background))
 
     def finalize(self, data):
         pass

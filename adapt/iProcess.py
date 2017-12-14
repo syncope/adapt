@@ -18,6 +18,7 @@
 
 from . import processData
 from . import processParameters
+from .processParameters import ProcessParameter
 
 '''This is the abstract base class of a user programmable process.
 It defines functions that have to be present in any derived process.
@@ -27,10 +28,24 @@ class IProcess():
 
     def __init__(self, ptype):
         self._ptype = ptype
-        self._parameters = ProcessParameters()
+        self._parameters = processParameters.ProcessParameters()
+        self._parametersset = False
     
     def getProcessParameters(self):
         return self._parameters
+
+    def setParameterValues(self, pparams):
+        for pp in self._parameters.values():
+            try:
+                pp.set(pparams[pp.name])
+            except KeyError:
+                if pp.isOptional:
+                    continue
+                else:
+                    raise ValueError("Can't set process parameters, value of name " + str(pp.name) + " is missing.")
+    
+    def _internalCheck(self):
+        return True
 
     def getConfigGUI(self):
         pass

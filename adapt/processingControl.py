@@ -24,12 +24,12 @@
 
 from . import iProcess
 from . import processData
-from . import constructionDelegator
+from . import processBuilder
 
 class ProcessingControl():
 
-    def __init__(self, procList):
-        self._delegator = constructionDelegator.ConstructionDelegator() 
+    def __init__(self):
+        self._pBuilder = processBuilder.ProcessBuilder()
         self._data = processData.ProcessData()
         self._masterExecutionlist = None
 
@@ -37,15 +37,12 @@ class ProcessingControl():
         # this is a potentially raw object
         # dismantle and check before instantiating anything!
  
-        pDefs = self._procConf.getProcessDefinitions()
+        execOrder = processConfig.getOrderOfExecution()
+        pDefs = processConfig.getProcessDefinitions()
 
         self._masterExecutionlist = []
-        for pname in self._procConf.getOrderOfExecution():
-            self._masterExecutionlist.append(
-                processFactory.ProcessFactory(
-                ).createProcessFromDefinition(
-                    pDefs[
-                        pname]))
+        for pname in execOrder:
+            self._masterExecutionlist.append( self._pBuilder.createProcessFromDictionary(pDefs[pname]) )
 
     def execute(self):
         self._runInitialization()

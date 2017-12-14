@@ -19,27 +19,16 @@
 from adapt import iProcess
 
 
-class globaldatadef(iProcess.IProcessDefinition):
-
-    def __init__(self):
-        super(globaldatadef, self).__init__()
-        self._ptype = "globaldata"
-        self.createParameter("wavelength", "FLOAT", optional=True)
-        self.createParameter("sdd", "FLOAT", optional=True)
-        self.createParameter("unit", "STRING", optional=True)
-
-
 class globaldata(iProcess.IProcess):
 
     def __init__(self, pparameters):
         super(globaldata, self).__init__(pparameters)
+        #~ self._ptype = "globaldata"
+        #~ self.createParameter("wavelength", "FLOAT", optional=True)
+        #~ self.createParameter("sdd", "FLOAT", optional=True)
+        #~ self.createParameter("unit", "STRING", optional=True)
 
     def initialize(self, data):
         data.addGlobalData("wavelength", self.parameter("wavelength"))
         data.addGlobalData("sdd", self.parameter("sdd"))
         data.addGlobalData("unit", self.parameter("unit"))
-
-
-if __name__ == "__main__":
-    gdd = globaldatadef()
-    print(" gdd has parameters: " + repr(gdd.getParameters()))

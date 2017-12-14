@@ -33,28 +33,28 @@ try:
 except ImportError: # no more StringIO in Python3 -> different module
     from io import StringIO
 
-from adapt import iProcess
+from adapt.iProcess import *
 
 
-class specfilereaderdef(iProcess.IProcessDefinition):
+class specfilereader(IProcess):
 
-    def __init__(self):
-        super(specfilereaderdef, self).__init__()
-        self._ptype = "specfilereader"
-        self.createParameter("input", "STRING")
-        self.createParameter("output", "STRING")
-        self.createParameter("startScan", "INT")
-        self.createParameter("endScan", "INT")
-        self.createParameter("stride","INT", optional=True)
+    def __init__(self, ptype="specfilereader"):
+        super(specfilereader, self).__init__(ptype)
 
-
-class specfilereader(iProcess.IProcess):
-
-    def __init__(self, procDef):
-        super(specfilereader, self).__init__(procDef)
+        self._in = ProcessParameter("filename", str)
+        self._out = ProcessParameter("outputdata", str)
+        self._startScan = ProcessParameter("startScan", int)
+        self._endScan = ProcessParameter("endScan", int)
+        self._stride = ProcessParameter("stride", int, optional=True)
+        self._parameters.add(self._in)
+        self._parameters.add(self._out)
+        self._parameters.add(self._startScan)
+        self._parameters.add(self._endScan)
+        self._parameters.add(self._stride)
+        print(" >>> ASDASDA <<<< " )
 
     def initialize(self, data):
-        self.sfr = SpecFileReader(self.parameter("input"))
+        self.sfr = SpecFileReader(self._in)
         if self.parameter("stride"):
             self.scandata = self.sfr.read(self.parameter("startScan"),
                                           self.parameter("endScan"),
@@ -63,6 +63,7 @@ class specfilereader(iProcess.IProcess):
             self.scandata = self.sfr.read(self.parameter("startScan"),
                                           self.parameter("endScan"))
         self.dataIterator = iter(self.scandata)
+        print("SCHOMOMOSS")
 
     def execute(self, data):
         # read next entry from spec file, 
@@ -72,6 +73,7 @@ class specfilereader(iProcess.IProcess):
         except StopIteration:
             print("---End of procesing ---")
             raise StopIteration
+        self.dataIterator.dump()
 
     def finalize(self, data):
         pass

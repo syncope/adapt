@@ -27,9 +27,11 @@ class ProcessBuilder():
     def __init__(self):
         pass
 
-    def createProcessFromDefinition(self, procdef):
+    def createProcessFromDictionary(self, pDict):
         try:
-            processType = procdef.getProcessType()
+            processType = pDict["type"]
         except:
-            print("[ProcessBuilder] Cannot build the specified type of process for: \n" + str(procdef))
-        return getattr(getattr(processes, processType), processType)(procdef)
+            print("[ProcessBuilder] Cannot build the specified type of process: " + str(processType))
+        process =  getattr(getattr(processes, processType), processType)() 
+        process.setParameterValues(pDict)
+        return process
