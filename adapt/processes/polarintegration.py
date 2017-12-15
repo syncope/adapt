@@ -19,58 +19,64 @@
 # this is a first shot at an azimuthal integrator based on pyFAI
 
 import pyFAI
-from adapt import iProcess
+
+from adapt/iProcess import *
 
 
-class polarintegrationdef(iProcess.IProcessDefinition):
+class polarintegration(IProcess):
 
-    def __init__(self):
-        super(polarintegrationdef, self).__init__()
-        self._ptype = "polarintegration"
-        # names of in- and output
-        self.createParameter("input", "STRING", "data")
-        self.createParameter("output", "STRING", "polarintegrated")
-
-        # information about masking and detector
-        self.createParameter("detectorname", "STRING", None)
-        self.createParameter("custommask", "STRING", optional=True)
-
-        # original pyfai parametrization
-        self.createParameter("poni1", "FLOAT", optional=True)
-        self.createParameter("poni2", "FLOAT", optional=True)
-        self.createParameter("rot1", "FLOAT", optional=True)
-        self.createParameter("rot2", "FLOAT", optional=True)
-        self.createParameter("rot3", "FLOAT", optional=True)
-
-        # and old-style fit2d
-        self.createParameter("fit2dstyle", "BOOL", optional=True)
-        self.createParameter("center1", "INT", optional=True)
-        self.createParameter("center2", "INT", optional=True)
-        self.createParameter("tilt", "FLOAT", optional=True)
-        self.createParameter("tiltrotation", "FLOAT", optional=True)
-
-        # now real parameters that steer the integration
-        self.createParameter("nbins", "INT")
-        self.createParameter("method", "STRING", value="lut", optional=True)
-        self.createParameter("azimlowlim", "FLOAT", optional=True)
-        self.createParameter("azimhighlim", "FLOAT", optional=True)
-        self.createParameter("radiallowlim", "FLOAT", optional=True)
-        self.createParameter("radialhighlim", "FLOAT", optional=True)
-
-class polarintegration(iProcess.IProcess):
-
-    def __init__(self, pparameters):
-        super(polarintegration, self).__init__(pparameters)
+    def __init__(self, ptype="polarintegration"):
+        super(polarintegration, self).__init__(ptype)
+        self._inputPar = ProcessParameter("input", str, "data")
+        self._datanamePar = ProcessParameter("dataname", str, "polarintegrated")
+        self._detectornamePar = ProcessParameter("detectorname", str, None)
+        self._custommaskPar = ProcessParameter("custommask", str, optional=True)
+        self._poni1Par = ProcessParameter("poni1", float, optional=True)
+        self._poni2Par =  ProcessParameter("poni2", float, optional=True)
+        self._rot1Par =  ProcessParameter("rot1", float, optional=True)
+        self._rot2Par =  ProcessParameter("rot2", float, optional=True)
+        self._rot3Par =  ProcessParameter("rot3", float, optional=True)
+        self._fit2dstylePar =  ProcessParameter("fit2dstyle", bool, optional=True)
+        self._center1Par =  ProcessParameter("center1", int, optional=True)
+        self._center2Par =  ProcessParameter("center2", int, optional=True)
+        self._tiltPar =  ProcessParameter("tilt", float, optional=True)
+        self._tiltrotationPar =  ProcessParameter("tiltrotation", float, optional=True)
+        self._nbinsPar =  ProcessParameter("nbins", int)
+        self._methodPar =  ProcessParameter("method", str, "lut", optional=True)
+        self._aziminPar =  ProcessParameter("azimlowlim", float, optional=True)
+        self._azimaxPar =  ProcessParameter("azimhighlim", float, optional=True)
+        self._rminPar =  ProcessParameter("radiallowlim", float, optional=True)
+        self._rmaxPar =  ProcessParameter("radialhighlim", float, optional=True)
+        self._parmaters.add(self._inputPar)
+        self._parmaters.add(self._datanamePar)
+        self._parmaters.add(self._detectornamePar)
+        self._parmaters.add(self._custommaskPar)
+        self._parmaters.add(self._poni1Par)
+        self._parmaters.add(self._poni2Par)
+        self._parmaters.add(self._rot1Par)
+        self._parmaters.add(self._rot2Par)
+        self._parmaters.add(self._rot3Par)
+        self._parmaters.add(self._fit2dstylePar)
+        self._parmaters.add(self._center1Par)
+        self._parmaters.add(self._center2Par)
+        self._parmaters.add(self._tiltPar)
+        self._parmaters.add(self._tiltrotationPar)
+        self._parmaters.add(self._nbinsPar)
+        self._parmaters.add(self._methodPar)
+        self._parmaters.add(self._aziminPar)
+        self._parmaters.add(self._azimaxPar)
+        self._parmaters.add(self._rminPar)
+        self._parmaters.add(self._rmaxPar)
 
     def initialize(self, data):
-        self._input = self._parameters["input"]
-        self._dataname = self._parameters["output"]
-        self._nbins = self._parameters["nbins"]
-        self._unit = data.getData("unit")
-        self._method = self._parameters["method"]
-        _detector = self._parameters["detectorname"]
-        _wavelength = data.getData("wavelength")
-        _distance = data.getData("sdd")
+        self._input = self._inputPar.get()
+        self._dataname = self._datanamePar.get()
+        self._nbins = self._nbinsPar.get()
+        self._unit = self._unitPar.get()
+        self._method = self._methodPar.get()
+        _detector = self._detectornamePar.get()
+        _wavelength = data.get("wavelength")
+        _distance = data.get("sdd")
         
         # distinguish between fit2d and pyFAI style
         if(self._parameters["fit2dstyle"] == True):

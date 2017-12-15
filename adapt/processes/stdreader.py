@@ -26,25 +26,29 @@ except ImportError:
     print("[proc:stdreader] library psio not found; it will not be available!")
     pass
 
-from adapt import iProcess
+from adapt.iProcess import *
 
 
-class stdreaderdef(iProcess.IProcessDefinition):
-
-    def __init__(self):
-        super(stdreaderdef, self).__init__()
-        self._ptype = "stdreader"
-        self.createParameter("input", "STRINGLIST")
-        self.createParameter("output", "STRING")
-        self.createParameter("path", "STRING", optional=True)
-        self.createParameter("attribute", "STRING", optional=True)
 
 class stdreader(iProcess.IProcess):
 
-    def __init__(self, procDef):
-        super(stdreader, self).__init__(procDef)
+    def __init__(self, ptype="stdreader"):
+        super(stdreader, self).__init__(ptype)
+        self._inputPar = ProcessParameter("input", list)
+        self._datanamePar = ProcessParameter("dataname", str)
+        self._pathPar = ProcessParameter("path", str, None, optional=True)
+        self._attributePar = ProcessParameter("attribute", str, None, optional=True)
+        self._parameters.add(self._inputPar)
+        self._parameters.add(self._datanamePar)
+        self._parameters.add(self._pathPar)
+        self._parameters.add(self._attributePar)
 
     def initialize(self, data):
+        self._input = self._inputPar.get()
+        self._dataname = self._datanamePar.get()
+        self._path = self._pathPar.get()
+        self._attribute = self._attributePar.get()
+
         if(self.parameter("path")):
             try:
                 self.dataIterator = dataHandler.DataHandler(
