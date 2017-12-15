@@ -18,24 +18,23 @@
 
 # one of the most simple processes subtract two np.ndarrays, store result
 
-from adapt import iProcess
+from adapt.iProcess import *
 
-class backgroundsubtraction(iProcess.IProcess):
+class backgroundsubtraction(IProcess):
 
     def __init__(self, ptype="backgroundsubtraction"):
         super(backgroundsubtraction, self).__init__(ptype)
-        
-        self._in = ProcessParameter("input", str)
-        self._out = ProcessParameter("output", str)
-        self._bkg = ProcessParameter("background", str)
-
-        self._parameters.add(self._in)
-        self._parameters.add(self._out)
-        self._parameters.add(self._bkg)
-
+        self._inPar = ProcessParameter("input", str)
+        self._outPar = ProcessParameter("output", str)
+        self._bkgPar = ProcessParameter("background", str)
+        self._parameters.add(self._inPar)
+        self._parameters.add(self._outPar)
+        self._parameters.add(self._bkgPar)
 
     def initialize(self, data):
-        pass
+        self._in = self._inPar.get()
+        self._out = self._outPar.get()
+        self._bkg = self._bkgPar.get()
 
     def execute(self, data):
         element = data.getData(self._in)

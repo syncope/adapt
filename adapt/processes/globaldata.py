@@ -16,19 +16,24 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor,
 # Boston, MA  02110-1301, USA.
 
-from adapt import iProcess
+from adapt.iProcess import *
 
 
 class globaldata(iProcess.IProcess):
 
-    def __init__(self, pparameters):
-        super(globaldata, self).__init__(pparameters)
-        #~ self._ptype = "globaldata"
-        #~ self.createParameter("wavelength", "FLOAT", optional=True)
-        #~ self.createParameter("sdd", "FLOAT", optional=True)
-        #~ self.createParameter("unit", "STRING", optional=True)
+    def __init__(self, ptype="globaldata"):
+        super(globaldata, self).__init__(ptype)
+        self._lambdaPar = ProcessParameter("wavelength", float, optional=True)
+        self._sddPar = ProcessParameter("sdd", float, optional=True)
+        self._unitPar = ProcessParameter("unit", str, optional=True)
+        self._parameters.add(self._lambdaPar)
+        self._parameters.add(self._sddPar)
+        self._parameters.add(self._unitPar)
 
     def initialize(self, data):
-        data.addGlobalData("wavelength", self.parameter("wavelength"))
-        data.addGlobalData("sdd", self.parameter("sdd"))
-        data.addGlobalData("unit", self.parameter("unit"))
+        self._lambda = self._lambdaPar.get()
+        self._sdd = self._sddPar.get()
+        self._unit = self._unitPar.get()
+        data.addGlobalData("wavelength", self._lambda)
+        data.addGlobalData("sdd", self._sdd))
+        data.addGlobalData("unit", self._unit)

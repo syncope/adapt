@@ -19,44 +19,45 @@
 # this is a first shot at a "line integration" tool
 
 import numpy as np
-from adapt import iProcess
+
+from adapt.iProcess import *
 
 
-class sliceprojectiondef(iProcess.IProcessDefinition):
+class sliceprojection(IProcess):
 
-    def __init__(self):
-        super(sliceprojectiondef, self).__init__()
-        # define name of in- and output data
-        self._ptype = "sliceprojection"
-        self.createParameter("output", "STRING")
-        self.createParameter("input", "STRING")
-        # minimal information: x, dx, y, dy, projection direction
-        self.createParameter("slowmin", "INT")
-        self.createParameter("slowmax", "INT")
-        self.createParameter("fastmin", "INT")
-        self.createParameter("fastmax", "INT")
-        self.createParameter("horizontal", "BOOL", True)
-        # additional info: mask
-        self.createParameter("custommask", "STRING", optional=True)
-
-class sliceprojection(iProcess.IProcess):
-
-    def __init__(self, pparameters):
-        super(sliceprojection, self).__init__(pparameters)
+    def __init__(self, ptype="sliceprojection"):
+        super(sliceprojection, self).__init__(ptype)
+        self._inputPar = ProcessParameter("input", str)
+        self._datanamePar = ProcessParameter("dataname", str)
+        self._xminPar = ProcessParameter("fastmin", int)
+        self._xmaxPar = ProcessParameter("fastmax", int)
+        self._yminPar = ProcessParameter("slowmin", int)
+        self._ymaxPar = ProcessParameter("slowmax", int)
+        self._horizontalPar = ProcessParameter("horizontal", bool, True)
+        self._custommaskPar = ProcessParameter("custommask", str, optional=True)
+        self._parameters.add(self._inputPar)
+        self._parameters.add(self._datanamePar)
+        self._parameters.add(self._xminPar)
+        self._parameters.add(self._xmaxPar)
+        self._parameters.add(self._yminPar)
+        self._parameters.add(self._ymaxPar)
+        self._parameters.add(self._horizontalPar)
+        self._parameters.add(self._custommaskPar)
 
     def initialize(self, data):
-        self._input = self.parameterValue("input")
-        self._dataname = self.parameterValue("dataname")
-        self._xmin = self.parameterValue("fastmin")
-        self._xmax = self.parameterValue("fastmax")
-        self._ymin = self.parameterValue("slowmin")
-        self._ymax = self.parameterValue("slowmax")
-        if(self.parameterValue("horizontal")):
+        self._input = self._inputPar.get()
+        self._dataname = self._datanamePar.get()
+        self._xmin = self._xminPar.get()
+        self._xmax = self._xmaxPar.get()
+        self._ymin = self._yminPar.get()
+        self._ymax = self._ymaxPar.get()
+        self._horizontal = self._horizontalPar.get()
+        if(self._horizontal):
             self._axis = 0
         else:
             self._axis = 1
         try:
-            self._custommask = self.getParameterValue("custommask")
+            self._custommask = self._custommaskPar.get()
         except KeyError:
             pass
 

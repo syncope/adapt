@@ -18,42 +18,42 @@
 
 # special for p09: collect and output results
 
-from adapt import iProcess
-
 import numpy as np
 import lmfit
 
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 
+from adapt.iProcess import *
 
-class iintfinalizationdef(iProcess.IProcessDefinition):
 
-    def __init__(self):
-        super(iintfinalizationdef, self).__init__()
-        self._ptype = "iintfinalization"
-        self.createParameter("outputs", "STRINGLIST")
-        self.createParameter("outfilename", "STRING")
-        self.createParameter("pdffilename", "STRING")
-        self.createParameter("motor", "STRING")
-        self.createParameter("observable", "STRING")
-        self.createParameter("fitresult", "STRING")
+class iintfinalization(IProcess):
 
-class iintfinalization(iProcess.IProcess):
+    def __init__(self, ptype="iintfinalization"):
+        super(iintfinalization, self).__init__(ptype)
+        self._namesPar = ProcessParameter("outputs", list)
+        self._outfilenamePar = ProcessParameter("outfilename", str)
+        self._pdfoutfilenamePar = ProcessParameter("pdffilename", str)
+        self._pdfmotorPar = ProcessParameter("motor", str)
+        self._pdfobservablePar = ProcessParameter("observable", str)
+        self._pdffitresultPar = ProcessParameter("fitresult", str)
+        self._parameters.add(self._namesPar)
+        self._parameters.add(self._outfilenamePar)
+        self._parameters.add(self._pdfoutfilenamePar)
+        self._parameters.add(self._pdfmotorPar)
+        self._parameters.add(self._pdfobservablePar)
+        self._parameters.add(self._pdffitresultPar)
 
-    def __init__(self, procDef):
-        super(iintfinalization, self).__init__(procDef)
-        self._names = self._parameters["outputs"]
-        self._outfilename = self._parameters["outfilename"]
-        self._pdfoutfilename = self._parameters["pdffilename"]
-        self._pdfmotor = self._parameters["motor"]
-        self._pdfobservable = self._parameters["observable"]
-        self._pdffitresult = self._parameters["fitresult"]
+    def initialize(self, data):
+        self._names = self._names
+        self._outfilename = self._outfilenamePar.get()
+        self._pdfoutfilename = self._pdfoutfilenamePar.get()
+        self._pdfmotor = self._pdfmotorPar.get()
+        self._pdfobservable = self._pdfobservablePar.get()
+        self._pdffitresult = self._pdffitresultPar.get()
         self._headers = []
         self._values = []
         self._plots = []
-
-    def initialize(self, data):
         self._pdfoutfile = PdfPages(self._pdfoutfilename + ".pdf")
 
     def execute(self, data):

@@ -1,6 +1,6 @@
 #$## !!!!!!! EVERYTHING IS A STRING -- DON"T USE ANY QUOTAS
 
-execlist: [ read, observable,despike ]
+execlist: [ read, observable,despike, trapintegrate ]
 
 read:
     type: specfilereader
@@ -29,58 +29,58 @@ despike:
     input: observable
     output: despikedObservable
 
-#~ [trapintegrate]
-#~ type = trapezoidintegration
-#~ motor = pth
-#~ observable = observable
-#~ output = trapint
-#~ 
-#~ [bkgselect]
-#~ type = subsequenceselection
-#~ input = [ despikedObservable, pth ]
-#~ output = [ bkgY, bkgX ] 
-#~ selectors = [ selectfromstart , selectfromend ]
-#~ startpointnumber = 3
-#~ endpointnumber = 3
-#~ 
+trapintegrate:
+    type: trapezoidintegration
+    motor: pth
+    observable: observable
+    output: trapint
+
+bkgselect:
+    type: subsequenceselection
+    input: [ despikedObservable, pth ]
+    output: [ bkgY, bkgX ] 
+    selectors: [ selectfromstart , selectfromend ]
+    startpointnumber: 3
+    endpointnumber: 3
+
 #~ [bkgfit]
-#~ type = curvefitting
-#~ xdata = bkgX
-#~ ydata = bkgY
-#~ model = gaussianModel
-#~ result = bkgfitresult
+#~ type: curvefitting
+#~ xdata: bkgX
+#~ ydata: bkgY
+#~ model: gaussianModel
+#~ result: bkgfitresult
 #~ 
-#~ [calcbkgpoints]
-#~ type = gendatafromfunction
-#~ fitresult = bkgfitresult
-#~ xdata = pth
-#~ output = bkg
-#~ 
-#~ [bkgsubtract]
-#~ type = backgroundsubtraction
-#~ input = despikedObservable
-#~ background = bkg
-#~ output = despikedSignal
-#~ 
+calcbkgpoints:
+    type: gendatafromfunction
+    fitresult: bkgfitresult
+    xdata: pth
+    output: bkg
+
+bkgsubtract:
+    type: backgroundsubtraction
+    input: despikedObservable
+    background: bkg
+    output: despikedSignal
+
 #~ [curvefit]
-#~ type = curvefitting
-#~ xdata = pth
-#~ ydata = despikedSignal
-#~ model = gaussianModel
-#~ result = fitresult
-#~ tryguessing = True
+#~ type: curvefitting
+#~ xdata: pth
+#~ ydata: despikedSignal
+#~ model: gaussianModel
+#~ result: fitresult
+#~ tryguessing: True
 #~ 
 #~ [finalize]
-#~ type = iintfinalization
-#~ outputs = [ scannumber, petra_beamcurrent, lks340_outputchannela, lks340_outputchannelb , pr1chi, pr2chi, ptth, peta, fitresult]
-#~ outfilename = testout
-#~ motor = pth
-#~ observable = despikedSignal
-#~ fitresult = fitresult
-#~ pdffilename = fits
+#~ type: iintfinalization
+#~ outputs: [ scannumber, petra_beamcurrent, lks340_outputchannela, lks340_outputchannelb , pr1chi, pr2chi, ptth, peta, fitresult]
+#~ outfilename: testout
+#~ motor: pth
+#~ observable: despikedSignal
+#~ fitresult: fitresult
+#~ pdffilename: fits
 #~ 
 #~ [polarizationanalysis]
-#~ type = p09polarization
+#~ type: p09polarization
 #~ 
 info:
     type: datainfo

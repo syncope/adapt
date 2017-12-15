@@ -18,28 +18,25 @@
 
 # generate points according to fitted model for the given fit results
 
-from adapt import iProcess
+from adapt.iProcess import *
 
 
-class gendatafromfunctiondef(iProcess.IProcessDefinition):
 
-    def __init__(self):
-        super(gendatafromfunctiondef, self).__init__()
-        self._ptype = "gendatafromfunction"
-        self.createParameter("fitresult", "STRING")
-        self.createParameter("xdata", "STRING")
-        self.createParameter("output", "STRING")
+class gendatafromfunction(IProcess):
 
-class gendatafromfunction(iProcess.IProcess):
-
-    def __init__(self, procDef):
-        super(gendatafromfunction, self).__init__(procDef)
-        self._fitresult = self._parameters["fitresult"]
-        self._xdata = self._parameters["xdata"]
-        self._output = self._parameters["output"]
+    def __init__(self, ptype="gendatafromfunction"):
+        super(gendatafromfunction, self).__init__(ptype)
+        self._fitresultPar = ProcessParameter("fitresult", str)
+        self._xdataPar = ProcessParameter("xdata", str)
+        self._outputPar = ProcessParameter("output", str)
+        self._parameters.add(self._fitresultPar)
+        self._parameters.add(self._xdataPar)
+        self._parameters.add(self._outputPar)
 
     def initialize(self, data):
-        pass
+        self._fitresult = self._fitresultPar.get()
+        self._xdata = self._xdataPar.get()
+        self._output = self._outputPar.get()
 
     def execute(self, data):
         fitresult = data.getData(self._fitresult)

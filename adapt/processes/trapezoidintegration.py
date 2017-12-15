@@ -18,31 +18,28 @@
 
 # perform trapezoidal integration on the given dataset
 
-from adapt import iProcess
-
 import numpy as np
 from math import fabs
 from scipy.interpolate import interp1d
 
-class trapezoidintegrationdef(iProcess.IProcessDefinition):
+from adapt.iProcess import *
 
-    def __init__(self):
-        super(trapezoidintegrationdef, self).__init__()
-        self._ptype = "trapezoidintegration"
-        self.createParameter("motor", "STRING")
-        self.createParameter("observable", "STRING")
-        self.createParameter("output", "STRING")
 
-class trapezoidintegration(iProcess.IProcess):
+class trapezoidintegration(IProcess):
 
-    def __init__(self, procDef):
-        super(trapezoidintegration, self).__init__(procDef)
-        self._observable = self._parameters["observable"]
-        self._independentvar = self._parameters["motor"]
-        self._output = self._parameters["output"]
+    def __init__(self, ptype="trapezoidintegration"):
+        super(trapezoidintegration, self).__init__(ptype)
+        self._observablePar = ProcessParameter("motor", str)
+        self._independentvarPar = ProcessParameter("observable", str)
+        self._outputPar = ProcessParameter("output", str)
+        self._parameters.add(self._observablePar)
+        self._parameters.add(self._independentvarPar)
+        self._parameters.add(self._outputPar)
 
     def initialize(self, data):
-        pass
+        self._observable = self._observablePar.get()
+        self._independentvar = self._independentvarPar.get()
+        self._output = self._outputPar.get()
 
     def execute(self, data):
         motor = data.getData(self._independentvar)
@@ -52,7 +49,7 @@ class trapezoidintegration(iProcess.IProcess):
         integral=0
         for point in range(0,len(motor)-1):
             integral=integral+0.5*(observable[point+1]+observable[point])*fabs(motor[point+1]-motor[point])
-        
+
         #  estimate error bar
         fn10 = interp1d(motor, observable, kind='cubic')
         xnew = np.linspace(motor[0], motor[len(motor)-1], 10*len(motor))

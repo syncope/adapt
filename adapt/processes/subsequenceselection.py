@@ -18,37 +18,40 @@
 
 # implement subsequence selections, needs an interface: func(seq, ...)
 
-from adapt import iProcess
 import numpy as np
 
-class subsequenceselectiondef(iProcess.IProcessDefinition):
+from adapt.iProcess import *
 
-    def __init__(self):
-        super(subsequenceselectiondef, self).__init__()
-        self._ptype = "subsequenceselection"
-        self.createParameter("input", "STRINGLIST")
-        self.createParameter("output", "STRINGLIST")
-        self.createParameter("selectors", "STRINGLIST")
-        self.createParameter("startpointnumber", "INT", optional=True)
-        self.createParameter("endpointnumber", "INT", optional=True)
-        self.createParameter("startendindices", "INTLIST", optional=True)
 
-class subsequenceselection(iProcess.IProcess):
+class subsequenceselection(IProcess):
     
-    def __init__(self, procDef):
-        super(subsequenceselection, self).__init__(procDef)
-        self._inputs = self._parameters["input"]
-        self._output = self._parameters["output"]
-        self._selectionmethods = self._parameters["selectors"]
-        self._startpoints = self._parameters["startpointnumber"]
-        self._endpoints = self._parameters["endpointnumber"]
-        self._startendindices = self._parameters["startendindices"]
+    def __init__(self, ptype="subsequenceselection"):
+        super(subsequenceselection, self).__init__(ptype)
+        self._inputsPar = ProcessParameter("input", list)
+        self._outputPar = ProcessParameter("output", list)
+        self._selectionmethodsPar = ProcessParameter("selectors", list)
+        self._startpointsPar = ProcessParameter("startpointnumber", int, optional=True)
+        self._endpointsPar = ProcessParameter("endpointnumber", int, optional=True)
+        self._startendindicesPar = ProcessParameter("startendindices", list, optional=True)
+        self._parameters.add(self._inputsPar)
+        self._parameters.add(self._outputPar)
+        self._parameters.add(self._selectionmethodsPar)
+        self._parameters.add(self._startpointsPar)
+        self._parameters.add(self._endpointsPar)
+        self._parameters.add(self._startendindicesPar)
         self._methodDict = {"selectfromstart" : self._selectFromStart,
                             "selectfromend" : self._selectFromEnd,
                             "selectSection" : self._selectSection,
                            }
 
     def initialize(self, data):
+        self._inputs = self._inputsPar.get()
+        self._output = self._outputPar.get()
+        self._selectionmethods = self._selectionmethodsPar.get()
+        self._startpoints = self._startpointsPar.get()
+        self._endpoints = self._endpointsPar.get()
+        self._startendindices = self._startendindicesPar.get()
+
         # check if the methods are available and parameter logic is correct
         for method in self._selectionmethods:
             if method not in self._methodDict:
