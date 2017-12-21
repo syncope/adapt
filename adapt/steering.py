@@ -20,13 +20,14 @@
 
 from . import configurationHandler
 from . import processingControl
+from . import processingConfiguration
 
 class Steering():
 
     def __init__(self):
         self._cfghandler = configurationHandler.ConfigurationHandler()
         self._control = processingControl.ProcessingControl()
-        self._processingConfig = None
+        self._processingConfig = processingConfiguration.ProcessingConfiguration()
 
     def load(self, filename):
         self._processingConfig = self._cfghandler.loadConfig(filename)
@@ -35,5 +36,14 @@ class Steering():
         self._cfghandler.writeConfig(filename, self._processingConfig)
 
     def process(self):
-        self._control.build(self._processingConfig)
         self._control.execute()
+
+    def setConfig(self):
+        self._control.reset()
+        self._control.build(self._processingConfig)        
+
+    def addProcess(self, process):
+        self._processingConfig.addProcess(process)
+
+    def removeProcess(self, processname):
+        self._processingConfig.removeProcess(processname)

@@ -33,6 +33,9 @@ class ProcessingControl():
         self._data = processData.ProcessData()
         self._masterExecutionlist = []
 
+    def reset(self):
+        self._masterExecutionlist = []
+
     def build(self, processConfig):
         # this is a potentially raw object
         # dismantle and check before instantiating anything!
