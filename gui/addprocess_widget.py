@@ -46,10 +46,8 @@ class addProcess(QtGui.QDialog):
         layout.addWidget(self.cb, 1, 1)
         layout.addWidget(self.add, 2, 0)
         layout.addWidget(self.cancel, 2, 1)
-
         self.setLayout(layout)
         
-        #~ self.name
         self.cancel.clicked.connect(self.close)
         self.add.clicked.connect(self.emitProcessHeader)
 
@@ -62,3 +60,26 @@ class addProcess(QtGui.QDialog):
             self.name.setStyleSheet("color: yellow;"
                                    "background-color: red;")
 
+class removeProcess(QtGui.QDialog):
+    
+    rmProc = QtCore.pyqtSignal(int)
+    
+    def __init__(self, parent=None):
+        super(removeProcess, self).__init__(parent)
+        self.identifier = None
+        layout = QtGui.QVBoxLayout()
+        self.remove = QtGui.QPushButton("Remove")  # : \n" + str(self.identifier))
+        self.cancel = QtGui.QPushButton("Cancel")
+        layout.addWidget(self.remove)
+        layout.addWidget(self.cancel)
+        self.setLayout(layout)
+        
+        self.cancel.clicked.connect(self.close)
+        self.remove.clicked.connect(self.emitRemoval)
+
+    def setIdentifier(self, ident):
+        self.identifier = ident
+
+    def emitRemoval(self):
+        self.rmProc.emit(self.identifier)
+        self.close()

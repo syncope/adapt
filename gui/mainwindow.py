@@ -22,7 +22,7 @@
 import sys
 from PyQt4 import QtCore, QtGui
 
-from addprocess_widget import addProcess
+from addprocess_widget import addProcess, removeProcess
 
 __version__ ="0.0.0a"
 
@@ -39,25 +39,34 @@ class adaptmaingui(QtGui.QMainWindow):
         # define global layout: horizontal division
         self._central = QtGui.QWidget()
         globallayout = QtGui.QHBoxLayout()
-        listhandler = listHandler()
-        globallayout.addLayout(listhandler)
+        self.listhandler = listHandler()
+        globallayout.addLayout(self.listhandler)
         globallayout.addWidget(actionTabHandler())
         self._central.setLayout(globallayout)
         self.setCentralWidget(self._central)
 
         self.setWindowTitle("ADAPT")
 
+        
 class twobuttons(QtGui.QWidget):
     def __init__(self, parent=None):
         super(twobuttons, self).__init__(parent)
         self._layout = QtGui.QHBoxLayout()
         self._addButton = QtGui.QPushButton("Add process")
         self._removeButton = QtGui.QPushButton("Remove process")
+        self._removeButton.setEnabled(False)
         self._layout.addWidget(self._addButton)
         self._layout.addWidget(self._removeButton)
         self.setLayout(self._layout)
         self._addProcess = addProcess()
+        self._removeProcess = removeProcess()
         self._addButton.clicked.connect(self._addProcess.show)
+        self._removeButton.clicked.connect(self._removeProcess.show)
+
+    def enableRemove(self, arg=None):
+        if(arg != None):
+            self._removeButton.setEnabled(True)
+            self._removeProcess.setIdentifier(arg.listWidget().currentRow())
 
 class listHandler(QtGui.QVBoxLayout):
 
@@ -65,21 +74,33 @@ class listHandler(QtGui.QVBoxLayout):
         super(listHandler, self).__init__(parent)
 
         self._listHandle = guiListHandler()
+        self._twobuttons = twobuttons()
         self.addWidget(self._listHandle)
-        self.addWidget(twobuttons())
-        
-    def addProcess(self):
-        pass
+        self.addWidget(self._twobuttons)
+        self._twobuttons._addProcess.processHeader.connect(self.addProcess)
+        self._twobuttons._removeProcess.rmProc.connect(self.removeProcess)
+        self._listHandle.itemPressed.connect(self._twobuttons.enableRemove)
 
-    def removeProcess(self):
-        pass
+    def addProcess(self, pname, ptype):
+        shortname = str(pname) + ":" + str(ptype)
+        self._listHandle.add(shortname)
+
+    def removeProcess(self, identifier):
+        self._listHandle.remove(identifier)
 
 class guiListHandler(QtGui.QListWidget):
+    
     def __init__(self, parent=None):
         super(guiListHandler, self).__init__(parent)
+        self._list = []
 
-        #~ li = ["hallo", "nachbar", "ich", "nicht"]
-        #~ self.addItems(li)
+    def add(self, elem):
+        self.addItem(elem)
+
+    def remove(self, elem):
+        it = self.takeItem(elem)
+        it = None
+        #~ self.removeItemWidget(elem)
 
 class actionTabHandler(QtGui.QTabWidget):
     def __init__(self, parent=None):
