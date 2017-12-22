@@ -29,8 +29,7 @@ except ImportError:
 from adapt.iProcess import *
 
 
-
-class stdreader(iProcess.IProcess):
+class stdreader(IProcess):
 
     def __init__(self, ptype="stdreader"):
         super(stdreader, self).__init__(ptype)

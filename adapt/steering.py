@@ -39,7 +39,7 @@ class Steering():
         self._control.execute()
 
     def setConfig(self):
-        self._control.reset()
+        self._control.resetList()
         self._control.build(self._processingConfig)        
 
     def addProcess(self, process):
@@ -47,3 +47,6 @@ class Steering():
 
     def removeProcess(self, processname):
         self._processingConfig.removeProcess(processname)
+
+    def getProcessTypeList(self):
+        return self._control.getProcessTypeList()

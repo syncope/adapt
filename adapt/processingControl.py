@@ -33,7 +33,10 @@ class ProcessingControl():
         self._data = processData.ProcessData()
         self._masterExecutionlist = []
 
-    def reset(self):
+    def getProcessTypeList(self):
+        return self._pBuilder.getProcessTypeList()
+
+    def resetList(self):
         self._masterExecutionlist = []
 
     def build(self, processConfig):

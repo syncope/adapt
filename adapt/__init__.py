@@ -24,6 +24,5 @@ from . import processParameters
 from . import processDefinitionFactory
 from . import processBuilder
 from . import processingConfiguration
-from . import processGUIBuilder
 from . import processingControl
 from . import valueMap

@@ -20,7 +20,7 @@
 
 import pyFAI
 
-from adapt/iProcess import *
+from adapt.iProcess import *
 
 
 class polarintegration(IProcess):

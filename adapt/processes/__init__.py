@@ -31,3 +31,22 @@ from . import backgroundsubtraction
 #~ from . import curvefitting
 from . import trapezoidintegration
 from . import gendatafromfunction
+
+processTypeList = [ 
+        "globaldata",
+        "datainfo",
+        "stdreader",
+        "specfilereader",
+        "polarintegration",
+        "sliceprojection",
+        "iintdefinition",
+        "iintfinalization",
+        #~  "p09polarization",
+        "filter1d",
+        "subsequenceselection",
+        "backgroundsubtraction",
+        #~  "curvefitting",
+        "trapezoidintegration",
+        "gendatafromfunction",
+        ]
+    

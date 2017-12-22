@@ -19,7 +19,7 @@
 from adapt.iProcess import *
 
 
-class globaldata(iProcess.IProcess):
+class globaldata(IProcess):
 
     def __init__(self, ptype="globaldata"):
         super(globaldata, self).__init__(ptype)
@@ -35,5 +35,5 @@ class globaldata(iProcess.IProcess):
         self._sdd = self._sddPar.get()
         self._unit = self._unitPar.get()
         data.addGlobalData("wavelength", self._lambda)
-        data.addGlobalData("sdd", self._sdd))
+        data.addGlobalData("sdd", self._sdd)
         data.addGlobalData("unit", self._unit)
