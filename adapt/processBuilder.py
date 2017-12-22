@@ -35,3 +35,6 @@ class ProcessBuilder():
         process =  getattr(getattr(processes, processType), processType)() 
         process.setParameterValues(pDict)
         return process
+
+    def getProcessTypeList(self):
+        return processes.processTypeList
