@@ -28,11 +28,10 @@ configuration files:
             - given by the type attribute of the configObject
             then the process.create(cfgObj) method will be called
                 -> iterates over the required parameters and casts them accordingly
+                
+                
+generate UML: 
+    pyreverse adapt/
+    dot -Tpng classes_No_Name.dot -o adapt.UML.png
 
-
-ARGH. i'm still missing the central point with the parameters.
-i want: to set the format and a name for the parameters in the process definition
- --> static description
-
-when i instantiate the process i want to cast the given config value to the given type
-
+discard the rest
