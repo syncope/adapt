@@ -51,7 +51,15 @@ class trapezoidintegration(IProcess):
             integral=integral+0.5*(observable[point+1]+observable[point])*fabs(motor[point+1]-motor[point])
 
         #  estimate error bar
-        fn10 = interp1d(motor, observable, kind='cubic')
+        try:
+            fn10 = interp1d(motor, observable, kind='cubic')
+        except np.linalg.linalg.LinAlgError:
+            # there is an error ocurring, which I don't understand. 
+            # fix code for now as circumvention
+            print("[trapInt]: Matrix inversion error while trying to interpolate. Trying to continue.")
+            data.addData(self._output, [integral, integral])
+            return
+
         xnew = np.linspace(motor[0], motor[len(motor)-1], 10*len(motor))
         fnew = fn10(xnew)
         integraln10=0

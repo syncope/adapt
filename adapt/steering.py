@@ -31,6 +31,7 @@ class Steering():
 
     def load(self, filename):
         self._processingConfig = self._cfghandler.loadConfig(filename)
+        self.setConfig()
 
     def write(self, filename):
         self._cfghandler.writeConfig(filename, self._processingConfig)
