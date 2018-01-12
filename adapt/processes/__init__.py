@@ -28,7 +28,7 @@ from . import iintfinalization
 from . import filter1d
 from . import subsequenceselection
 from . import backgroundsubtraction
-#~ from . import curvefitting
+from . import curvefitting
 from . import trapezoidintegration
 from . import gendatafromfunction
 
@@ -45,7 +45,7 @@ processTypeList = [
         "filter1d",
         "subsequenceselection",
         "backgroundsubtraction",
-        #~  "curvefitting",
+        "curvefitting",
         "trapezoidintegration",
         "gendatafromfunction",
         ]

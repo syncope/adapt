@@ -1,6 +1,7 @@
 #$## !!!!!!! EVERYTHING IS A STRING -- DON"T USE ANY QUOTAS
 
-execlist: [ read, observable,despike, trapintegrate ]
+#~ execlist: [ read, observable,despike, trapintegrate ]
+execlist: [ read, observable, despike, bkgselect, bkgfit ]
 
 read:
     type: specfilereader
@@ -43,13 +44,19 @@ bkgselect:
     startpointnumber: 3
     endpointnumber: 3
 
-#~ [bkgfit]
-#~ type: curvefitting
-#~ xdata: bkgX
-#~ ydata: bkgY
-#~ model: gaussianModel
-#~ result: bkgfitresult
-#~ 
+bkgfit:
+    type: curvefitting
+    model:
+        gauss:
+            sigma: 
+                value: 1.23 
+                vary: True 
+                min: None
+                max: 0.
+    xdata: bkgX
+    ydata: bkgY
+    result: bkgfitresult
+
 calcbkgpoints:
     type: gendatafromfunction
     fitresult: bkgfitresult
