@@ -20,6 +20,8 @@
 from adapt.iProcess import *
 
 import numpy as np
+import lmfit.models, lmfit
+#~ from lmfit.models import PolynomialModel, ExponentialModel
 
 class curvefitting(IProcess):
 
@@ -35,68 +37,25 @@ class curvefitting(IProcess):
         self._parameters.add(self._yerrPar)
         self._parameters.add(self._modelPar)
         self._parameters.add(self._resultPar)
-        #~ ProcessParameter("bkgmodel", "STRING", optional=True)
-        #~ ProcessParameter("onlybkg", "BOOL", optional=True)
-        #~ ProcessParameter("tryguessing", "BOOL", optional=True)
-        #~ self._xdata = self._parameters["xdata"]
-        #~ self._ydata = self._parameters["ydata"]
-        #~ self._fitmodel = self._parameters["model"]
-        #~ self._bkgonly = self._parameters["onlybkg"]
-        #~ self._bkgmodel = self._parameters["bkgmodel"]
-        #~ self._resultsname = self._parameters["result"]
-        #~ self._trytoguess = self._parameters["tryguessing"]
-        #~ for stuff in self._model:
-        #~ print(str(self._model))
-        
+
     def initialize(self, data):
         # first set up the fit model with the given information
         # the model is a map/dictionary:
         # first level of keys are the models
         # their respective values are the parameter names which are keys themselves
         # the values of of the parameter names are the key/value pairs for the parameter hints
-        
-        self.model = self._modelPar.get()
-        print(str(self.model))
-        #~ if self._fitmodel:
-            #~ try:
-                #~ self._model = fitModels[self._fitmodel]
-            #~ except KeyError:
-                #~ raise NotImplementedError("Missing implementation of " + 
-                                  #~ self._fitmodel + " in curvefitting." )
-        #~ 
-        #~ if self._parameters["bkgmodel"]:
-            #~ try:
-                #~ self._bkgmodel = fitModels[self._parameters["bkgmodel"]]
-                #~ self._bkgmodel.prefix += "BKG_"
-            #~ except KeyError:
-                #~ raise NotImplementedError("Missing implementation of " + 
-                    #~ self._parameters["bkgmodel"] + " in curvefitting." )
-        #~ 
-        #~ if not self._bkgonly and self._bkgmodel:
-            #~ self._fitmodel += self._bkgmodel
-#~ 
-        #~ self._fitparameters = self._model.make_params()
+        self._extract(self._modelPar.get())
 
     def execute(self, data):
-        pass
-        #~ independentVariable = data.getData(self._xdata)
-        #~ dependentVariable = data.getData(self._ydata)
-        #~ if self._trytoguess:
-            #~ if self._fitmodel == "gaussianModel":
-                #~ meanval = np.mean(independentVariable)
-                #~ amp_obs = np.amax(dependentVariable)
-                #~ stderr_obs = np.std(independentVariable)
-                #~ self._model.set_param_hint("g_center", value=meanval)
-                #~ self._model.set_param_hint("g_amplitude", value=amp_obs)
-                #~ self._model.set_param_hint("g_sigma", value=stderr_obs)
-            #~ else:
-                #~ try:
-                    #~ self._fitparameters = self._model.guess(data=[independentVariable, dependentVariable])
-                #~ except NotImplementedError:
-                    #~ print("[curvefitting] Guessing is not implemented for " + str(self._model) + ".")
-#~ 
-        #~ self._result = self._model.fit(dependentVariable, x=independentVariable)
-        #~ data.addData(self._resultsname, self._result)
+        independentVariable = data.getData(self._xdataPar.get())
+        dependentVariable = data.getData(self._ydataPar.get())
+        print(self.model)
+        #~ print(self.model.param_names)
+        print(self.model.param_hints)
+        #~ print(independentVariable)
+        #~ print(dependentVariable)
+        self._result = self.model.fit(dependentVariable, x=independentVariable)
+        #~ data.addData(self._resultPar.get(), self._result)
         
     def finalize(self, data):
         pass
@@ -104,41 +63,38 @@ class curvefitting(IProcess):
     def check(self, data):
         pass
 
+    def _extract(self, modelDict):
+        print("EXTRACTING")
+        mlist = []
+        for m, mdesc in modelDict.items():
+            try:
+                tmpmodel = FitModels[str(m)]()
+                tmpparams = tmpmodel.make_params()
+                tmpparamnames = tmpmodel.param_names
+            except KeyError:
+                print("[EXCEPTION::curvefitting] Building FitModel " + str(m) + " failed. Is a name defined?")
+                print("Available models are: " + repr(FitModels.keys()))
+                exit()
+            for pname in tmpparamnames:
+                try:
+                    par = mdesc[pname]
+                    print(tmpmodel.set_param_hint(pname, **par))
+                except KeyError:
+                    pass
+            tmpmodel.prefix=str(mdesc['name'])
+            mlist.append(tmpmodel)
+            print(tmpmodel.param_hints)
+        self.model = mlist.pop()
+        print(self.model.param_hints)
+        for m in mlist:
+            self.model += m
+        #~ self.model.make_params()
 
-class fitParameter():
-    '''Abstract definition of a fit parameter interface.'''
-
-    def __init__(self, obj):
-        '''Also serves as a check: there must be five components!'''
-        try:
-            self._name = obj["name"]
-            self._value = obj["value"]
-            self._variable = obj["variable"]
-            self._min = obj["min"]
-            self._max = obj["max"]
-        except KeyError("[fitParameter] The parameter is not fully qualified, at least one element is missing."):
-            exit()
-
-    def name(self):
-        return self._name
-    
-    def value(self):
-        return self._value
-
-    def variable(self):
-        return self._variable
-
-    def min(self):
-        return self._min
-
-    def max(self):
-        return self._max
-
-    def dump(self):
-        print("[fitParameter::dump]: name:" + str(self._name) 
-                                + " value:" + str(self._value)
-                                + " variable?" + str(self._variable)
-                                + " min:" + str(self._min)
-                                + " max:" + str(self._max))
-
+FitModels = { "constantModel" : lmfit.models.ConstantModel,
+              "linearModel" : lmfit.models.LinearModel,
+              "quadraticModel" : lmfit.models.QuadraticModel,
+              "gaussianModel" : lmfit.models.GaussianModel,
+              "lorentzianModel" : lmfit.models.LorentzianModel,
+              "psvModel" : lmfit.models.PseudoVoigtModel,
+            }
 

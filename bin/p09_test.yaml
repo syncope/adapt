@@ -47,14 +47,11 @@ bkgselect:
 bkgfit:
     type: curvefitting
     model:
-        gauss:
-            sigma: 
-                value: 1.23 
-                vary: True 
-                min: None
-                max: 0.
+        linearModel:
+            name: lin_
     xdata: bkgX
     ydata: bkgY
+    error: None
     result: bkgfitresult
 
 calcbkgpoints:
