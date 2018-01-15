@@ -49,12 +49,8 @@ class curvefitting(IProcess):
     def execute(self, data):
         independentVariable = data.getData(self._xdataPar.get())
         dependentVariable = data.getData(self._ydataPar.get())
-        print(self.model)
-        #~ print(self.model.param_names)
-        print(self.model.param_hints)
-        #~ print(independentVariable)
-        #~ print(dependentVariable)
-        self._result = self.model.fit(dependentVariable, x=independentVariable)
+        self._fparams = self.model.guess(dependentVariable, x=independentVariable)
+        self._result = self.model.fit(dependentVariable, self._fparams, x=independentVariable)
         #~ data.addData(self._resultPar.get(), self._result)
         
     def finalize(self, data):
@@ -64,12 +60,11 @@ class curvefitting(IProcess):
         pass
 
     def _extract(self, modelDict):
-        print("EXTRACTING")
         mlist = []
         for m, mdesc in modelDict.items():
             try:
                 tmpmodel = FitModels[str(m)]()
-                tmpparams = tmpmodel.make_params()
+                tmpmodel.make_params()
                 tmpparamnames = tmpmodel.param_names
             except KeyError:
                 print("[EXCEPTION::curvefitting] Building FitModel " + str(m) + " failed. Is a name defined?")
@@ -78,17 +73,14 @@ class curvefitting(IProcess):
             for pname in tmpparamnames:
                 try:
                     par = mdesc[pname]
-                    print(tmpmodel.set_param_hint(pname, **par))
                 except KeyError:
                     pass
             tmpmodel.prefix=str(mdesc['name'])
             mlist.append(tmpmodel)
-            print(tmpmodel.param_hints)
         self.model = mlist.pop()
-        print(self.model.param_hints)
         for m in mlist:
             self.model += m
-        #~ self.model.make_params()
+        self.model.make_params()
 
 FitModels = { "constantModel" : lmfit.models.ConstantModel,
               "linearModel" : lmfit.models.LinearModel,
