@@ -49,9 +49,13 @@ class curvefitting(IProcess):
     def execute(self, data):
         independentVariable = data.getData(self._xdataPar.get())
         dependentVariable = data.getData(self._ydataPar.get())
-        self._fparams = self.model.guess(dependentVariable, x=independentVariable)
-        self._result = self.model.fit(dependentVariable, self._fparams, x=independentVariable)
-        #~ data.addData(self._resultPar.get(), self._result)
+        
+        params = self.model.guess(dependentVariable, x=independentVariable)
+        print(" the model is: " + str(self.model))
+        print("the parameters are: " + str(params))
+        self._result = self.model.fit(dependentVariable, params, x=independentVariable)
+
+        data.addData(self._resultPar.get(), self._result)
         
     def finalize(self, data):
         pass
@@ -89,4 +93,3 @@ FitModels = { "constantModel" : lmfit.models.ConstantModel,
               "lorentzianModel" : lmfit.models.LorentzianModel,
               "psvModel" : lmfit.models.PseudoVoigtModel,
             }
-
