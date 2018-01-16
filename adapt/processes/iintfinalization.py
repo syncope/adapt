@@ -93,6 +93,7 @@ class iintfinalization(IProcess):
         obs = data.getData(self._pdfobservable)
         mot = data.getData(self._pdfmotor)
         fr = data.getData(self._pdffitresult)
+        print(fr.fit_report())
         plt.plot(mot,obs,'bo')
         plt.plot(mot, fr.best_fit, 'r-')
         plt.title("Scan: " + str(scannumber))

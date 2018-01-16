@@ -44,17 +44,16 @@ class curvefitting(IProcess):
         # first level of keys are the models
         # their respective values are the parameter names which are keys themselves
         # the values of of the parameter names are the key/value pairs for the parameter hints
-        self._extract(self._modelPar.get())
+        self._updateModel(self._modelPar.get())
 
     def execute(self, data):
+        # x and y data
         independentVariable = data.getData(self._xdataPar.get())
         dependentVariable = data.getData(self._ydataPar.get())
-        
+        # define paramaters by guessing
         params = self.model.guess(dependentVariable, x=independentVariable)
-        print(" the model is: " + str(self.model))
-        print("the parameters are: " + str(params))
+        # fit the data using the guessed value
         self._result = self.model.fit(dependentVariable, params, x=independentVariable)
-
         data.addData(self._resultPar.get(), self._result)
         
     def finalize(self, data):
@@ -63,28 +62,45 @@ class curvefitting(IProcess):
     def check(self, data):
         pass
 
-    def _extract(self, modelDict):
+    def _updateModel(self, modelDict):
         mlist = []
+        # the model description consists of nested dictionaries
+        # first level are the models, second layer are the attributes:
+        # name and as another dictionary info on the parameters of that model
         for m, mdesc in modelDict.items():
             try:
-                tmpmodel = FitModels[str(m)]()
-                tmpmodel.make_params()
-                tmpparamnames = tmpmodel.param_names
+                prefix=mdesc['name']
             except KeyError:
-                print("[EXCEPTION::curvefitting] Building FitModel " + str(m) + " failed. Is a name defined?")
+                print("[EXCEPTION::curvefitting] Building FitModel " + str(m) + " failed. A name is mandatory!")
+                exit()
+            try:
+                tmpparamnames = FitModels[str(m)]().param_names
+                tmpmodel = FitModels[str(m)](prefix=prefix)
+            except KeyError:
+                print("[EXCEPTION::curvefitting] Building FitModel " + str(m) + " failed, the model is undefined.")
                 print("Available models are: " + repr(FitModels.keys()))
                 exit()
+
+            # look at the parameter names from the model and pick them from the dictionary
             for pname in tmpparamnames:
                 try:
+                    # if present get the parameter description from the config dict
                     par = mdesc[pname]
+                    # iterate over the stuff written there to set the parameter properties
+                    for k, v in par.items():
+                        try:
+                            tmpmodel.param_hints[str(prefix+pname)] = v
+                        except KeyError:
+                            print("FUCKFUCKFUCK?")
                 except KeyError:
                     pass
-            tmpmodel.prefix=str(mdesc['name'])
+            tmpmodel.make_params()
+            print("THIS IS : " + str(tmpmodel.param_hints))
+
             mlist.append(tmpmodel)
         self.model = mlist.pop()
         for m in mlist:
             self.model += m
-        self.model.make_params()
 
 FitModels = { "constantModel" : lmfit.models.ConstantModel,
               "linearModel" : lmfit.models.LinearModel,

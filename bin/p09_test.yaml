@@ -1,13 +1,12 @@
 #$## !!!!!!! EVERYTHING IS A STRING -- DON"T USE ANY QUOTAS
 
 #~ execlist: [ read, observable,despike, trapintegrate ]
-execlist: [ read, observable, despike, bkgselect, bkgfit, calcbkgpoints, bkgsubtract,  curvefit]
-#~ , trapintegrate, finalize ]
+execlist: [ read, observable, despike, bkgselect, bkgfit, calcbkgpoints, bkgsubtract,  curvefit, trapintegrate, finalize ]
 
 read:
     type: specfilereader
     startScan: 699
-    endScan: 740
+    endScan: 700
     filename: "/home/rosem/iintplus/MnCo15.spc"
     outputdata: "data"
 
@@ -72,6 +71,12 @@ curvefit:
     model:
         gaussianModel:
             name: g_
+            center: 
+                value: 45.
+            amplitude:
+                value: 1000.
+            sigma:
+                value: 0.1
     xdata: pth
     ydata: despikedSignal
     error: None
