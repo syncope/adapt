@@ -21,7 +21,6 @@ from adapt.iProcess import *
 
 import numpy as np
 import lmfit.models, lmfit
-#~ from lmfit.models import PolynomialModel, ExponentialModel
 
 class curvefitting(IProcess):
 
@@ -50,10 +49,16 @@ class curvefitting(IProcess):
         # x and y data
         independentVariable = data.getData(self._xdataPar.get())
         dependentVariable = data.getData(self._ydataPar.get())
+        errorname = self._yerrPar.get()
+        if(errorname == 'None'):
+            variableWeight = np.sqrt(np.clip(dependentVariable, 0., None))
+        else:
+            variableWeight = 1./data.getData(errorname)
         # define paramaters by guessing
-        params = self.model.guess(dependentVariable, x=independentVariable)
+        if(self.model._name == "linear"):
+            self.model.params = self.model.guess(dependentVariable, x=independentVariable)
         # fit the data using the guessed value
-        self._result = self.model.fit(dependentVariable, params, x=independentVariable)
+        self._result = self.model.fit(dependentVariable, self.model.params, weights=variableWeight, x=independentVariable)
         data.addData(self._resultPar.get(), self._result)
         
     def finalize(self, data):
@@ -86,21 +91,20 @@ class curvefitting(IProcess):
                 try:
                     # if present get the parameter description from the config dict
                     par = mdesc[pname]
-                    # iterate over the stuff written there to set the parameter properties
+                    parname = str(prefix+pname)
+                    hintdict = {}
+                    # build the dict of parameter properties
                     for k, v in par.items():
-                        try:
-                            tmpmodel.param_hints[str(prefix+pname)] = v
-                        except KeyError:
-                            print("FUCKFUCKFUCK?")
+                        hintdict[k] = v
+                    tmpmodel.set_param_hint(parname, **hintdict)
                 except KeyError:
                     pass
-            tmpmodel.make_params()
-            print("THIS IS : " + str(tmpmodel.param_hints))
-
+            tmppars = tmpmodel.make_params()
             mlist.append(tmpmodel)
         self.model = mlist.pop()
         for m in mlist:
             self.model += m
+        self.model.params = self.model.make_params()
 
 FitModels = { "constantModel" : lmfit.models.ConstantModel,
               "linearModel" : lmfit.models.LinearModel,
