@@ -45,7 +45,7 @@ class iintfinalization(IProcess):
         self._parameters.add(self._pdffitresultPar)
 
     def initialize(self, data):
-        self._names = self._names
+        self._names = self._namesPar.get()
         self._outfilename = self._outfilenamePar.get()
         self._pdfoutfilename = self._pdfoutfilenamePar.get()
         self._pdfmotor = self._pdfmotorPar.get()
@@ -93,6 +93,7 @@ class iintfinalization(IProcess):
         obs = data.getData(self._pdfobservable)
         mot = data.getData(self._pdfmotor)
         fr = data.getData(self._pdffitresult)
+        print(fr.fit_report())
         plt.plot(mot,obs,'bo')
         plt.plot(mot, fr.best_fit, 'r-')
         plt.title("Scan: " + str(scannumber))

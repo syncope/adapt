@@ -1,7 +1,7 @@
 #$## !!!!!!! EVERYTHING IS A STRING -- DON"T USE ANY QUOTAS
 
 #~ execlist: [ read, observable,despike, trapintegrate ]
-execlist: [ read, observable, despike, bkgselect, bkgfit ]
+execlist: [ read, observable, despike, bkgselect, bkgfit, calcbkgpoints, bkgsubtract, curvefit, trapintegrate, finalize ]
 
 read:
     type: specfilereader
@@ -66,23 +66,31 @@ bkgsubtract:
     background: bkg
     output: despikedSignal
 
-#~ [curvefit]
-#~ type: curvefitting
-#~ xdata: pth
-#~ ydata: despikedSignal
-#~ model: gaussianModel
-#~ result: fitresult
-#~ tryguessing: True
-#~ 
-#~ [finalize]
-#~ type: iintfinalization
-#~ outputs: [ scannumber, petra_beamcurrent, lks340_outputchannela, lks340_outputchannelb , pr1chi, pr2chi, ptth, peta, fitresult]
-#~ outfilename: testout
-#~ motor: pth
-#~ observable: despikedSignal
-#~ fitresult: fitresult
-#~ pdffilename: fits
-#~ 
+curvefit:
+    type: curvefitting
+    model:
+        gaussianModel:
+            name: g_
+            center: 
+                value: 45.
+            amplitude:
+                value: 100.
+            sigma:
+                value: 0.1
+    xdata: pth
+    ydata: despikedSignal
+    error: None
+    result: fitresult
+
+finalize:
+    type: iintfinalization
+    outputs: [ scannumber, petra_beamcurrent, lks340_outputchannela, lks340_outputchannelb , pr1chi, pr2chi, ptth, peta, fitresult]
+    outfilename: testout
+    motor: pth
+    observable: despikedSignal
+    fitresult: fitresult
+    pdffilename: fits
+
 #~ [polarizationanalysis]
 #~ type: p09polarization
 #~ 

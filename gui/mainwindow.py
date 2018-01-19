@@ -100,7 +100,6 @@ class guiListHandler(QtGui.QListWidget):
     def remove(self, elem):
         it = self.takeItem(elem)
         it = None
-        #~ self.removeItemWidget(elem)
 
 class actionTabHandler(QtGui.QTabWidget):
     def __init__(self, parent=None):

@@ -21,7 +21,6 @@
 from adapt.iProcess import *
 
 
-
 class gendatafromfunction(IProcess):
 
     def __init__(self, ptype="gendatafromfunction"):

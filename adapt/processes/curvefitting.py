@@ -21,7 +21,6 @@ from adapt.iProcess import *
 
 import numpy as np
 import lmfit.models, lmfit
-#~ from lmfit.models import PolynomialModel, ExponentialModel
 
 class curvefitting(IProcess):
 
@@ -44,14 +43,23 @@ class curvefitting(IProcess):
         # first level of keys are the models
         # their respective values are the parameter names which are keys themselves
         # the values of of the parameter names are the key/value pairs for the parameter hints
-        self._extract(self._modelPar.get())
+        self._updateModel(self._modelPar.get())
 
     def execute(self, data):
+        # x and y data
         independentVariable = data.getData(self._xdataPar.get())
         dependentVariable = data.getData(self._ydataPar.get())
-        self._fparams = self.model.guess(dependentVariable, x=independentVariable)
-        self._result = self.model.fit(dependentVariable, self._fparams, x=independentVariable)
-        #~ data.addData(self._resultPar.get(), self._result)
+        errorname = self._yerrPar.get()
+        if(errorname == 'None'):
+            variableWeight = np.sqrt(np.clip(dependentVariable, 0., None))
+        else:
+            variableWeight = 1./data.getData(errorname)
+        # define paramaters by guessing
+        if(self.model._name == "linear"):
+            self.model.params = self.model.guess(dependentVariable, x=independentVariable)
+        # fit the data using the guessed value
+        self._result = self.model.fit(dependentVariable, self.model.params, weights=variableWeight, x=independentVariable)
+        data.addData(self._resultPar.get(), self._result)
         
     def finalize(self, data):
         pass
@@ -59,28 +67,44 @@ class curvefitting(IProcess):
     def check(self, data):
         pass
 
-    def _extract(self, modelDict):
+    def _updateModel(self, modelDict):
         mlist = []
+        # the model description consists of nested dictionaries
+        # first level are the models, second layer are the attributes:
+        # name and as another dictionary info on the parameters of that model
         for m, mdesc in modelDict.items():
             try:
-                tmpmodel = FitModels[str(m)]()
-                tmpmodel.make_params()
-                tmpparamnames = tmpmodel.param_names
+                prefix=mdesc['name']
             except KeyError:
-                print("[EXCEPTION::curvefitting] Building FitModel " + str(m) + " failed. Is a name defined?")
+                print("[EXCEPTION::curvefitting] Building FitModel " + str(m) + " failed. A name is mandatory!")
+                exit()
+            try:
+                tmpparamnames = FitModels[str(m)]().param_names
+                tmpmodel = FitModels[str(m)](prefix=prefix)
+            except KeyError:
+                print("[EXCEPTION::curvefitting] Building FitModel " + str(m) + " failed, the model is undefined.")
                 print("Available models are: " + repr(FitModels.keys()))
                 exit()
+
+            # look at the parameter names from the model and pick them from the dictionary
             for pname in tmpparamnames:
                 try:
+                    # if present get the parameter description from the config dict
                     par = mdesc[pname]
+                    parname = str(prefix+pname)
+                    hintdict = {}
+                    # build the dict of parameter properties
+                    for k, v in par.items():
+                        hintdict[k] = v
+                    tmpmodel.set_param_hint(parname, **hintdict)
                 except KeyError:
                     pass
-            tmpmodel.prefix=str(mdesc['name'])
+            tmppars = tmpmodel.make_params()
             mlist.append(tmpmodel)
         self.model = mlist.pop()
         for m in mlist:
             self.model += m
-        self.model.make_params()
+        self.model.params = self.model.make_params()
 
 FitModels = { "constantModel" : lmfit.models.ConstantModel,
               "linearModel" : lmfit.models.LinearModel,
@@ -89,4 +113,3 @@ FitModels = { "constantModel" : lmfit.models.ConstantModel,
               "lorentzianModel" : lmfit.models.LorentzianModel,
               "psvModel" : lmfit.models.PseudoVoigtModel,
             }
-
