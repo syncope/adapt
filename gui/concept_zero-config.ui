@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>GimmeName</class>
- <widget class="QMainWindow" name="GimmeName">
+ <class>adaptConfig</class>
+ <widget class="QMainWindow" name="adaptConfig">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>GimmeName</string>
+   <string>ADAPT - A Data Processing Toolkit</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QWidget" name="verticalLayoutWidget_3">
@@ -25,7 +25,7 @@
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_3">
      <item alignment="Qt::AlignHCenter">
-      <widget class="QLabel" name="label_3">
+      <widget class="QLabel" name="topLabel">
        <property name="text">
         <string>Process List Configuration</string>
        </property>
@@ -135,7 +135,7 @@
          <item>
           <widget class="QPushButton" name="acceptConfigButton">
            <property name="text">
-            <string>Done</string>
+            <string>Accept</string>
            </property>
           </widget>
          </item>
@@ -161,7 +161,7 @@
        <item>
         <widget class="QPushButton" name="nextButton">
          <property name="text">
-          <string>Next</string>
+          <string>Open Processing Control</string>
          </property>
         </widget>
        </item>
@@ -188,7 +188,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="label_2">
+      <widget class="QLabel" name="messageLabel">
        <property name="text">
         <string>Messages:</string>
        </property>
