@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1045</width>
-    <height>716</height>
+    <height>503</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -212,7 +212,7 @@
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>File</string>
+     <string>&amp;File</string>
     </property>
     <addaction name="actionOpen"/>
     <addaction name="actionOpen_recent"/>
@@ -242,8 +242,28 @@
    <property name="text">
     <string>Quit</string>
    </property>
+   <property name="shortcut">
+    <string>Q</string>
+   </property>
   </action>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>actionQuit</sender>
+   <signal>activated()</signal>
+   <receiver>adaptConfig</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>522</x>
+     <y>251</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
