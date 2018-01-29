@@ -22,6 +22,8 @@
 import sys
 from PyQt4 import QtCore, QtGui, uic
 
+from adapt import processingConfiguration
+
 __version__ ="0.0.1"
 
 class iintGUI(QtGui.QMainWindow):
@@ -30,12 +32,14 @@ class iintGUI(QtGui.QMainWindow):
         super(iintGUI, self).__init__(parent)
         uic.loadUi("iint-gui.ui", self)
         
+        self._procConfig = processingConfiguration.ProcessingConfiguration()
+        
         # define the connections
         # input section:
-        self.chooseInputFileBtn.clicked.connect(print)
-
+        self.chooseInputFileBtn.clicked.connect(self.getFile)
 
         # output section
+        self.chooseOutputFileBtn.clicked.connect(self.defineOutput)
         
         # observable section
         
@@ -45,6 +49,13 @@ class iintGUI(QtGui.QMainWindow):
         
         # processing section
 
+    def getFile(self):
+        self._file = QtGui.QFileDialog.getOpenFileName(self, 'Choose spec file', '.')
+
+    def defineOutput(self):
+        self._outfile = QtGui.QFileDialog.getOpenFileName(self, 'Select output file', '.')
+        
+        
 if __name__ == "__main__":
     import sys
     app = QtGui.QApplication(sys.argv)
