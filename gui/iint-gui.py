@@ -23,6 +23,10 @@ import sys
 from PyQt4 import QtCore, QtGui, uic
 
 from adapt import processingConfiguration
+from adapt.processes import specfilereader
+from adapt.processes import iintdefinition
+from adapt import processData
+
 
 __version__ ="0.0.1"
 
@@ -31,12 +35,22 @@ class iintGUI(QtGui.QMainWindow):
     def __init__(self, parent=None):
         super(iintGUI, self).__init__(parent)
         uic.loadUi("iint-gui.ui", self)
+        self._pdata = processData.ProcessData()
+        # placeholder objects:
+        self._headerlist = []
+        self._columnlist = []
         
+        self._specReader = specfilereader.specfilereader()
+        self._specReaderDict = self._specReader.getProcessParameters()
+        self._specReaderDict["outputdata"] = "_specfiledata"
+        self._observableDict = iintdefinition.iintdefinition().getProcessParameters()
         self._procConfig = processingConfiguration.ProcessingConfiguration()
         
         # define the connections
         # input section:
-        self.chooseInputFileBtn.clicked.connect(self.getFile)
+        self.chooseInputFileBtn.clicked.connect(self.getAndOpenFile)
+        self.dataSelectionBtn.clicked.connect(self.readFile)
+        
 
         # output section
         self.chooseOutputFileBtn.clicked.connect(self.defineOutput)
@@ -49,8 +63,24 @@ class iintGUI(QtGui.QMainWindow):
         
         # processing section
 
-    def getFile(self):
+    def getAndOpenFile(self):
         self._file = QtGui.QFileDialog.getOpenFileName(self, 'Choose spec file', '.')
+        self.inputFileLE.setText(self._file)
+        
+    def readFile(self):
+        self._specReaderDict["filename"] = self._file
+        self._specReaderDict["startScan"] = self.processingStartSB.value()
+        self._specReaderDict["endScan"] = self.processingEndSB.value()
+        if self.processingStepSB.value() is not 1:
+            self._specReaderDict["stride"] = self.processingStepSB.value()
+        self._specReader.setParameterValues(self._specReaderDict)
+        self._specReader.initialize(self._pdata)
+        self.data = self._specReader.getSelectedData()
+        
+        
+
+        
+        print("CHOSEN: " + str(self._file))
 
     def defineOutput(self):
         self._outfile = QtGui.QFileDialog.getOpenFileName(self, 'Select output file', '.')
