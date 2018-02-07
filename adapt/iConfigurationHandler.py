@@ -21,6 +21,10 @@
 
 
 class IConfigurationHandler():
+    '''Abstract definition of what a handler of configuration should be able to do.
+       This provides an interface to the persistency of config files:
+        - loadConfig: loads a valid config file
+        - writeConfig: writes a valid config file'''
 
     def loadConfig(self, filename):
         pass
