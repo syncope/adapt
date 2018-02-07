@@ -1,4 +1,4 @@
-# Copyright (C) 2017  Christoph Rosemann, DESY, Notkestr. 85, D-22607 Hamburg
+# Copyright (C) 2017-8  Christoph Rosemann, DESY, Notkestr. 85, D-22607 Hamburg
 # email contact: christoph.rosemann@desy.de
 #
 # This program is free software; you can redistribute it and/or
@@ -21,13 +21,15 @@
 class ProcessParameter():
     '''An object to hold all information needed for parameters.'''
 
-    def __init__(self, name=None, ptype=None, defval=None, optional=False):
+    def __init__(self, name=None, partype=None, defval=None, optional=False):
         self.name = name
-        self._type = ptype
+        self._type = partype
         self.value = defval
         self.optional = optional
 
     def typecheck(self, val):
+        print("typecheck: value " + str(val) + " of type " + str(type(val)) + " is supposed to be " + str(self._type))
+        print(str(self.dump()))
         if type(val) is self._type:
             return True
         else:
@@ -45,6 +47,9 @@ class ProcessParameter():
     def isOptional(self):
         return self.optional
 
+    def dump(self):
+        return (self.name, self._type, self.value, self.optional)
+        
 class ProcessParameters(dict):
     
     def __init__(self,*arg,**kw):
