@@ -26,23 +26,32 @@ from . import processingConfiguration
 
 
 class ConfigurationHandler(iConfigurationHandler.IConfigurationHandler):
+    '''An actual implementation of a configuration handler.
+       The file persistency is performed with using YAML.'''
 
     def __init__(self):
+        '''Constructs with an empty config file.
+           Uses composition with a processing configuration object inside.'''
         self._datablob = None
         self._procConfig = processingConfiguration.ProcessingConfiguration()
 
     def loadConfig(self, filename):
+        '''Loads a yaml file and returns the processingConfiguration.
+           :param filename: the filename of the configuration file
+           :type filename: a yaml configuration file'''
         with open(filename) as blob:
             self._datablob = yaml.load(blob)
         self._serialize()
         return self._procConfig
 
     def writeConfig(self, filename, procconf):
+        '''Writes the given processing configuration to a yaml file.
+           :param filename: The name of the yaml file to be created
+           :param procconf: The processing configuration object'''
         dumpDict = {}
         dumpDict["execlist"] = procconf.getOrderOfExecution()
         for k,v in procconf.getProcessDefinitions().items:
             dumpDict[k] = v
-        
         with open(filename, 'w') as outfile:
             yaml.dump(dumpDict, outfile, default_flow_style=False)
 
