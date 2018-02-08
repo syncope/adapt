@@ -56,6 +56,9 @@ class iintGUI(QtGui.QMainWindow):
         self.observableDetectorCB.activated.connect(self.setObservable)
         self.observableMonitorCB.activated.connect(self.setMonitor)
         self.observableTimeCB.activated.connect(self.setTime)
+        self._useAttenuationFactor=False
+        self.observableAttFaccheck.stateChanged.connect(self.toggleAttFac)
+        self.observableAttFacCB.setDisabled(True)
         self.observableAttFacCB.activated.connect(self.setAttFac)
         # background section
 
@@ -101,8 +104,13 @@ class iintGUI(QtGui.QMainWindow):
     def setTime(self, timename):
         self._timename = timename
 
+    def toggleAttFac(self):
+        self.observableAttFacCB.setDisabled(self._useAttenuationFactor)
+        self._useAttenuationFactor = not self._useAttenuationFactor
+
     def setAttFac(self, attfacname):
-        self._attenfname = attfacname
+        if(self._useAttenuationFactor):
+            self._attenfname = attfacname
 
 if __name__ == "__main__":
     import sys
