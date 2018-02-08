@@ -28,8 +28,6 @@ class ProcessParameter():
         self.optional = optional
 
     def typecheck(self, val):
-        print("typecheck: value " + str(val) + " of type " + str(type(val)) + " is supposed to be " + str(self._type))
-        print(str(self.dump()))
         if type(val) is self._type:
             return True
         else:
