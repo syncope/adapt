@@ -79,7 +79,7 @@ class iintGUI(QtGui.QMainWindow):
         # update everything that depends on new available data selection
         self._specReader.initialize(processData.ProcessData())
         self.data = self._specReader.getSelectedData()
-
+        self.observableMotorLabel.setText(self.data[0].getStartIdentifier(2))
         self.observableDetectorCB.clear()
         self.observableMonitorCB.clear()
         self.observableTimeCB.clear()

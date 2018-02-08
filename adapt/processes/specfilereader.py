@@ -70,6 +70,7 @@ class specfilereader(IProcess):
         pass
 
     def _selectData(self):
+        self._selectedData = []
         for d in self.data:
             if self._start <= d.getScanNumber() <= self._end:
                 self._selectedData.append(d)
