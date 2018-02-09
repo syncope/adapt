@@ -105,7 +105,7 @@ class iintGUI(QtGui.QMainWindow):
         self.observableMonitorCB.addItems(self._currentdataLabels)
         self.observableTimeCB.addItems(self._currentdataLabels)
         self.observableAttFacCB.addItems(self._currentdataLabels)
-
+        
     def defineOutput(self):
         self._outfile = QtGui.QFileDialog.getOpenFileName(self, 'Select output file', '.')
 
@@ -134,11 +134,13 @@ class iintGUI(QtGui.QMainWindow):
 
     def view(self):
         self.calculateObservable()
-        
-        import pyqtgraph as pg
         self._obsData.addData("_rawdata", self.data.getData("rawdata")[0])
         self._observableProc.execute(self._obsData)
-        pg.plot(self._obsData.getData(self._observableName))
+        gui = simpleDataPlot(parent=self)
+        gui.show()
+        print(" accessing observable: " + str(self._obsData.getData(self._observableName)))
+        print(" accessing motor : " + str(self._obsData.getData(self._motorname))) # THIS IS WHERE IT FAILS.. WHAT'S GOING WRONG??
+        gui.plot(self._obsData.getData(self._motorname), self._obsData.getData(self._observableName))
 
     def calculateObservable(self):
         self._observableDict["input"] = "_rawdata"
@@ -156,6 +158,18 @@ class iintGUI(QtGui.QMainWindow):
         self._observableProc.setParameterValues(self._observableDict)
         self._obsData = processData.ProcessData()
         self._observableProc.initialize(self._obsData)
+        print(" types? : motor: " + str(type(self._motorname)) + " and observ: " + str(type(self._obsname)))
+
+class simpleDataPlot(QtGui.QDialog):
+    import pyqtgraph as pg
+    
+    def __init__(self, parent=None):
+        super(simpleDataPlot, self).__init__(parent)
+        uic.loadUi("iint_simplePlot.ui", self)
+        
+    def plot(self, xdata, ydata):
+        self.viewPart.plot(xdata, ydata, pen=None, symbol='o')
+
 
 if __name__ == "__main__":
     import sys
