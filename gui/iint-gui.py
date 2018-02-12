@@ -110,7 +110,7 @@ class iintGUI(QtGui.QMainWindow):
         self._outfile = QtGui.QFileDialog.getOpenFileName(self, 'Select output file', '.')
 
     def setObservable(self, obsindex):
-        self._obsname = self._currentdataLabels[obsindex]
+        self._detname = self._currentdataLabels[obsindex]
 
     def setMonitor(self, monindex):
         self._monname = self._currentdataLabels[monindex]
@@ -138,14 +138,12 @@ class iintGUI(QtGui.QMainWindow):
         self._observableProc.execute(self._obsData)
         gui = simpleDataPlot(parent=self)
         gui.show()
-        print(" accessing observable: " + str(self._obsData.getData(self._observableName)))
-        print(" accessing motor : " + str(self._obsData.getData(self._motorname))) # THIS IS WHERE IT FAILS.. WHAT'S GOING WRONG??
         gui.plot(self._obsData.getData(self._motorname), self._obsData.getData(self._observableName))
 
     def calculateObservable(self):
         self._observableDict["input"] = "_rawdata"
         self._observableDict["motor_column"] = self._motorname
-        self._observableDict["detector_column"] = self._obsname
+        self._observableDict["detector_column"] = self._detname
         self._observableDict["monitor_column"] = self._monname
         self._observableDict["exposureTime_column"] = self._timename
         if(self._useAttenuationFactor):
@@ -153,12 +151,11 @@ class iintGUI(QtGui.QMainWindow):
         self._observableDict["columns_log"] = [ "petra_beamcurrent", "lks340_outputchannela", "lks340_outputchannelb" ]
         self._observableDict["headers_log"] = [ "pr1chi", "pr2chi", "ptth", "peta" ]
         self._observableDict["observableoutput"] = self._observableName
-        self._observableDict["motoroutput"] = "bla"
+        self._observableDict["motoroutput"] = self._motorname
         self._observableDict["id"] = "scannumber"
         self._observableProc.setParameterValues(self._observableDict)
         self._obsData = processData.ProcessData()
         self._observableProc.initialize(self._obsData)
-        print(" types? : motor: " + str(type(self._motorname)) + " and observ: " + str(type(self._obsname)))
 
 class simpleDataPlot(QtGui.QDialog):
     import pyqtgraph as pg
