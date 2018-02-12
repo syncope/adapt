@@ -66,7 +66,7 @@ class iintGUI(QtGui.QMainWindow):
 
         self.despikeCheckBox.stateChanged.connect(self.toggleDespiking)
 
-        self.observableVIEW.clicked.connect(self.view)
+        self.observableVIEW.clicked.connect(self.viewNext)
 
         # background section
         self.subtractBkgCheckBox.stateChanged.connect(self.toggleBKGsubtraction)
@@ -132,13 +132,13 @@ class iintGUI(QtGui.QMainWindow):
     def toggleBKGsubtraction(self):
         self._subtractBackground = not self._subtractBackground
 
-    def view(self):
+    def viewNext(self):
         self.calculateObservable()
         self._obsData.addData("_rawdata", self.data.getData("rawdata")[0])
         self._observableProc.execute(self._obsData)
         gui = simpleDataPlot(parent=self)
         gui.show()
-        gui.plot(self._obsData.getData(self._motorname), self._obsData.getData(self._observableName))
+        gui.plot(self._obsData.getData(self._motorname), self._obsData.getData(self._observableName), self._obsData.getData("scannumber"))
 
     def calculateObservable(self):
         self._observableDict["input"] = "_rawdata"
@@ -164,9 +164,9 @@ class simpleDataPlot(QtGui.QDialog):
         super(simpleDataPlot, self).__init__(parent)
         uic.loadUi("iint_simplePlot.ui", self)
         
-    def plot(self, xdata, ydata):
+    def plot(self, xdata, ydata, scanid):
+        self.scanID.setText(str(scanid))
         self.viewPart.plot(xdata, ydata, pen=None, symbol='o')
-
 
 if __name__ == "__main__":
     import sys
