@@ -25,6 +25,12 @@ from PyQt4 import QtCore, QtGui, uic
 from adapt import processingConfiguration
 from adapt.processes import specfilereader
 from adapt.processes import iintdefinition
+from adapt.processes import filter1d
+from adapt.processes import subsequenceselection
+from adapt.processes import curvefitting
+from adapt.processes import gendatafromfunction
+from adapt.processes import backgroundsubtraction
+from adapt.processes import trapezoidintegration
 from adapt import processData
 
 
@@ -41,18 +47,29 @@ class iintGUI(QtGui.QMainWindow):
         self._despike = False
         self._subtractBackground = False
         self._observableName = "_observable"
+        self._processedObservableName = "_processedobservable"
+        self._motorname = ""
         
+        # pyqt helper stuff
         self._simpleImageView = simpleDataPlot(parent=self)
-        
+
+        # the adapt processes
         self._specReader = specfilereader.specfilereader()
-        self._specReaderDict = {}
         self._observableProc = iintdefinition.iintdefinition()
-        self._observableDict = {}
+        self._despiker = filter1d.filter1d()
+        self._bkgSelector = subsequenceselection.subsequenceselection()
+        self._bkgFitter = curvefitting.curvefitting()
+        self._bkgValues = gendatafromfunction.gendatafromfunction()
+        self._bkgSubtractor = backgroundsubtraction.backgroundsubtraction()
+        self._trapezoidIntegrator = trapezoidintegration.trapezoidintegration()
         
+        # the internal data pointer -- instance holder
+        self.data = processData.ProcessData()
+
         # define the connections
         # input section:
         self.chooseInputFileBtn.clicked.connect(self.getAndOpenFile)
-        self.dataSelectionBtn.clicked.connect(self.readFile)
+        self.dataSelectionBtn.clicked.connect(self.readDataFromFile)
 
         # output section
         self.chooseOutputFileBtn.clicked.connect(self.defineOutput)
@@ -81,24 +98,24 @@ class iintGUI(QtGui.QMainWindow):
         self._file = QtGui.QFileDialog.getOpenFileName(self, 'Choose spec file', '.', "SPEC files (*.spc *.spe *.spec)")
         self.inputFileLE.setText(self._file)
         
-    def readFile(self):
-        self._specReaderDict["filename"] = self._file
-        self._specReaderDict["startScan"] = self.processingStartSB.value()
-        self._specReaderDict["endScan"] = self.processingEndSB.value()
-        self._specReaderDict["stride"] = self.processingStepSB.value()
-        self._specReaderDict["outputdata"] = "_specfiledata"
-        self._specReader.setParameterValues(self._specReaderDict)
-        self._updateDependents()
-
-    def _updateDependents(self):
-        # update everything that depends on new available data selection
+    def readDataFromFile(self):
+        # clear existing all data
+        self.data.clearAll()
+        
+        # steering of the spec reader:
+        self.configureSpecReader()
+        
+        # call the spec reader only to get the data of choice; this is stored as a list!
         self._specReader.initialize(processData.ProcessData())
-        self.data = processData.ProcessData()
-        self.data.addData("rawdata", self._specReader.getSelectedData())
-        self._currentdata = self.data.getData("rawdata")[0]
-        self._currentdataLabels = self._currentdata.getLabels()
+        self.data.addGlobalData("filteredrawdata", self._specReader.getSelectedData())
+
+        # to set the displayed columns etc. one element of the selected data is needed
+        _currentdata = self.data.getData("filteredrawdata")[0]
+        self._currentdataLabels = _currentdata.getLabels()
         self.observableMotorLabel.setStyleSheet("color: blue;")
-        self._motorname = self._currentdata.getStartIdentifier(2)
+        self._motorname = _currentdata.getStartIdentifier(2)
+
+        # now set the texts and labels
         self.observableMotorLabel.setText(self._motorname)
         self.observableDetectorCB.clear()
         self.observableMonitorCB.clear()
@@ -108,7 +125,7 @@ class iintGUI(QtGui.QMainWindow):
         self.observableMonitorCB.addItems(self._currentdataLabels)
         self.observableTimeCB.addItems(self._currentdataLabels)
         self.observableAttFacCB.addItems(self._currentdataLabels)
-        
+
     def defineOutput(self):
         self._outfile = QtGui.QFileDialog.getOpenFileName(self, 'Select output file', '.')
 
@@ -136,6 +153,7 @@ class iintGUI(QtGui.QMainWindow):
         self._subtractBackground = not self._subtractBackground
 
     def viewFirst(self):
+        # rethink logic here!
         self.calculateObservable()
         self._obsData.addData("_rawdata", self.data.getData("rawdata")[0])
         self._observableProc.execute(self._obsData)
@@ -143,21 +161,74 @@ class iintGUI(QtGui.QMainWindow):
         self._simpleImageView.plot(self._obsData.getData(self._motorname), self._obsData.getData(self._observableName), self._obsData.getData("scannumber"))
 
     def calculateObservable(self):
-        self._observableDict["input"] = "_rawdata"
-        self._observableDict["motor_column"] = self._motorname
-        self._observableDict["detector_column"] = self._detname
-        self._observableDict["monitor_column"] = self._monname
-        self._observableDict["exposureTime_column"] = self._timename
-        if(self._useAttenuationFactor):
-            self._observableDict["attenuationFactor_column"] = self._attenfname
-        self._observableDict["columns_log"] = [ "petra_beamcurrent", "lks340_outputchannela", "lks340_outputchannelb" ]
-        self._observableDict["headers_log"] = [ "pr1chi", "pr2chi", "ptth", "peta" ]
-        self._observableDict["observableoutput"] = self._observableName
-        self._observableDict["motoroutput"] = self._motorname
-        self._observableDict["id"] = "scannumber"
-        self._observableProc.setParameterValues(self._observableDict)
+        self.configureObservable()
         self._obsData = processData.ProcessData()
         self._observableProc.initialize(self._obsData)
+
+    def configureSpecReader(self):
+        specReaderDict = { "filename" : self._file,
+                           "startScan" : self.processingStartSB.value(),
+                           "endScan" : self.processingEndSB.value(),
+                           "stride" : self.processingStepSB.value(),
+                           "outputdata" : "_specfiledata" }
+        self._specReader.setParameterValues(specReaderDict)
+
+    def configureObservable(self):
+        observableDict = { "input" : "_rawdata",
+                           "motor_column" : self._motorname,
+                           "detector_column" : self._detname,
+                           "monitor_column" : self._monname,
+                           "exposureTime_column" : self._timename,
+                           "columns_log" : ["petra_beamcurrent", "lks340_outputchannela", "lks340_outputchannelb"], # CHANGE !
+                           "headers_log" : ["pr1chi", "pr2chi", "ptth", "peta"], # CHANGE!
+                           "observableoutput" : self._observableName,
+                           "motoroutput" : self._motorname,
+                           "id" : "scannumber" }
+        if(self._useAttenuationFactor):
+            observableDict["attenuationFactor_column"] = self._attenfname
+
+        self._observableProc.setParameterValues(observableDict)
+
+    def configureDespiker(self):
+        despikeDict = { "input" : self._observableName, 
+                        "output" : self._processedObservableName,
+                        "method" : "p09despiking"}
+        self._despiker.setParameterValues(despikeDict)
+
+    def configureBKGselection(self):
+        bkgSelDict = { "input" : [ self._processedObservableName, self._motorname ],
+                       "output" : [ "bkgY", "bkgX" ] ,
+                       "selectors": [ "selectfromstart" , "selectfromend" ],
+                       "startpointnumber" : 3, # CHANGE!
+                       "endpointnumber" : 3 } # CHANGE!
+        self._bkgSelector.setParameterValues(bkgSelDict)
+
+    #~ def configureBKGFitter(self):
+        #~ bkfFitDict = { "model" : "linearModel",
+            #~ name: lin_
+                #~ xdata: bkgX
+    #~ ydata: bkgY
+    #~ error: None
+    #~ result: bkgfitresult
+        #~ self._bkgFitter.setParameterValues(bkfFitDict)
+
+    def configureBKGDataGenerator(self):
+        bkgGenDict = { "fitresult" : "bkgfitresult",
+                        "xdata" :  "pth", # CHANGE!
+                        "output" : "bkg" }
+        self._bkgValues.setParameterValues(bkgGenDict)
+
+    def configureBKGSubtractor(self):
+        bkgSubtractDict =  { "input" : "despikedObservable",
+                             "background" : "bkg",
+                             "output" : "despikedSignal" }  # CHANGE!
+        self._bkgSubtractor.setParameterValues(bkgSubtractDict)
+
+    def configureTrapezoidIntegrator(self):
+        trapintDict = { "motor" : "pth", # CHANGE!
+                        "observable" : "observable", # CHANGE!
+                        "output" : "trapint" }
+        self._trapezoidIntegrator.setParameterValues(trapintDict)
 
 class simpleDataPlot(QtGui.QDialog):
     import pyqtgraph as pg
@@ -178,4 +249,3 @@ if __name__ == "__main__":
     ui = iintGUI()
     ui.show()
     sys.exit(app.exec_())
-
