@@ -42,6 +42,8 @@ class iintGUI(QtGui.QMainWindow):
         self._subtractBackground = False
         self._observableName = "_observable"
         
+        self._simpleImageView = simpleDataPlot(parent=self)
+        
         self._specReader = specfilereader.specfilereader()
         self._specReaderDict = {}
         self._observableProc = iintdefinition.iintdefinition()
@@ -66,13 +68,14 @@ class iintGUI(QtGui.QMainWindow):
 
         self.despikeCheckBox.stateChanged.connect(self.toggleDespiking)
 
-        self.observableVIEW.clicked.connect(self.viewNext)
+        self.observableVIEW.clicked.connect(self.viewFirst)
 
         # background section
         self.subtractBkgCheckBox.stateChanged.connect(self.toggleBKGsubtraction)
 
         # signal section
         # processing section
+        #~ self._simpleImageView.showDespiked.connect(print)
 
     def getAndOpenFile(self):
         self._file = QtGui.QFileDialog.getOpenFileName(self, 'Choose spec file', '.', "SPEC files (*.spc *.spe *.spec)")
@@ -132,13 +135,12 @@ class iintGUI(QtGui.QMainWindow):
     def toggleBKGsubtraction(self):
         self._subtractBackground = not self._subtractBackground
 
-    def viewNext(self):
+    def viewFirst(self):
         self.calculateObservable()
         self._obsData.addData("_rawdata", self.data.getData("rawdata")[0])
         self._observableProc.execute(self._obsData)
-        gui = simpleDataPlot(parent=self)
-        gui.show()
-        gui.plot(self._obsData.getData(self._motorname), self._obsData.getData(self._observableName), self._obsData.getData("scannumber"))
+        self._simpleImageView.show()
+        self._simpleImageView.plot(self._obsData.getData(self._motorname), self._obsData.getData(self._observableName), self._obsData.getData("scannumber"))
 
     def calculateObservable(self):
         self._observableDict["input"] = "_rawdata"
@@ -159,14 +161,16 @@ class iintGUI(QtGui.QMainWindow):
 
 class simpleDataPlot(QtGui.QDialog):
     import pyqtgraph as pg
+    showDespiked = QtCore.pyqtSignal(int)
     
     def __init__(self, parent=None):
         super(simpleDataPlot, self).__init__(parent)
         uic.loadUi("iint_simplePlot.ui", self)
-        
+        self.showDespikedBtn.clicked.connect(self.showDespiked.emit)
+
     def plot(self, xdata, ydata, scanid):
         self.scanID.setText(str(scanid))
-        self.viewPart.plot(xdata, ydata, pen=None, symbol='o')
+        self.viewPart.plot(xdata, ydata, pen=None, symbol='+')
 
 if __name__ == "__main__":
     import sys

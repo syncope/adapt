@@ -784,7 +784,7 @@
           <item>
            <widget class="QPushButton" name="observableVIEW">
             <property name="text">
-             <string>View next</string>
+             <string>View First</string>
             </property>
            </widget>
           </item>
