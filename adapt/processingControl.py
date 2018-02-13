@@ -63,7 +63,7 @@ class ProcessingControl():
             while(1):
                 for proc in self._masterExecutionlist:
                     proc.execute(self._data)
-                self._data.clear()
+                self._data.clearCurrent()
         except StopIteration:
             return
 
