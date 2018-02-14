@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>437</width>
-    <height>684</height>
+    <height>774</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -779,12 +779,22 @@
               </property>
              </widget>
             </item>
+            <item>
+             <widget class="QPushButton" name="applyDespikeBtn">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="text">
+               <string>Apply</string>
+              </property>
+             </widget>
+            </item>
            </layout>
           </item>
           <item>
            <widget class="QPushButton" name="observableVIEW">
             <property name="text">
-             <string>View First</string>
+             <string>View</string>
             </property>
            </widget>
           </item>

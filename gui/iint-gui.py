@@ -85,7 +85,7 @@ class iintGUI(QtGui.QMainWindow):
 
         self.despikeCheckBox.stateChanged.connect(self.toggleDespiking)
 
-        self.observableVIEW.clicked.connect(self.viewFirst)
+        self.observableVIEW.clicked.connect(self.viewSimple)
 
         # background section
         self.subtractBkgCheckBox.stateChanged.connect(self.toggleBKGsubtraction)
@@ -148,14 +148,15 @@ class iintGUI(QtGui.QMainWindow):
 
     def toggleDespiking(self):
         self._despike = not self._despike
+        self.applyDespikeBtn.setEnabled(self._despike)
 
     def toggleBKGsubtraction(self):
         self._subtractBackground = not self._subtractBackground
 
-    def viewFirst(self):
+    def viewSimple(self):
         # rethink logic here!
         self.calculateObservable()
-        self._obsData.addData("_rawdata", self.data.getData("rawdata")[0])
+        self._obsData.addData("_rawdata", self.data.getData("filteredrawdata")[0])
         self._observableProc.execute(self._obsData)
         self._simpleImageView.show()
         self._simpleImageView.plot(self._obsData.getData(self._motorname), self._obsData.getData(self._observableName), self._obsData.getData("scannumber"))
@@ -232,15 +233,21 @@ class iintGUI(QtGui.QMainWindow):
 
 class simpleDataPlot(QtGui.QDialog):
     import pyqtgraph as pg
-    showDespiked = QtCore.pyqtSignal(int)
+    showNext = QtCore.pyqtSignal(int)
+    showPrevious = QtCore.pyqtSignal(int)
+    showNumber = QtCore.pyqtSignal(int)
     
-    def __init__(self, parent=None):
+    def __init__(self, parent=None,minimum=1,maximum=1000):
         super(simpleDataPlot, self).__init__(parent)
         uic.loadUi("iint_simplePlot.ui", self)
-        self.showDespikedBtn.clicked.connect(self.showDespiked.emit)
+        self.scanIDspinbox.setMinimum(minimum)
+        self.scanIDspinbox.setMaximum(maximum)
+        self.scanIDspinbox.valueChanged.connect(self.showNumber.emit)
+        self.showPreviousBtn.clicked.connect(self.showPrevious.emit)
+        self.showNextBtn.clicked.connect(self.showNext.emit)
 
     def plot(self, xdata, ydata, scanid):
-        self.scanID.setText(str(scanid))
+        self.scanIDspinbox.setValue(scanid)
         self.viewPart.plot(xdata, ydata, pen=None, symbol='+')
 
 if __name__ == "__main__":
