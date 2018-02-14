@@ -1,4 +1,4 @@
-# Copyright (C) 2017  Christoph Rosemann, DESY, Notkestr. 85, D-22607 Hamburg
+# Copyright (C) 2017-8  Christoph Rosemann, DESY, Notkestr. 85, D-22607 Hamburg
 # email contact: christoph.rosemann@desy.de
 #
 # adapt is a programmable data processing toolkit
@@ -32,7 +32,7 @@ from adapt.processes import gendatafromfunction
 from adapt.processes import backgroundsubtraction
 from adapt.processes import trapezoidintegration
 from adapt import processData
-
+from adapt.utilities import iintData
 
 __version__ ="0.0.1alpha"
 
