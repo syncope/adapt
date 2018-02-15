@@ -51,7 +51,7 @@ class iintGUI(QtGui.QMainWindow):
         self._motorname = ""
 
         # the central data element for the gui; specific to iint!
-        self._dataKeeper = []
+        self._dataKeeper = {}
         
         # pyqt helper stuff
         self._simpleImageView = simpleDataPlot(parent=self)
@@ -112,16 +112,24 @@ class iintGUI(QtGui.QMainWindow):
         # call the spec reader only to get the data of choice; this is stored as a list!
         self._specReader.initialize(processData.ProcessData())
         theRawData = self._specReader.getSelectedData()
-        for scan in theRawData:
-            newdata = iintData.IintData()
-            newdata.setRaw(scan)
-            self._dataKeeper.append(newdata)
 
         # to set the displayed columns etc. one element of the selected data is needed
-        exampleData = self._datakeeper[0].getRaw()
+        exampleData = theRawData[0]
         self._currentdataLabels = exampleData.getLabels()
         self.observableMotorLabel.setStyleSheet("color: blue;")
         self._motorname = exampleData.getStartIdentifier(2)
+        
+        for scan in theRawData:
+            scanid = scan.getScanNumber()
+            newdata = iintData.IintData(scanid = scanid, 
+                                        scantype = scan.getStartIdentifier(1),
+                                        motor = self._motorname)
+            newdata.setRaw(scan)
+            newdata.setMotor(scan.getArray(self._motorname))
+            self._dataKeeper[scanid] = newdata
+            # here the world looks fine
+
+        self.setCurrentScanID(exampleData.getScanNumber())
 
         # now set the texts and labels
         self.observableMotorLabel.setText(self._motorname)
@@ -162,22 +170,32 @@ class iintGUI(QtGui.QMainWindow):
         self._subtractBackground = not self._subtractBackground
 
     def viewSimple(self):
-        pass
         # rethink logic here!
         #~ self.calculateObservable()
         #~ self._obsData.addData("_rawdata", self.data.getData("filteredrawdata")[0])
         #~ self._observableProc.execute(self._obsData)
-        #~ self._simpleImageView.show()
-        #~ self._simpleImageView.plot(self._obsData.getData(self._motorname), self._obsData.getData(self._observableName), self._obsData.getData("scannumber"))
+        print("view simple: xdata is " + str(self._currentScan.getMotor()) + " ydata is " + str(self._currentScan.getObservable()) + " and id is: " + str(self._currentScan.getScanID()))
+        self._simpleImageView.show()
+        #~ self.setCurrentScanID(699)
+        self._simpleImageView.plot( xdata= self._currentScan.getMotor(), 
+                                    ydata = self._currentScan.getObservable(),
+                                    scanid= self._currentScan.getScanID())
+
+    def setCurrentScanID(self, identifier):
+        self._currentScan = self._dataKeeper[identifier]
+        print(" SCSI: of type: " + str(self._currentScan))
+        self._currentScan.dump()
 
     def calculateObservable(self):
         self.configureObservable()
         self._obsData = processData.ProcessData()
         self._observableProc.initialize(self._obsData)
-        for element in self.data.getData("filteredrawdata"):
-            self._obsData.addData("_rawdata", element)
+        for scan in self._dataKeeper.values():
+            self._obsData.addData("_rawdata", scan.getRaw())
             self._observableProc.execute(self._obsData)
-            
+            scan.setObservable(self._obsData.getData(self._observableName))
+            scan.setMotor(self._obsData)
+            self._obsData.clearCurrent()
 
     def configureSpecReader(self):
         specReaderDict = { "filename" : self._file,
