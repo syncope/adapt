@@ -21,7 +21,11 @@
 class IintData():
 
     def __init__(self, scanid, scantype, motor):
+        self._id = scanid
+        self._typeName = scantype
+        self._motorName = motor
         self._hasRaw = False
+        self._hasMotor = False
         self._hasObservable = False
         self._hasDespiked = False
         self._hasBackground = False
@@ -29,12 +33,22 @@ class IintData():
         self._hasFit = False
         self._hasIntegration = False
         self._raw = None
+        self._motor = None
         self._observable = None
         self._despikedObservable = None
         self._fittedBackground = None
         self._backgroundSubtracted = None
         self._fittedSignal = None
         self._integratedIntensity = None
+
+    def getScanID(self):
+        return self._id
+
+    def getScanType(self):
+        return self._typeName
+
+    def getMotorName(self):
+        return self._motorName
 
     def setRaw(self, rd):
         self._raw = rd
@@ -43,6 +57,16 @@ class IintData():
     def getRaw(self):
         if(self._hasRaw):
             return self._raw
+        else:
+            return None
+
+    def setMotor(self,mot):
+        self._motor = mot
+        self._hasMotor = True
+
+    def getMotor(self):
+        if(self._hasMotor):
+            return self._motor
         else:
             return None
 
@@ -106,3 +130,6 @@ class IintData():
         else:
             return None
 
+    def dump(self):
+        print(" [ INFO ] :: my id is  " + str(self._id))
+        print(" my motor: " + str(self._motor))
