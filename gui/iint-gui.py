@@ -170,10 +170,6 @@ class iintGUI(QtGui.QMainWindow):
         self._subtractBackground = not self._subtractBackground
 
     def viewSimple(self):
-        # rethink logic here!
-        #~ self.calculateObservable()
-        #~ self._obsData.addData("_rawdata", self.data.getData("filteredrawdata")[0])
-        #~ self._observableProc.execute(self._obsData)
         print("view simple: xdata is " + str(self._currentScan.getMotor()) + " ydata is " + str(self._currentScan.getObservable()) + " and id is: " + str(self._currentScan.getScanID()))
         self._simpleImageView.show()
         #~ self.setCurrentScanID(699)
@@ -185,17 +181,6 @@ class iintGUI(QtGui.QMainWindow):
         self._currentScan = self._dataKeeper[identifier]
         print(" SCSI: of type: " + str(self._currentScan))
         self._currentScan.dump()
-
-    def calculateObservable(self):
-        self.configureObservable()
-        self._obsData = processData.ProcessData()
-        self._observableProc.initialize(self._obsData)
-        for scan in self._dataKeeper.values():
-            self._obsData.addData("_rawdata", scan.getRaw())
-            self._observableProc.execute(self._obsData)
-            scan.setObservable(self._obsData.getData(self._observableName))
-            scan.setMotor(self._obsData)
-            self._obsData.clearCurrent()
 
     def configureSpecReader(self):
         specReaderDict = { "filename" : self._file,
@@ -221,11 +206,31 @@ class iintGUI(QtGui.QMainWindow):
 
         self._observableProc.setParameterValues(observableDict)
 
+    def calculateObservable(self):
+        self.configureObservable()
+        obsData = processData.ProcessData()
+        self._observableProc.initialize(obsData)
+        for scan in self._dataKeeper.values():
+            obsData.addData("_rawdata", scan.getRaw())
+            self._observableProc.execute(obsData)
+            scan.setObservable(obsData.getData(self._observableName))
+            scan.setMotor(obsData)
+            obsData.clearCurrent()
+
     def configureDespiker(self):
         despikeDict = { "input" : self._observableName, 
                         "output" : self._processedObservableName,
                         "method" : "p09despiking"}
         self._despiker.setParameterValues(despikeDict)
+
+    def despike(self):
+        self.configureDespiker()
+        despData = processData.ProcessData()
+        self._despiker.initialize(despData)
+        for scan in self._dataKeeper.values():
+            despData.addData(self._observableName, scan.getObservable())
+            self._despiker.execute(despData)
+            scan.setDespiked(despData.getData(self._processedObservableName))
 
     def configureBKGselection(self):
         bkgSelDict = { "input" : [ self._processedObservableName, self._motorname ],
