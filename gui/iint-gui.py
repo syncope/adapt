@@ -85,7 +85,7 @@ class iintGUI(QtGui.QMainWindow):
         self.observableAttFaccheck.stateChanged.connect(self.toggleAttFac)
         self.observableAttFacCB.setDisabled(True)
         self.observableAttFacCB.activated.connect(self.setAttFac)
-        self.observableCalcBtn.clicked.connect(calculateObservable)
+        self.observableCalcBtn.clicked.connect(self.calculateObservable)
 
         self.despikeCheckBox.stateChanged.connect(self.toggleDespiking)
 
@@ -113,14 +113,15 @@ class iintGUI(QtGui.QMainWindow):
         self._specReader.initialize(processData.ProcessData())
         theRawData = self._specReader.getSelectedData()
         for scan in theRawData:
-            
-        self.data.addGlobalData("filteredrawdata", )
+            newdata = iintData.IintData()
+            newdata.setRaw(scan)
+            self._dataKeeper.append(newdata)
 
         # to set the displayed columns etc. one element of the selected data is needed
-        _currentdata = self.data.getData("filteredrawdata")[0]
-        self._currentdataLabels = _currentdata.getLabels()
+        exampleData = self._datakeeper[0].getRaw()
+        self._currentdataLabels = exampleData.getLabels()
         self.observableMotorLabel.setStyleSheet("color: blue;")
-        self._motorname = _currentdata.getStartIdentifier(2)
+        self._motorname = exampleData.getStartIdentifier(2)
 
         # now set the texts and labels
         self.observableMotorLabel.setText(self._motorname)
@@ -161,6 +162,7 @@ class iintGUI(QtGui.QMainWindow):
         self._subtractBackground = not self._subtractBackground
 
     def viewSimple(self):
+        pass
         # rethink logic here!
         #~ self.calculateObservable()
         #~ self._obsData.addData("_rawdata", self.data.getData("filteredrawdata")[0])
