@@ -36,7 +36,7 @@ class specfilereader(IProcess):
         self._inPar = ProcessParameter("filename", str)
         self._outPar = ProcessParameter("outputdata", str)
         self._startScanPar = ProcessParameter("startScan", int, -1, optional=True)
-        self._endScanPar = ProcessParameter("endScan", float('inf'), optional=True)
+        self._endScanPar = ProcessParameter("endScan", int, float('inf'), optional=True)
         self._stridePar = ProcessParameter("stride", int, 1, optional=True)
         self._parameters.add(self._inPar)
         self._parameters.add(self._outPar)
