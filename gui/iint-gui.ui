@@ -721,50 +721,24 @@
            </layout>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_23">
-            <item>
-             <widget class="QLabel" name="label_24">
-              <property name="text">
-               <string>columns log</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="observableColumnsLabel">
-              <property name="text">
-               <string>[...]</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="observableAddColumnBtn">
-              <property name="text">
-               <string>Choose columns</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
            <layout class="QHBoxLayout" name="horizontalLayout_22">
             <item>
-             <widget class="QLabel" name="label_22">
-              <property name="text">
-               <string>headers log</string>
+             <spacer name="horizontalSpacer_8">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
               </property>
-             </widget>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
             </item>
             <item>
-             <widget class="QLabel" name="observableHeadersLabel">
+             <widget class="QPushButton" name="observableCalcBtn">
               <property name="text">
-               <string>[...]</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="observableAddHeaderBtn">
-              <property name="text">
-               <string>Choose headers</string>
+               <string>Calculate</string>
               </property>
              </widget>
             </item>

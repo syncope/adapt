@@ -49,6 +49,9 @@ class iintGUI(QtGui.QMainWindow):
         self._observableName = "_observable"
         self._processedObservableName = "_processedobservable"
         self._motorname = ""
+
+        # the central data element for the gui; specific to iint!
+        self._dataKeeper = []
         
         # pyqt helper stuff
         self._simpleImageView = simpleDataPlot(parent=self)
@@ -82,6 +85,7 @@ class iintGUI(QtGui.QMainWindow):
         self.observableAttFaccheck.stateChanged.connect(self.toggleAttFac)
         self.observableAttFacCB.setDisabled(True)
         self.observableAttFacCB.activated.connect(self.setAttFac)
+        self.observableCalcBtn.clicked.connect(calculateObservable)
 
         self.despikeCheckBox.stateChanged.connect(self.toggleDespiking)
 
@@ -107,7 +111,10 @@ class iintGUI(QtGui.QMainWindow):
         
         # call the spec reader only to get the data of choice; this is stored as a list!
         self._specReader.initialize(processData.ProcessData())
-        self.data.addGlobalData("filteredrawdata", self._specReader.getSelectedData())
+        theRawData = self._specReader.getSelectedData()
+        for scan in theRawData:
+            
+        self.data.addGlobalData("filteredrawdata", )
 
         # to set the displayed columns etc. one element of the selected data is needed
         _currentdata = self.data.getData("filteredrawdata")[0]
@@ -155,16 +162,20 @@ class iintGUI(QtGui.QMainWindow):
 
     def viewSimple(self):
         # rethink logic here!
-        self.calculateObservable()
-        self._obsData.addData("_rawdata", self.data.getData("filteredrawdata")[0])
-        self._observableProc.execute(self._obsData)
-        self._simpleImageView.show()
-        self._simpleImageView.plot(self._obsData.getData(self._motorname), self._obsData.getData(self._observableName), self._obsData.getData("scannumber"))
+        #~ self.calculateObservable()
+        #~ self._obsData.addData("_rawdata", self.data.getData("filteredrawdata")[0])
+        #~ self._observableProc.execute(self._obsData)
+        #~ self._simpleImageView.show()
+        #~ self._simpleImageView.plot(self._obsData.getData(self._motorname), self._obsData.getData(self._observableName), self._obsData.getData("scannumber"))
 
     def calculateObservable(self):
         self.configureObservable()
         self._obsData = processData.ProcessData()
         self._observableProc.initialize(self._obsData)
+        for element in self.data.getData("filteredrawdata"):
+            self._obsData.addData("_rawdata", element)
+            self._observableProc.execute(self._obsData)
+            
 
     def configureSpecReader(self):
         specReaderDict = { "filename" : self._file,
