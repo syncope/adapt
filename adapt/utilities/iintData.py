@@ -132,4 +132,4 @@ class IintData():
 
     #~ def dump(self):
         #~ print(" [ INFO ] :: my id is  " + str(self._id))
-        #~ print(" my motor: " + str(self._motor))
+        #~ print(" bkg fit:  " + str(self.getBackground()))

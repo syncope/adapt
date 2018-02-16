@@ -28,7 +28,7 @@ class curvefitting(IProcess):
         super(curvefitting, self).__init__(ptype)
         self._xdataPar = ProcessParameter("xdata", str)
         self._ydataPar = ProcessParameter("ydata", str)
-        self._yerrPar = ProcessParameter("error", str)
+        self._yerrPar = ProcessParameter("error", str, None, optional=True)
         self._modelPar = ProcessParameter("model", dict)
         self._resultPar = ProcessParameter("result", str)
         self._parameters.add(self._xdataPar)
@@ -50,7 +50,7 @@ class curvefitting(IProcess):
         independentVariable = data.getData(self._xdataPar.get())
         dependentVariable = data.getData(self._ydataPar.get())
         errorname = self._yerrPar.get()
-        if(errorname == 'None'):
+        if(errorname == None):
             variableWeight = np.sqrt(np.clip(dependentVariable, 0., None))
         else:
             variableWeight = 1./data.getData(errorname)
