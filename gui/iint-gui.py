@@ -89,15 +89,18 @@ class iintGUI(QtGui.QMainWindow):
         self.observableAttFacCB.setDisabled(True)
         self.observableAttFacCB.activated.connect(self.setAttFac)
         self.observableCalcBtn.clicked.connect(self.calculateObservable)
-
         self.despikeCheckBox.stateChanged.connect(self.toggleDespiking)
         self.applyDespikeBtn.clicked.connect(self.despike)
-
         self.observableVIEW.clicked.connect(self.viewSimple)
 
         # background section
         self.subtractBkgCheckBox.stateChanged.connect(self.toggleBKGsubtraction)
-
+        self.bkgStartPointsSB.setKeyboardTracking(False)
+        self.bkgStartPointsSB.valueChanged.connect(self.selectStartBKG)
+        self.bkgEndPointsSB.setKeyboardTracking(False)
+        self.bkgEndPointsSB.valueChanged.connect(self.selectEndBKG)
+        self.fitBKGbtn.clicked.connect(self.selectAndFitBackground)
+        
         # signal section
         # processing section
         #~ self._simpleImageView.showDespiked.connect(print)
@@ -254,22 +257,44 @@ class iintGUI(QtGui.QMainWindow):
             scan.setDespiked(despData.getData(self._processedObservableName))
             despData.clearCurrent()
 
+    def selectStartBKG(self, value):
+        self._bkgStartPoints  = value
+
+    def selectEndBKG(self, value):
+        self._bkgEndPoints  = value
+
     def configureBKGselection(self):
-        bkgSelDict = { "input" : [ self._processedObservableName, self._motorname ],
+        bkgSelDict = { "input" : [ self._processedObservableName ,self._motorname ],
                        "output" : [ "bkgY", "bkgX" ] ,
                        "selectors": [ "selectfromstart" , "selectfromend" ],
-                       "startpointnumber" : 3, # CHANGE!
-                       "endpointnumber" : 3 } # CHANGE!
+                       "startpointnumber" : self._bkgStartPoints, # CHANGE!
+                       "endpointnumber" : self._bkgEndPoints } # CHANGE!
         self._bkgSelector.setParameterValues(bkgSelDict)
 
-    #~ def configureBKGFitter(self):
-        #~ bkfFitDict = { "model" : "linearModel",
-            #~ name: lin_
-                #~ xdata: bkgX
-    #~ ydata: bkgY
-    #~ error: None
-    #~ result: bkgfitresult
-        #~ self._bkgFitter.setParameterValues(bkfFitDict)
+    def selectAndFitBackground(self):
+        self.configureBKGselection()
+        self.configureBKGFitter()
+        bkgData = processData.ProcessData()
+        self._bkgSelector.initialize(bkgData)
+        self._bkgFitter.initialize(bkgData)
+        for scan in self._dataKeeper.values():
+            bkgData.addData(self._processedObservableName, scan.getDespiked())
+            bkgData.addData(self._motorname, scan.getMotor())
+            self._bkgSelector.execute(bkgData)
+            self._bkgFitter.execute(bkgData)
+            scan.setBackground(bkgData.getData("bkgfitresult"))
+            bkgData.clearCurrent()
+            scan.dump()
+
+    def configureBKGFitter(self):
+        bkfFitDict = { "model" : { "linearModel": { "name" : "lin_"}},
+                       "xdata" : "bkgX",
+                       "ydata" : "bkgY",
+                       "result": "bkgfitresult"}
+        self._bkgFitter.setParameterValues(bkfFitDict)
+
+    def fitBackground(self):
+        self.selectBackground()
 
     def configureBKGDataGenerator(self):
         bkgGenDict = { "fitresult" : "bkgfitresult",
@@ -294,7 +319,7 @@ class simpleDataPlot(QtGui.QDialog):
     showNext = QtCore.pyqtSignal(int)
     showPrevious = QtCore.pyqtSignal(int)
     showNumber = QtCore.pyqtSignal(int)
-    
+
     def __init__(self, parent=None,minimum=1,maximum=1000):
         super(simpleDataPlot, self).__init__(parent)
         uic.loadUi("iint_simplePlot.ui", self)
