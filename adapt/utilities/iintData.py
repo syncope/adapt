@@ -130,6 +130,6 @@ class IintData():
         else:
             return None
 
-    def dump(self):
-        print(" [ INFO ] :: my id is  " + str(self._id))
-        print(" my motor: " + str(self._motor))
+    #~ def dump(self):
+        #~ print(" [ INFO ] :: my id is  " + str(self._id))
+        #~ print(" my motor: " + str(self._motor))
