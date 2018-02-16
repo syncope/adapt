@@ -304,7 +304,8 @@ class simpleDataPlot(QtGui.QDialog):
         self.scanIDspinbox.valueChanged.connect(self.showNumber.emit)
         self.showPreviousBtn.clicked.connect(self.showPrevious.emit)
         self.showNextBtn.clicked.connect(self.showNext.emit)
-
+        self.viewPart.scene().sigMouseClicked.connect(self.mouse_click)
+        
     def setMinimum(self, minimum):
         self.scanIDspinbox.setMinimum(minimum)
 
@@ -314,11 +315,17 @@ class simpleDataPlot(QtGui.QDialog):
     def plot(self, xdata, ydata, scanid):
         self.scanIDspinbox.setValue(scanid)
         self.viewPart.clear()
-        self.viewPart.plot(xdata, ydata, pen=None, symbol='+')
+        self._plot = self.viewPart.plot(xdata, ydata, pen=None, symbol='+')
 
     def addDespike(self, xdata, despikeData):
         self.viewPart.plot(xdata, despikeData, pen='y', symbol='o')
+
+    def mouse_click(self, mouseclick):
+        mousepos = self._plot.mapFromScene(mouseclick.pos())
+        xdata = mousepos.x()
+        ydata = mousepos.y()
         
+
 if __name__ == "__main__":
     import sys
     app = QtGui.QApplication(sys.argv)
