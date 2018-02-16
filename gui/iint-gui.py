@@ -55,6 +55,9 @@ class iintGUI(QtGui.QMainWindow):
         
         # pyqt helper stuff
         self._simpleImageView = simpleDataPlot(parent=self)
+        self._simpleImageView.showNext.connect(self.incrementCurrentScanID)
+        self._simpleImageView.showPrevious.connect(self.decrementCurrentScanID)
+        self._simpleImageView.showNumber.connect(self.setCurrentScanID)
 
         # the adapt processes
         self._specReader = specfilereader.specfilereader()
@@ -127,8 +130,10 @@ class iintGUI(QtGui.QMainWindow):
             newdata.setRaw(scan)
             newdata.setMotor(scan.getArray(self._motorname))
             self._dataKeeper[scanid] = newdata
-            # here the world looks fine
 
+        # create a sorted bookkeeping list of the scan ids  to allow easier handling
+        self._dKidlist = list(self._dataKeeper.keys())
+        self._dKidlist.sort()
         self.setCurrentScanID(exampleData.getScanNumber())
 
         # now set the texts and labels
@@ -170,17 +175,27 @@ class iintGUI(QtGui.QMainWindow):
         self._subtractBackground = not self._subtractBackground
 
     def viewSimple(self):
-        print("view simple: xdata is " + str(self._currentScan.getMotor()) + " ydata is " + str(self._currentScan.getObservable()) + " and id is: " + str(self._currentScan.getScanID()))
         self._simpleImageView.show()
-        #~ self.setCurrentScanID(699)
         self._simpleImageView.plot( xdata= self._currentScan.getMotor(), 
                                     ydata = self._currentScan.getObservable(),
                                     scanid= self._currentScan.getScanID())
 
     def setCurrentScanID(self, identifier):
         self._currentScan = self._dataKeeper[identifier]
-        print(" SCSI: of type: " + str(self._currentScan))
-        self._currentScan.dump()
+
+    def incrementCurrentScanID(self):
+        try:
+            self.setCurrentScanID(self._currentScan.getScanID() + 1)
+        except KeyError:
+            self.setCurrentScanID(self._dKidlist[0])
+        self.viewSimple()
+
+    def decrementCurrentScanID(self):
+        try:
+            self.setCurrentScanID(self._currentScan.getScanID() - 1)
+        except KeyError:
+            self.setCurrentScanID(self._dKidlist[-1])
+        self.viewSimple()
 
     def configureSpecReader(self):
         specReaderDict = { "filename" : self._file,
@@ -214,7 +229,7 @@ class iintGUI(QtGui.QMainWindow):
             obsData.addData("_rawdata", scan.getRaw())
             self._observableProc.execute(obsData)
             scan.setObservable(obsData.getData(self._observableName))
-            scan.setMotor(obsData)
+            scan.setMotor(obsData.getData(self._motorname))
             obsData.clearCurrent()
 
     def configureDespiker(self):
@@ -282,8 +297,15 @@ class simpleDataPlot(QtGui.QDialog):
         self.showPreviousBtn.clicked.connect(self.showPrevious.emit)
         self.showNextBtn.clicked.connect(self.showNext.emit)
 
+    def setMinimum(self, minimum):
+        self.scanIDspinbox.setMinimum(minimum)
+
+    def setMaximum(self, maximum):
+        self.scanIDspinbox.setMaximum(maximum)
+
     def plot(self, xdata, ydata, scanid):
         self.scanIDspinbox.setValue(scanid)
+        self.viewPart.clear()
         self.viewPart.plot(xdata, ydata, pen=None, symbol='+')
 
 if __name__ == "__main__":
