@@ -91,6 +91,7 @@ class iintGUI(QtGui.QMainWindow):
         self.observableCalcBtn.clicked.connect(self.calculateObservable)
 
         self.despikeCheckBox.stateChanged.connect(self.toggleDespiking)
+        self.applyDespikeBtn.clicked.connect(self.despike)
 
         self.observableVIEW.clicked.connect(self.viewSimple)
 
@@ -175,10 +176,15 @@ class iintGUI(QtGui.QMainWindow):
         self._subtractBackground = not self._subtractBackground
 
     def viewSimple(self):
+        self._simpleImageView.setMinimum(self._dKidlist[0])
+        self._simpleImageView.setMaximum(self._dKidlist[-1])
         self._simpleImageView.show()
         self._simpleImageView.plot( xdata= self._currentScan.getMotor(), 
                                     ydata = self._currentScan.getObservable(),
                                     scanid= self._currentScan.getScanID())
+        despike = self._currentScan.getDespiked()
+        if(despike is not None):
+            self._simpleImageView.addDespike(self._currentScan.getMotor(),despike )
 
     def setCurrentScanID(self, identifier):
         self._currentScan = self._dataKeeper[identifier]
@@ -246,6 +252,7 @@ class iintGUI(QtGui.QMainWindow):
             despData.addData(self._observableName, scan.getObservable())
             self._despiker.execute(despData)
             scan.setDespiked(despData.getData(self._processedObservableName))
+            despData.clearCurrent()
 
     def configureBKGselection(self):
         bkgSelDict = { "input" : [ self._processedObservableName, self._motorname ],
@@ -293,6 +300,7 @@ class simpleDataPlot(QtGui.QDialog):
         uic.loadUi("iint_simplePlot.ui", self)
         self.scanIDspinbox.setMinimum(minimum)
         self.scanIDspinbox.setMaximum(maximum)
+        self.scanIDspinbox.setKeyboardTracking(False)
         self.scanIDspinbox.valueChanged.connect(self.showNumber.emit)
         self.showPreviousBtn.clicked.connect(self.showPrevious.emit)
         self.showNextBtn.clicked.connect(self.showNext.emit)
@@ -308,6 +316,9 @@ class simpleDataPlot(QtGui.QDialog):
         self.viewPart.clear()
         self.viewPart.plot(xdata, ydata, pen=None, symbol='+')
 
+    def addDespike(self, xdata, despikeData):
+        self.viewPart.plot(xdata, despikeData, pen='y', symbol='o')
+        
 if __name__ == "__main__":
     import sys
     app = QtGui.QApplication(sys.argv)
