@@ -101,7 +101,7 @@ class IintData():
             return None
 
     def setBkgSubtracted(self,bkgsub):
-        self._backgroundSubtracted = bkg
+        self._backgroundSubtracted = bkgsub
         self._hasBKGsub = True
 
     def getBkgSubtracted(self):
