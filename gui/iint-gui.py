@@ -100,10 +100,10 @@ class iintGUI(QtGui.QMainWindow):
         self.bkgEndPointsSB.setKeyboardTracking(False)
         self.bkgEndPointsSB.valueChanged.connect(self.selectEndBKG)
         self.fitBKGbtn.clicked.connect(self.selectAndFitBackground)
+        self.subtractBkgCheckBox.stateChanged.connect(self.subtractBackground)
         
         # signal section
         # processing section
-        #~ self._simpleImageView.showDespiked.connect(print)
 
     def getAndOpenFile(self):
         self._file = QtGui.QFileDialog.getOpenFileName(self, 'Choose spec file', '.', "SPEC files (*.spc *.spe *.spec)")
@@ -284,7 +284,7 @@ class iintGUI(QtGui.QMainWindow):
             self._bkgFitter.execute(bkgData)
             scan.setBackground(bkgData.getData("bkgfitresult"))
             bkgData.clearCurrent()
-            scan.dump()
+        self.subtractBkgCheckBox.setDisabled(False)
 
     def configureBKGFitter(self):
         bkfFitDict = { "model" : { "linearModel": { "name" : "lin_"}},
@@ -293,9 +293,6 @@ class iintGUI(QtGui.QMainWindow):
                        "result": "bkgfitresult"}
         self._bkgFitter.setParameterValues(bkfFitDict)
 
-    def fitBackground(self):
-        self.selectBackground()
-
     def configureBKGDataGenerator(self):
         bkgGenDict = { "fitresult" : "bkgfitresult",
                         "xdata" :  "pth", # CHANGE!
@@ -303,11 +300,27 @@ class iintGUI(QtGui.QMainWindow):
         self._bkgValues.setParameterValues(bkgGenDict)
 
     def configureBKGSubtractor(self):
-        bkgSubtractDict =  { "input" : "despikedObservable",
+        bkgSubtractDict =  { "input" : self._processedObservableName,
                              "background" : "bkg",
                              "output" : "despikedSignal" }  # CHANGE!
         self._bkgSubtractor.setParameterValues(bkgSubtractDict)
 
+    def subtractBackground(self):
+        self.configureBKGDataGenerator()
+        self.configureBKGSubtractor()
+        
+        bkgData = processData.ProcessData()
+        self._bkgValues.initialize(bkgData)
+        self._bkgSubtractor.initialize(bkgData)
+        for scan in self._dataKeeper.values():
+            bkgData.addData("bkgfitresult", scan.getBackground())
+            bkgData.addData(self._motorname, scan.getMotor())
+            bkgData.addData(self._processedObservableName, scan.getDespiked())
+            self._bkgValues.execute(bkgData)
+            self._bkgSubtractor.execute(bkgData)
+            scan.setBkgSubtracted(bkgData.getData("despikedSignal"))
+            bkgData.clearCurrent()
+            
     def configureTrapezoidIntegrator(self):
         trapintDict = { "motor" : "pth", # CHANGE!
                         "observable" : "observable", # CHANGE!
@@ -343,7 +356,7 @@ class simpleDataPlot(QtGui.QDialog):
         self._plot = self.viewPart.plot(xdata, ydata, pen=None, symbol='+')
 
     def addDespike(self, xdata, despikeData):
-        self.viewPart.plot(xdata, despikeData, pen='y', symbol='o')
+        self.viewPart.plot(xdata, despikeData, pen=None, symbolPen='y', symbol='o')
 
     def mouse_click(self, mouseclick):
         mousepos = self._plot.mapFromScene(mouseclick.pos())
