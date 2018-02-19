@@ -382,7 +382,7 @@ class firstFitPanel(QtGui.QDialog):
         self.selectModelPushBtn.clicked.connect(self.selectCurrentModel)
         self.reftoplot = dataview
         self.reftoplot.mouseposition.connect(self.useMouseClick)
-        self.configDonePushBtn.clicked.connect(self.hideDialog)
+        #~ self.configDonePushBtn.clicked.connect(self.hideDialog)
         
     def showFitParamDialog(self):
         self._paramDialog.show()
