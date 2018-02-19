@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>437</width>
-    <height>774</height>
+    <width>529</width>
+    <height>727</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -843,20 +843,52 @@
              </widget>
             </item>
             <item>
+             <spacer name="horizontalSpacer_3">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
              <widget class="QSpinBox" name="bkgStartPointsSB"/>
             </item>
            </layout>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_9">
+           <layout class="QHBoxLayout" name="horizontalLayout_10">
             <item>
-             <widget class="QPushButton" name="fitBKGbtn">
+             <widget class="QLabel" name="label_7">
               <property name="text">
-               <string>Fit background</string>
+               <string>points at end</string>
               </property>
              </widget>
             </item>
+            <item>
+             <spacer name="horizontalSpacer_2">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="bkgEndPointsSB"/>
+            </item>
            </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_9"/>
           </item>
          </layout>
         </item>
@@ -876,18 +908,11 @@
         <item>
          <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_10">
-            <item>
-             <widget class="QLabel" name="label_7">
-              <property name="text">
-               <string>points at end</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSpinBox" name="bkgEndPointsSB"/>
-            </item>
-           </layout>
+           <widget class="QPushButton" name="fitBKGbtn">
+            <property name="text">
+             <string>Fit background</string>
+            </property>
+           </widget>
           </item>
           <item>
            <widget class="QCheckBox" name="subtractBkgCheckBox">
@@ -941,63 +966,9 @@
         <item>
          <widget class="QLabel" name="label_9">
           <property name="text">
-           <string>Signal:</string>
+           <string>Signal fitting:</string>
           </property>
          </widget>
-        </item>
-        <item>
-         <spacer name="horizontalSpacer_2">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <layout class="QVBoxLayout" name="verticalLayout_6">
-          <item>
-           <widget class="QCheckBox" name="signalFitFunctionOneCheckBox">
-            <property name="text">
-             <string>function 1</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QComboBox" name="sigFitModelOneCB"/>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <spacer name="horizontalSpacer_3">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <layout class="QVBoxLayout" name="verticalLayout_7">
-          <item>
-           <widget class="QCheckBox" name="signalFitFunctionTwoCheckBox">
-            <property name="text">
-             <string>function 2</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QComboBox" name="sigFitModelTwoCB"/>
-          </item>
-         </layout>
         </item>
         <item>
          <spacer name="horizontalSpacer_4">
@@ -1013,18 +984,11 @@
          </spacer>
         </item>
         <item>
-         <layout class="QVBoxLayout" name="verticalLayout_8">
-          <item>
-           <widget class="QCheckBox" name="signalFitFunctionThreeCheckBox">
-            <property name="text">
-             <string>function 3</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QComboBox" name="sigFitModelThreeCB"/>
-          </item>
-         </layout>
+         <widget class="QPushButton" name="openFitPanelPushBtn">
+          <property name="text">
+           <string>Open Fit Panel</string>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>
@@ -1296,7 +1260,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>437</width>
+     <width>529</width>
      <height>19</height>
     </rect>
    </property>

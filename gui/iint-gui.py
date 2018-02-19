@@ -58,6 +58,8 @@ class iintGUI(QtGui.QMainWindow):
         self._simpleImageView.showNext.connect(self.incrementCurrentScanID)
         self._simpleImageView.showPrevious.connect(self.decrementCurrentScanID)
         self._simpleImageView.showNumber.connect(self.setCurrentScanID)
+        self._fitPanel = firstFitPanel(parent=self, dataview=self._simpleImageView)
+
 
         # the adapt processes
         self._specReader = specfilereader.specfilereader()
@@ -103,6 +105,7 @@ class iintGUI(QtGui.QMainWindow):
         self.subtractBkgCheckBox.stateChanged.connect(self.subtractBackground)
         
         # signal section
+        self.openFitPanelPushBtn.clicked.connect(self.showFitPanel)
         # processing section
 
     def getAndOpenFile(self):
@@ -327,11 +330,15 @@ class iintGUI(QtGui.QMainWindow):
                         "output" : "trapint" }
         self._trapezoidIntegrator.setParameterValues(trapintDict)
 
+    def showFitPanel(self):
+        self._fitPanel.show()
+
 class simpleDataPlot(QtGui.QDialog):
     import pyqtgraph as pg
     showNext = QtCore.pyqtSignal(int)
     showPrevious = QtCore.pyqtSignal(int)
     showNumber = QtCore.pyqtSignal(int)
+    mouseposition = QtCore.pyqtSignal(float,float)
 
     def __init__(self, parent=None,minimum=1,maximum=1000):
         super(simpleDataPlot, self).__init__(parent)
@@ -353,16 +360,59 @@ class simpleDataPlot(QtGui.QDialog):
     def plot(self, xdata, ydata, scanid):
         self.scanIDspinbox.setValue(scanid)
         self.viewPart.clear()
-        self._plot = self.viewPart.plot(xdata, ydata, pen=None, symbol='+')
+        self._plot = self.viewPart.plot(xdata, ydata, pen=None, symbolPen='w', symbolBrush='w', symbol='+')
 
     def addDespike(self, xdata, despikeData):
-        self.viewPart.plot(xdata, despikeData, pen=None, symbolPen='y', symbol='o')
+        self.viewPart.plot(xdata, despikeData, pen=None, symbolPen='y', symbolBrush='y', symbol='o')
 
     def mouse_click(self, mouseclick):
         mousepos = self._plot.mapFromScene(mouseclick.pos())
         xdata = mousepos.x()
         ydata = mousepos.y()
+        self.mouseposition.emit(xdata, ydata)
+
+
+class firstFitPanel(QtGui.QDialog):
+    def __init__(self, parent=None, dataview=None):
+        super(firstFitPanel, self).__init__(parent)
+        uic.loadUi("fitpanel.ui", self)
+        self._paramDialog = gaussianModelFitParameterDialog()
+        self.configureModelPushBtn.clicked.connect(self.showFitParamDialog)
+        self.modelCB.addItems(list(curvefitting.FitModels.keys()))
+        self.selectModelPushBtn.clicked.connect(self.selectCurrentModel)
+        self.reftoplot = dataview
+        self.reftoplot.mouseposition.connect(self.useMouseClick)
+        self.configDonePushBtn.clicked.connect(self.hideDialog)
         
+    def showFitParamDialog(self):
+        self._paramDialog.show()
+
+
+    def selectCurrentModel(self):
+        self.currentModelName.setText(self.modelCB.currentText())
+
+    def useMouseClick(self, x, y):
+        print( " i have seen the truth at: " + str(x) + " // " + str(y))
+
+class gaussianModelFitParameterDialog(QtGui.QDialog):
+    pickPosition = QtCore.pyqtSignal(int)
+    parameterValues = QtCore.pyqtSignal(str, float, int, float, float)
+
+    def __init__(self, parent=None):
+        super(gaussianModelFitParameterDialog, self).__init__(parent)
+        uic.loadUi("gaussModelFitParameters.ui", self)
+        self.pickMeanAmplitudeBtn.clicked.connect(self.pickMeanAmplitude)
+        self.pickFWHMBtn.clicked.connect(self.pickFWHM)
+        self.configDonePushBtn.clicked.connect(self.returnParameterValues)
+    
+    def pickMeanAmplitude(self):
+        pass
+
+    def pickFWHM(self):
+        pass
+
+    def returnParameterValues(self):
+        pass
 
 if __name__ == "__main__":
     import sys
