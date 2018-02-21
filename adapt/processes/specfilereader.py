@@ -35,24 +35,18 @@ class specfilereader(IProcess):
 
         self._inPar = ProcessParameter("filename", str)
         self._outPar = ProcessParameter("outputdata", str)
-        self._startScanPar = ProcessParameter("startScan", int, -1, optional=True)
-        self._endScanPar = ProcessParameter("endScan", int, float('inf'), optional=True)
+        self._scanlistPar = ProcessParameter("scanlist", str, None, optional=True)
         self._stridePar = ProcessParameter("stride", int, 1, optional=True)
         self._parameters.add(self._inPar)
         self._parameters.add(self._outPar)
-        self._parameters.add(self._startScanPar)
-        self._parameters.add(self._endScanPar)
+        self._parameters.add(self._scanlistPar)
         self._parameters.add(self._stridePar)
-        self._selectedData = []
 
     def initialize(self, data):
-        self.data = dataHandler.DataHandler(self._inPar.get(), typehint="spec").getFileHandler().getAll()
-        self._start = self._startScanPar.get()
-        self._end = self._endScanPar.get()
+        self._scanlist = self._scanlistPar.get()
+        self.data = dataHandler.DataHandler(self._inPar.get(), typehint="spec").getFileHandler().getAll(self._scanlist)
         self._stride = self._stridePar.get()
-        self._selectData()
-        
-        self.dataIterator = iter(self._selectedData)
+        self.dataIterator = iter(self.data)
 
     def execute(self, data):
         # read next entry from spec file, 
@@ -69,11 +63,5 @@ class specfilereader(IProcess):
     def check(self, data):
         pass
 
-    def _selectData(self):
-        self._selectedData = []
-        for d in self.data:
-            if self._start <= d.getScanNumber() <= self._end:
-                self._selectedData.append(d)
-
-    def getSelectedData(self):
-        return self._selectedData
+    def getData(self):
+        return self.data

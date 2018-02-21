@@ -121,7 +121,7 @@ class iintGUI(QtGui.QMainWindow):
         
         # call the spec reader only to get the data of choice; this is stored as a list!
         self._specReader.initialize(processData.ProcessData())
-        theRawData = self._specReader.getSelectedData()
+        theRawData = self._specReader.getData()
 
         # to set the displayed columns etc. one element of the selected data is needed
         exampleData = theRawData[0]
@@ -211,9 +211,8 @@ class iintGUI(QtGui.QMainWindow):
 
     def configureSpecReader(self):
         specReaderDict = { "filename" : self._file,
-                           "startScan" : self.processingStartSB.value(),
-                           "endScan" : self.processingEndSB.value(),
-                           "stride" : self.processingStepSB.value(),
+                           "scanlist" : self.scanSelectionInput.text(),
+                           #~ "stride" : self.processingStepSB.value(),
                            "outputdata" : "_specfiledata" }
         self._specReader.setParameterValues(specReaderDict)
 

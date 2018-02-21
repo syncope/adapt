@@ -5,8 +5,7 @@ execlist: [ read, observable, despike, bkgselect, bkgfit, calcbkgpoints, bkgsubt
 
 read:
     type: specfilereader
-    startScan: 699
-    endScan: 740
+    scanlist: 699-740
     filename: "/home/rosem/iintplus/MnCo15.spc"
     outputdata: "data"
 
