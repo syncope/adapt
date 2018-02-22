@@ -400,8 +400,8 @@ class gaussianModelFitParameterDialog(QtGui.QDialog):
     def __init__(self, parent=None):
         super(gaussianModelFitParameterDialog, self).__init__(parent)
         uic.loadUi("gaussModelFitParameters.ui", self)
-        self.pickMeanAmplitudeBtn.clicked.connect(self.pickMeanAmplitude)
-        self.pickFWHMBtn.clicked.connect(self.pickFWHM)
+        #~ self.pickMeanAmplitudeBtn.clicked.connect(self.pickMeanAmplitude)
+        #~ self.pickFWHMBtn.clicked.connect(self.pickFWHM)
         self.configDonePushBtn.clicked.connect(self.returnParameterValues)
     
     def pickMeanAmplitude(self):
