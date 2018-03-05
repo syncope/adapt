@@ -29,8 +29,11 @@ class ProcessData():
         self.globaldata = {}
         self.currentdata = {}
 
-    def clearCurrent(self):
-        self.currentdata.clear()
+    def clearCurrent(self, name=None):
+        if name is None:
+            self.currentdata.clear()
+        else:
+            del self.currentdata[name]
 
     def clearAll(self):
         self.currentdata.clear()

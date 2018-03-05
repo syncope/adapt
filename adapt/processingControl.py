@@ -31,13 +31,13 @@ class ProcessingControl():
     def __init__(self):
         self._pBuilder = processBuilder.ProcessBuilder()
         self._data = processData.ProcessData()
-        self._masterExecutionlist = []
+        self._batchExecutionlist = []
 
     def getProcessTypeList(self):
         return self._pBuilder.getProcessTypeList()
 
     def resetList(self):
-        self._masterExecutionlist = []
+        self._batchExecutionlist = []
 
     def build(self, processConfig):
         # this is a potentially raw object
@@ -47,7 +47,7 @@ class ProcessingControl():
         pDefs = processConfig.getProcessDefinitions()
 
         for pname in execOrder:
-            self._masterExecutionlist.append( self._pBuilder.createProcessFromDictionary(pDefs[pname]) )
+            self._batchExecutionlist.append( self._pBuilder.createProcessFromDictionary(pDefs[pname]) )
 
     def execute(self):
         self._runInitialization()
@@ -55,18 +55,18 @@ class ProcessingControl():
         self._runFinalization()
 
     def _runInitialization(self):
-        for proc in self._masterExecutionlist:
+        for proc in self._batchExecutionlist:
             proc.initialize(self._data)
 
     def _runLoop(self):
         try:
             while(1):
-                for proc in self._masterExecutionlist:
+                for proc in self._batchExecutionlist:
                     proc.execute(self._data)
                 self._data.clearCurrent()
         except StopIteration:
             return
 
     def _runFinalization(self):
-        for proc in self._masterExecutionlist:
+        for proc in self._batchExecutionlist:
             proc.finalize(self._data)

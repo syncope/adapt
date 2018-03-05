@@ -54,11 +54,23 @@ class IProcess():
     def initialize(self, data):
         pass
 
+    def loopInitialize(self, datalist):
+        for elem in datalist:
+            self.initialize(elem)
+
     def execute(self, data):
         pass
 
+    def loopExecute(self, datalist):
+        for elem in datalist:
+            self.execute(elem)
+
     def finalize(self, data):
         pass
+
+    def loopFinalize(self, datalist):
+        for elem in datalist:
+            self.finalize(elem)
 
     def check(self, data):
         pass
