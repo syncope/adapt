@@ -26,15 +26,9 @@ class datainfo(IProcess):
     def __init__(self, ptype="datainfo"):
         super(datainfo, self).__init__(ptype)
 
-    def initialize(self, data):
-        pass
-
     def execute(self, data):
         data.info()
 
     def finalize(self, data):
         print("At the end of the run, the data info is:")
         data.info()
-
-    def check(self, data):
-        pass

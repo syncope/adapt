@@ -31,7 +31,7 @@ class backgroundsubtraction(IProcess):
         self._parameters.add(self._outPar)
         self._parameters.add(self._bkgPar)
 
-    def initialize(self, data):
+    def initialize(self):
         self._in = self._inPar.get()
         self._out = self._outPar.get()
         self._bkg = self._bkgPar.get()

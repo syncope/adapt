@@ -37,7 +37,7 @@ class curvefitting(IProcess):
         self._parameters.add(self._modelPar)
         self._parameters.add(self._resultPar)
 
-    def initialize(self, data):
+    def initialize(self):
         # first set up the fit model with the given information
         # the model is a map/dictionary:
         # first level of keys are the models

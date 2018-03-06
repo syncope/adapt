@@ -44,7 +44,7 @@ class subsequenceselection(IProcess):
                             "selectSection" : self._selectSection,
                            }
 
-    def initialize(self, data):
+    def initialize(self):
         self._inputs = self._inputsPar.get()
         self._output = self._outputPar.get()
         self._selectionmethods = self._selectionmethodsPar.get()

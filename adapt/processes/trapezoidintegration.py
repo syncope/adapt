@@ -36,7 +36,7 @@ class trapezoidintegration(IProcess):
         self._parameters.add(self._independentvarPar)
         self._parameters.add(self._outputPar)
 
-    def initialize(self, data):
+    def initialize(self):
         self._observable = self._observablePar.get()
         self._independentvar = self._independentvarPar.get()
         self._output = self._outputPar.get()

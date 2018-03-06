@@ -51,12 +51,8 @@ class IProcess():
     def getConfigGUI(self):
         pass
         
-    def initialize(self, data):
+    def initialize(self):
         pass
-
-    def loopInitialize(self, datalist):
-        for elem in datalist:
-            self.initialize(elem)
 
     def execute(self, data):
         pass

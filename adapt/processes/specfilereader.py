@@ -42,7 +42,7 @@ class specfilereader(IProcess):
         self._parameters.add(self._scanlistPar)
         self._parameters.add(self._stridePar)
 
-    def initialize(self, data):
+    def initialize(self):
         self._scanlist = self._scanlistPar.get()
         self.data = dataHandler.DataHandler(self._inPar.get(), typehint="spec").getFileHandler().getAll(self._scanlist)
         self._stride = self._stridePar.get()

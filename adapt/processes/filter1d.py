@@ -42,7 +42,7 @@ class filter1d(IProcess):
 
         self._methods = ["medianFilter", "p09despiking"]
 
-    def initialize(self, data):
+    def initialize(self):
         self._input = self._inputPar.get()
         self._output = self._outputPar.get()
         self._method = self._methodPar.get()

@@ -44,7 +44,7 @@ class sliceprojection(IProcess):
         self._parameters.add(self._horizontalPar)
         self._parameters.add(self._custommaskPar)
 
-    def initialize(self, data):
+    def initialize(self):
         self._input = self._inputPar.get()
         self._dataname = self._datanamePar.get()
         self._xmin = self._xminPar.get()

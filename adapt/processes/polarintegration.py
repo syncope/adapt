@@ -68,7 +68,7 @@ class polarintegration(IProcess):
         self._parmaters.add(self._rminPar)
         self._parmaters.add(self._rmaxPar)
 
-    def initialize(self, data):
+    def initialize(self):
         self._input = self._inputPar.get()
         self._dataname = self._datanamePar.get()
         self._nbins = self._nbinsPar.get()

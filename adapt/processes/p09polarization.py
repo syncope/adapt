@@ -41,7 +41,7 @@ class p09polarization(iProcess.IProcess):
     def __init__(self, procDef):
         super(p09polarization, self).__init__(procDef)
 
-    def initialize(self, data):
+    def initialize(self):
         pass
 
     def execute(self, data):

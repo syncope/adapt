@@ -50,7 +50,7 @@ class iintdefinition(IProcess):
         self._parameters.add(self._motorOutPar)
         self._parameters.add(self._idPar)
 
-    def initialize(self, data):
+    def initialize(self):
         self._input = self._inputPar.get()
         self._motor = self._motorPar.get()
         self._detector = self._detectorPar.get()

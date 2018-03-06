@@ -44,7 +44,7 @@ class iintfinalization(IProcess):
         self._parameters.add(self._pdfobservablePar)
         self._parameters.add(self._pdffitresultPar)
 
-    def initialize(self, data):
+    def initialize(self):
         self._names = self._namesPar.get()
         self._outfilename = self._outfilenamePar.get()
         self._pdfoutfilename = self._pdfoutfilenamePar.get()

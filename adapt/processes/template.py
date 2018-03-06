@@ -41,7 +41,7 @@ class $NAME(iProcess.IProcess):
     def __init__(self, procDef):
         super($NAME, self).__init__(procDef)
 
-    def initialize(self, data):
+    def initialize(self):
         pass
 
     def execute(self, data):

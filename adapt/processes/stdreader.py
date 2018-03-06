@@ -42,7 +42,7 @@ class stdreader(IProcess):
         self._parameters.add(self._pathPar)
         self._parameters.add(self._attributePar)
 
-    def initialize(self, data):
+    def initialize(self):
         self._input = self._inputPar.get()
         self._dataname = self._datanamePar.get()
         self._path = self._pathPar.get()

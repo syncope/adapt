@@ -32,7 +32,7 @@ class gendatafromfunction(IProcess):
         self._parameters.add(self._xdataPar)
         self._parameters.add(self._outputPar)
 
-    def initialize(self, data):
+    def initialize(self):
         self._fitresult = self._fitresultPar.get()
         self._xdata = self._xdataPar.get()
         self._output = self._outputPar.get()

@@ -29,11 +29,14 @@ class globaldata(IProcess):
         self._parameters.add(self._lambdaPar)
         self._parameters.add(self._sddPar)
         self._parameters.add(self._unitPar)
+        self._firstRun = True
 
-    def initialize(self, data):
-        self._lambda = self._lambdaPar.get()
-        self._sdd = self._sddPar.get()
-        self._unit = self._unitPar.get()
-        data.addGlobalData("wavelength", self._lambda)
-        data.addGlobalData("sdd", self._sdd)
-        data.addGlobalData("unit", self._unit)
+    def execute(self, data):
+        if self._firstRun:
+            self._lambda = self._lambdaPar.get()
+            self._sdd = self._sddPar.get()
+            self._unit = self._unitPar.get()
+            data.addGlobalData("wavelength", self._lambda)
+            data.addGlobalData("sdd", self._sdd)
+            data.addGlobalData("unit", self._unit)
+            self._firstRun = False
