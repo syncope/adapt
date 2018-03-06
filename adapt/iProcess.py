@@ -30,7 +30,7 @@ class IProcess():
         self._ptype = ptype
         self._parameters = processParameters.ProcessParameters()
         self._parametersset = False
-    
+
     def getProcessParameters(self):
         return self._parameters
 
@@ -44,13 +44,14 @@ class IProcess():
                     continue
                 else:
                     raise ValueError("Can't set process parameters, value of name " + str(pp.name) + " is missing.")
-    
+
     def _internalCheck(self):
         return True
 
     def getConfigGUI(self):
+        from PyQt4 import QtCore, QtGui, uic
         pass
-        
+
     def initialize(self):
         pass
 

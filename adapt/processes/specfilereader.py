@@ -65,3 +65,24 @@ class specfilereader(IProcess):
 
     def getData(self):
         return self.data
+
+    def getConfigGUI(self):
+        class sfrGUI(QtCore.QWidget):
+
+            def __init__(self, parent=None):
+                super(sfrGUI, self).__init__(parent)
+                uic.loadUi("ui/specfilereader.ui", self)            
+                self.chooseInputFileBtn.clicked.connect(self.getAndOpenFile)
+                self.nextBtn.clicked.connect(self.readDataFromFile)
+
+            def getAndOpenFile(self):
+                self._file = QtGui.QFileDialog.getOpenFileName(self, 'Choose spec file', '.', "SPEC files (*.spc *.spe *.spec)")
+                self.inputFileLE.setText(self._file)                       
+
+            def readDataFromFile(self):
+                specReaderDict = { "filename" : self._file,
+                                   "scanlist" : self.scanSelectionInput.text(),
+                                #~ "stride" : self.processingStepSB.value(),
+                                   "outputdata" : "_specfiledata" }
+                self.setParameterValues(specReaderDict)
+        return sfrGUI()
