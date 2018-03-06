@@ -41,6 +41,7 @@ class iintGUI(QtGui.QMainWindow):
     def __init__(self, parent=None):
         super(iintGUI, self).__init__(parent)
         uic.loadUi("iint-gui.ui", self)
+
         # placeholder objects:
         self._headerlist = []
         self._columnlist = []
@@ -50,16 +51,16 @@ class iintGUI(QtGui.QMainWindow):
         self._processedObservableName = "_processedobservable"
         self._motorname = ""
 
-        # the central data element for the gui; specific to iint!
-        self._dataKeeper = {}
-        
+        # still open thoughts: keep a complete list of the data objects
+        # i'd prefer the framework to handle it !?
+        self._dataList = []
+
         # pyqt helper stuff
         self._simpleImageView = simpleDataPlot(parent=self)
         self._simpleImageView.showNext.connect(self.incrementCurrentScanID)
         self._simpleImageView.showPrevious.connect(self.decrementCurrentScanID)
         self._simpleImageView.showNumber.connect(self.setCurrentScanID)
         self._fitPanel = firstFitPanel(parent=self, dataview=self._simpleImageView)
-
 
         # the adapt processes
         self._specReader = specfilereader.specfilereader()
@@ -70,9 +71,11 @@ class iintGUI(QtGui.QMainWindow):
         self._bkgValues = gendatafromfunction.gendatafromfunction()
         self._bkgSubtractor = backgroundsubtraction.backgroundsubtraction()
         self._trapezoidIntegrator = trapezoidintegration.trapezoidintegration()
-        
-        # the internal data pointer -- instance holder
-        self.data = processData.ProcessData()
+
+        # the internal data list
+        # debatable whether the data control should be outside adapt (...?) 
+        # it is not supposed to be accessed, but for pragma purposes it is
+        self.dataList = []
 
         # define the connections
         # input section:
@@ -103,7 +106,7 @@ class iintGUI(QtGui.QMainWindow):
         self.bkgEndPointsSB.valueChanged.connect(self.selectEndBKG)
         self.fitBKGbtn.clicked.connect(self.selectAndFitBackground)
         self.subtractBkgCheckBox.stateChanged.connect(self.subtractBackground)
-        
+
         # signal section
         self.openFitPanelPushBtn.clicked.connect(self.showFitPanel)
         # processing section
@@ -111,9 +114,9 @@ class iintGUI(QtGui.QMainWindow):
     def getAndOpenFile(self):
         self._file = QtGui.QFileDialog.getOpenFileName(self, 'Choose spec file', '.', "SPEC files (*.spc *.spe *.spec)")
         self.inputFileLE.setText(self._file)
-        
+
     def readDataFromFile(self):
-        # clear existing all data
+        # clear all existing data -- if new data is read, nothing is known
         self.data.clearAll()
         
         # steering of the spec reader:
@@ -138,7 +141,7 @@ class iintGUI(QtGui.QMainWindow):
             newdata.setMotor(scan.getArray(self._motorname))
             self._dataKeeper[scanid] = newdata
 
-        # create a sorted bookkeeping list of the scan ids  to allow easier handling
+        # create a sorted bookkeeping list of the scan ids to allow easier handling
         self._dKidlist = list(self._dataKeeper.keys())
         self._dKidlist.sort()
         self.setCurrentScanID(exampleData.getScanNumber())
@@ -322,7 +325,7 @@ class iintGUI(QtGui.QMainWindow):
             self._bkgSubtractor.execute(bkgData)
             scan.setBkgSubtracted(bkgData.getData("despikedSignal"))
             bkgData.clearCurrent()
-            
+
     def configureTrapezoidIntegrator(self):
         trapintDict = { "motor" : "pth", # CHANGE!
                         "observable" : "observable", # CHANGE!
@@ -370,7 +373,6 @@ class simpleDataPlot(QtGui.QDialog):
         ydata = mousepos.y()
         self.mouseposition.emit(xdata, ydata)
 
-
 class firstFitPanel(QtGui.QDialog):
     def __init__(self, parent=None, dataview=None):
         super(firstFitPanel, self).__init__(parent)
@@ -412,6 +414,32 @@ class gaussianModelFitParameterDialog(QtGui.QDialog):
 
     def returnParameterValues(self):
         pass
+
+
+#~ # iint - gui is an extremely customized program
+#~ # its first purpose is to provide a program usable to p09 users
+#~ # along these lines there a some general points to be learnt from it
+#~ 
+#~ 
+#~ fileread_out
+#~ observable_in
+#~ observable_out
+#~ despike_in
+#~ despike_out
+#~ bkgselect_in
+#~ bkgselect_out
+#~ bkgfit_in
+#~ bkgfit_out
+#~ calcbkgpoints_in
+#~ calcbkgpoints_out
+#~ bkgsubtract_in
+#~ bkgsubtract_out
+#~ curvefit_in
+#~ curvefit_out
+#~ trapintegrate_in
+#~ trapintegrate_out
+#~ polarizationanalysis
+#~ finalize_in
 
 if __name__ == "__main__":
     import sys
