@@ -58,7 +58,7 @@ class ProcessingControl():
 
     def _runInitialization(self):
         for proc in self._batchExecutionlist:
-            proc.initialize(self._data)
+            proc.initialize()
 
     def _runLoop(self):
         try:
