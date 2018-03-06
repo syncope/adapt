@@ -123,7 +123,7 @@ class iintGUI(QtGui.QMainWindow):
         self.configureSpecReader()
         
         # call the spec reader only to get the data of choice; this is stored as a list!
-        self._specReader.initialize(processData.ProcessData())
+        self._specReader.initialize()
         theRawData = self._specReader.getData()
 
         # to set the displayed columns etc. one element of the selected data is needed
@@ -156,6 +156,13 @@ class iintGUI(QtGui.QMainWindow):
         self.observableMonitorCB.addItems(self._currentdataLabels)
         self.observableTimeCB.addItems(self._currentdataLabels)
         self.observableAttFacCB.addItems(self._currentdataLabels)
+
+    def configureSpecReader(self):
+        specReaderDict = { "filename" : self._file,
+                           "scanlist" : self.scanSelectionInput.text(),
+                           #~ "stride" : self.processingStepSB.value(),
+                           "outputdata" : "_specfiledata" }
+        self._specReader.setParameterValues(specReaderDict)
 
     def defineOutput(self):
         self._outfile = QtGui.QFileDialog.getOpenFileName(self, 'Select output file', '.')
@@ -212,13 +219,6 @@ class iintGUI(QtGui.QMainWindow):
             self.setCurrentScanID(self._dKidlist[-1])
         self.viewSimple()
 
-    def configureSpecReader(self):
-        specReaderDict = { "filename" : self._file,
-                           "scanlist" : self.scanSelectionInput.text(),
-                           #~ "stride" : self.processingStepSB.value(),
-                           "outputdata" : "_specfiledata" }
-        self._specReader.setParameterValues(specReaderDict)
-
     def configureObservable(self):
         observableDict = { "input" : "_rawdata",
                            "motor_column" : self._motorname,
@@ -238,7 +238,7 @@ class iintGUI(QtGui.QMainWindow):
     def calculateObservable(self):
         self.configureObservable()
         obsData = processData.ProcessData()
-        self._observableProc.initialize(obsData)
+        self._observableProc.initialize()
         for scan in self._dataKeeper.values():
             obsData.addData("_rawdata", scan.getRaw())
             self._observableProc.execute(obsData)
@@ -255,7 +255,7 @@ class iintGUI(QtGui.QMainWindow):
     def despike(self):
         self.configureDespiker()
         despData = processData.ProcessData()
-        self._despiker.initialize(despData)
+        self._despiker.initialize()
         for scan in self._dataKeeper.values():
             despData.addData(self._observableName, scan.getObservable())
             self._despiker.execute(despData)
@@ -280,8 +280,8 @@ class iintGUI(QtGui.QMainWindow):
         self.configureBKGselection()
         self.configureBKGFitter()
         bkgData = processData.ProcessData()
-        self._bkgSelector.initialize(bkgData)
-        self._bkgFitter.initialize(bkgData)
+        self._bkgSelector.initialize()
+        self._bkgFitter.initialize()
         for scan in self._dataKeeper.values():
             bkgData.addData(self._processedObservableName, scan.getDespiked())
             bkgData.addData(self._motorname, scan.getMotor())
@@ -315,8 +315,8 @@ class iintGUI(QtGui.QMainWindow):
         self.configureBKGSubtractor()
         
         bkgData = processData.ProcessData()
-        self._bkgValues.initialize(bkgData)
-        self._bkgSubtractor.initialize(bkgData)
+        self._bkgValues.initialize()
+        self._bkgSubtractor.initialize()
         for scan in self._dataKeeper.values():
             bkgData.addData("bkgfitresult", scan.getBackground())
             bkgData.addData(self._motorname, scan.getMotor())

@@ -29,9 +29,14 @@ class InteractiveProcessingControl():
 
     def __init__(self):
         self._procControl = processingControl.ProcessingControl()
-
+        self._dataList = []
+        self._processList = []
+        
     def getProcessTypeList(self):
         return self._procControl.getProcessTypeList()
+
+    def getDataList(self):
+        return self._dataList
 
 #~ 
     #~ def build(self, processConfig):
