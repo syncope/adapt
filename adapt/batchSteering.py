@@ -17,12 +17,13 @@
 # Boston, MA  02110-1301, USA.
 
 # the entry point of the calling external binary
+# a severe shortcut to all internal functionality -- it binds all elements
 
 from . import configurationHandler
 from . import processingControl
 from . import processingConfiguration
 
-class Steering():
+class BatchSteering():
 
     def __init__(self):
         self._cfghandler = configurationHandler.ConfigurationHandler()

@@ -22,12 +22,12 @@
 
 import argparse
 try:
-    import adapt.steering as controller
+    import adapt.batchSteering as controller
 except ImportError("[adapt] library not found. Exiting!"):
     exit()
 
 def serialExecution(filename):
-    control = controller.Steering()
+    control = controller.BatchSteering()
     
     # parse the config file
     control.load(filename)

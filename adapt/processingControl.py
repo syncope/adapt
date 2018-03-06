@@ -19,7 +19,7 @@
 # potentially the central control class
 # it instantiates processes, keeps the master list of execution
 # and owns the central instance of the data object (!)
-# maybe presumably it needs a better name
+# presumably it needs a better name
 
 
 from . import iProcess
@@ -27,27 +27,30 @@ from . import processData
 from . import processBuilder
 
 class ProcessingControl():
+    '''The central control object for batch processing.
+       It holds the elements to build processes from their description,
+       the list of processes to be run and the central data exchange object.'''
 
     def __init__(self):
-        self._pBuilder = processBuilder.ProcessBuilder()
+        self._procBuilder = processBuilder.ProcessBuilder()
         self._data = processData.ProcessData()
         self._batchExecutionlist = []
 
     def getProcessTypeList(self):
-        return self._pBuilder.getProcessTypeList()
+        return self._procBuilder.getProcessTypeList()
 
     def resetList(self):
         self._batchExecutionlist = []
 
     def build(self, processConfig):
         # this is a potentially raw object
-        # dismantle and check before instantiating anything!
+        # TODO: dismantle and check before instantiating anything!
  
         execOrder = processConfig.getOrderOfExecution()
         pDefs = processConfig.getProcessDefinitions()
 
         for pname in execOrder:
-            self._batchExecutionlist.append( self._pBuilder.createProcessFromDictionary(pDefs[pname]) )
+            self._batchExecutionlist.append( self._procBuilder.createProcessFromDictionary(pDefs[pname]) )
 
     def execute(self):
         self._runInitialization()
