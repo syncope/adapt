@@ -45,7 +45,6 @@ class ProcessingControl():
     def build(self, processConfig):
         # this is a potentially raw object
         # TODO: dismantle and check before instantiating anything!
- 
         execOrder = processConfig.getOrderOfExecution()
         pDefs = processConfig.getProcessDefinitions()
 
