@@ -22,17 +22,17 @@
 import sys
 from PyQt4 import QtCore, QtGui, uic
 
-from adapt import processingConfiguration
+from adapt import interactiveProcessingControl
 from adapt.processes import specfilereader
-from adapt.processes import iintdefinition
-from adapt.processes import filter1d
-from adapt.processes import subsequenceselection
-from adapt.processes import curvefitting
-from adapt.processes import gendatafromfunction
-from adapt.processes import backgroundsubtraction
-from adapt.processes import trapezoidintegration
-from adapt import processData
-from adapt.utilities import iintData
+#~ from adapt.processes import iintdefinition
+#~ from adapt.processes import filter1d
+#~ from adapt.processes import subsequenceselection
+#~ from adapt.processes import curvefitting
+#~ from adapt.processes import gendatafromfunction
+#~ from adapt.processes import backgroundsubtraction
+#~ from adapt.processes import trapezoidintegration
+#~ from adapt import processData
+#~ from adapt.utilities import iintData
 
 __version__ ="0.0.1alpha"
 
@@ -42,40 +42,29 @@ class iintGUI(QtGui.QMainWindow):
         super(iintGUI, self).__init__(parent)
         uic.loadUi("iint-gui.ui", self)
 
-        # placeholder objects:
-        self._headerlist = []
-        self._columnlist = []
-        self._despike = False
-        self._subtractBackground = False
-        self._observableName = "_observable"
-        self._processedObservableName = "_processedobservable"
+        # the steering helper object
+        self._control = interactiveProcessingControl.InteractiveProcessingControl()
+
+        # the core independent variable in iint:
         self._motorname = ""
 
-        # still open thoughts: keep a complete list of the data objects
-        # i'd prefer the framework to handle it !?
-        self._dataList = []
+        # the adapt processes
+        self._specReaderGUI = specfilereader.specfilereaderGUI()
+        #~ self._observableProc = iintdefinition.iintdefinition()
+        #~ self._despiker = filter1d.filter1d()
+        #~ self._bkgSelector = subsequenceselection.subsequenceselection()
+        #~ self._bkgFitter = curvefitting.curvefitting()
+        #~ self._bkgValues = gendatafromfunction.gendatafromfunction()
+        #~ self._bkgSubtractor = backgroundsubtraction.backgroundsubtraction()
+        #~ self._trapezoidIntegrator = trapezoidintegration.trapezoidintegration()
+        #~ self._finalizer = iintfinalization.iintfinalization()
 
         # pyqt helper stuff
-        self._simpleImageView = simpleDataPlot(parent=self)
-        self._simpleImageView.showNext.connect(self.incrementCurrentScanID)
-        self._simpleImageView.showPrevious.connect(self.decrementCurrentScanID)
-        self._simpleImageView.showNumber.connect(self.setCurrentScanID)
-        self._fitPanel = firstFitPanel(parent=self, dataview=self._simpleImageView)
-
-        # the adapt processes
-        self._specReader = specfilereader.specfilereader()
-        self._observableProc = iintdefinition.iintdefinition()
-        self._despiker = filter1d.filter1d()
-        self._bkgSelector = subsequenceselection.subsequenceselection()
-        self._bkgFitter = curvefitting.curvefitting()
-        self._bkgValues = gendatafromfunction.gendatafromfunction()
-        self._bkgSubtractor = backgroundsubtraction.backgroundsubtraction()
-        self._trapezoidIntegrator = trapezoidintegration.trapezoidintegration()
-
-        # the internal data list
-        # debatable whether the data control should be outside adapt (...?) 
-        # it is not supposed to be accessed, but for pragma purposes it is
-        self.dataList = []
+        #~ self._simpleImageView = simpleDataPlot(parent=self)
+        #~ self._simpleImageView.showNext.connect(self.incrementCurrentScanID)
+        #~ self._simpleImageView.showPrevious.connect(self.decrementCurrentScanID)
+        #~ self._simpleImageView.showNumber.connect(self.setCurrentScanID)
+        #~ self._fitPanel = firstFitPanel(parent=self, dataview=self._simpleImageView)
 
         # define the connections
         # input section:
@@ -160,7 +149,6 @@ class iintGUI(QtGui.QMainWindow):
     def configureSpecReader(self):
         specReaderDict = { "filename" : self._file,
                            "scanlist" : self.scanSelectionInput.text(),
-                           #~ "stride" : self.processingStepSB.value(),
                            "outputdata" : "_specfiledata" }
         self._specReader.setParameterValues(specReaderDict)
 
