@@ -19,6 +19,7 @@
 from . import processData
 from . import processParameters
 from .processParameters import ProcessParameter
+from PyQt4 import QtCore, QtGui, uic
 
 '''This is the abstract base class of a user programmable process.
 It defines functions that have to be present in any derived process.
@@ -49,7 +50,6 @@ class IProcess():
         return True
 
     def getConfigGUI(self):
-        from PyQt4 import QtCore, QtGui, uic
         pass
 
     def initialize(self):
