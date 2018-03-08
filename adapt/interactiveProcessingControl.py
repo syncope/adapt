@@ -21,6 +21,8 @@
 
 from . import processingControl
 from . import processData
+from . import processBuilder
+
 
 class InteractiveProcessingControl():
     '''The central control object for interactive processing.
