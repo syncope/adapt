@@ -67,22 +67,31 @@ class specfilereader(IProcess):
         return self.data
 
     def getConfigGUI(self):
-        class sfrGUI(QtCore.QWidget):
+        return specfilereaderGUI()
 
-            def __init__(self, parent=None):
-                super(sfrGUI, self).__init__(parent)
-                uic.loadUi("ui/specfilereader.ui", self)            
-                self.chooseInputFileBtn.clicked.connect(self.getAndOpenFile)
-                self.nextBtn.clicked.connect(self.readDataFromFile)
 
-            def getAndOpenFile(self):
-                self._file = QtGui.QFileDialog.getOpenFileName(self, 'Choose spec file', '.', "SPEC files (*.spc *.spe *.spec)")
-                self.inputFileLE.setText(self._file)                       
+class specfilereaderGUI(QtGui.QWidget):
+    execute = QtCore.pyqtSignal(int)
 
-            def readDataFromFile(self):
-                specReaderDict = { "filename" : self._file,
-                                   "scanlist" : self.scanSelectionInput.text(),
-                                #~ "stride" : self.processingStepSB.value(),
-                                   "outputdata" : "_specfiledata" }
-                self.setParameterValues(specReaderDict)
-        return sfrGUI()
+    def __init__(self, parent=None):
+        super(specfilereaderGUI, self).__init__(parent)
+        uic.loadUi("specfilereader.ui", self)
+        self.chooseInputFileBtn.clicked.connect(self.getAndOpenFile)
+        self.okBtn.clicked.connect(self.emittit)
+        self._specReaderDict = {}
+
+    def getAndOpenFile(self):
+        self._file = QtGui.QFileDialog.getOpenFileName(self, 'Choose spec file', '.', "SPEC files (*.spc *.spe *.spec)")
+        self.inputFileLE.setText(self._file)
+
+    def getParameterDict(self):
+        return self._specReaderDict
+
+    def setParameterDict(self, paramDict):
+         self._specReaderDict = paramDict
+
+    def emittit(self):
+        self._specReaderDict["filename"] =  self._file
+        self._specReaderDict["scanlist"] = self.scanSelectionInput.text()
+        self._specReaderDict["outputdata"] = "_specfiledata"
+        self.execute.emit(1)
