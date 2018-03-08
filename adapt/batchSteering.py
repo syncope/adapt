@@ -32,7 +32,7 @@ class BatchSteering():
 
     def load(self, filename):
         self._processingConfig = self._cfghandler.loadConfig(filename)
-        self.setConfig()
+        self.createProcessingConfig()
 
     def write(self, filename):
         self._cfghandler.writeConfig(filename, self._processingConfig)
@@ -40,7 +40,7 @@ class BatchSteering():
     def process(self):
         self._control.execute()
 
-    def setConfig(self):
+    def createProcessingConfig(self):
         self._control.resetList()
         self._control.build(self._processingConfig)        
 
