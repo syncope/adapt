@@ -71,7 +71,7 @@ class specfilereader(IProcess):
 
 
 class specfilereaderGUI(QtGui.QWidget):
-    execute = QtCore.pyqtSignal(int)
+    pDict = QtCore.pyqtSignal(dict)
 
     def __init__(self, parent=None):
         super(specfilereaderGUI, self).__init__(parent)
@@ -94,7 +94,8 @@ class specfilereaderGUI(QtGui.QWidget):
          self._specReaderDict = paramDict
 
     def emittit(self):
+        self._specReaderDict["type"] = "specfilereader"
         self._specReaderDict["filename"] =  self._file
         self._specReaderDict["scanlist"] = self.scanSelectionInput.text()
         self._specReaderDict["outputdata"] = "_specfiledata"
-        self.execute.emit(1)
+        self.pDict.emit(self._specReaderDict)

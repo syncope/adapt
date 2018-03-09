@@ -50,15 +50,19 @@ class iintGUI(QtGui.QMainWindow):
     
         self._tasklist = [ chooseConfiguration(),
                            specfilereader.specfilereaderGUI(),
-                           observableDefinition()]
+                           observableDefinition(),
+                           backgroundHandling()]
         for task in self._tasklist:
             self.listWidget.addItem(task.windowTitle())
             self.stackedWidget.addWidget(task)
-        self.listWidget.itemClicked.connect(self.showit)
-    
-    def showit(self, item):
-        pass
+            try:
+                task.pDict.connect(self.doMagic)
+            except AttributeError:
+                print("the task has no pDict")
 
+    def doMagic(self, pDict):
+        print(" magic in the making: " + str(pDict))
+        
         #~ self._observableProc = iintdefinition.iintdefinition()
         #~ self._despiker = filter1d.filter1d()
         #~ self._bkgSelector = subsequenceselection.subsequenceselection()
@@ -453,6 +457,12 @@ class observableDefinition(QtGui.QWidget):
         vlayout.addWidget(iintdefinition.iintdefinitionGUI())
         vlayout.addWidget(filter1d.filter1dGUI())
         self.setLayout(vlayout)
+
+class backgroundHandling(QtGui.QWidget):
+    
+    def __init__(self, parent=None):
+        super(backgroundHandling, self).__init__(parent)
+        uic.loadUi("linearbackground.ui", self)
 
 if __name__ == "__main__":
     import sys
