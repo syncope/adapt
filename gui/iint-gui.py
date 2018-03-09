@@ -24,8 +24,8 @@ from PyQt4 import QtCore, QtGui, uic
 
 from adapt import interactiveProcessingControl
 from adapt.processes import specfilereader
-#~ from adapt.processes import iintdefinition
-#~ from adapt.processes import filter1d
+from adapt.processes import iintdefinition
+from adapt.processes import filter1d
 #~ from adapt.processes import subsequenceselection
 #~ from adapt.processes import curvefitting
 #~ from adapt.processes import gendatafromfunction
@@ -49,7 +49,8 @@ class iintGUI(QtGui.QMainWindow):
         self._motorname = ""
     
         self._tasklist = [ chooseConfiguration(),
-                           specfilereader.specfilereaderGUI() ]
+                           specfilereader.specfilereaderGUI(),
+                           observableDefinition()]
         for task in self._tasklist:
             self.listWidget.addItem(task.windowTitle())
             self.stackedWidget.addWidget(task)
@@ -438,10 +439,20 @@ class gaussianModelFitParameterDialog(QtGui.QDialog):
 #~ finalize_in
 
 class chooseConfiguration(QtGui.QWidget):
-    
+
     def __init__(self, parent=None):
         super(chooseConfiguration, self).__init__(parent)
         uic.loadUi("configurationChoice.ui", self)
+
+class observableDefinition(QtGui.QWidget):
+
+    def __init__(self, parent=None):
+        super(observableDefinition, self).__init__(parent)
+        self.setWindowTitle("Observable definition")
+        vlayout = QtGui.QVBoxLayout()
+        vlayout.addWidget(iintdefinition.iintdefinitionGUI())
+        vlayout.addWidget(filter1d.filter1dGUI())
+        self.setLayout(vlayout)
 
 if __name__ == "__main__":
     import sys

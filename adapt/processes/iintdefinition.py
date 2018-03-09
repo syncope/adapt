@@ -96,6 +96,38 @@ class iintdefinition(IProcess):
         pass
 
 
+class iintdefinitionGUI(QtGui.QWidget):
+    execute = QtCore.pyqtSignal(int)
+
+    def __init__(self, parent=None):
+        super(iintdefinitionGUI, self).__init__(parent)
+        import os
+        dir_path = os.path.dirname(os.path.realpath(__file__)) + "/"
+        formfile = os.path.join(dir_path, "ui/iintdefinition.ui")
+        uic.loadUi(formfile, self)
+        #~ self.observableDetectorCB.activated.connect(self.setObservable)
+        #~ self.observableMonitorCB.activated.connect(self.setMonitor)
+        #~ self.observableTimeCB.activated.connect(self.setTime)
+        #~ self._useAttenuationFactor = False
+        #~ self.observableAttFaccheck.stateChanged.connect(self.toggleAttFac)
+        #~ self.observableAttFacCB.setDisabled(True)
+        #~ self.observableAttFacCB.activated.connect(self.setAttFac)
+        #~ self.observableCalcBtn.clicked.connect(self.calculateObservable)
+        #~ self.despikeCheckBox.stateChanged.connect(self.toggleDespiking)
+        #~ self.applyDespikeBtn.clicked.connect(self.despike)
+        self._iintDefDict = {}
+
+    def getParameterDict(self):
+        return self._iintDefDict
+
+    def setParameterDict(self, paramDict):
+         self._iintDefDict = paramDict
+
+    def emittit(self):
+        #~ self._specReaderDict["filename"] =  self._file
+        #~ self._specReaderDict["scanlist"] = self.scanSelectionInput.text()
+        #~ self._specReaderDict["outputdata"] = "_specfiledata"
+        self.execute.emit(1)
 
 
 

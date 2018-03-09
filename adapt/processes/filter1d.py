@@ -109,3 +109,13 @@ class filter1d(IProcess):
             return inputarr
         else:
             return medianfilter1d(inputarr)
+
+class filter1dGUI(QtGui.QWidget):
+    execute = QtCore.pyqtSignal(int)
+
+    def __init__(self, parent=None):
+        super(filter1dGUI, self).__init__(parent)
+        import os
+        dir_path = os.path.dirname(os.path.realpath(__file__)) + "/"
+        formfile = os.path.join(dir_path, "ui/filter1d.ui")
+        uic.loadUi(formfile, self)
