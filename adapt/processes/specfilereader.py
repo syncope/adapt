@@ -75,7 +75,10 @@ class specfilereaderGUI(QtGui.QWidget):
 
     def __init__(self, parent=None):
         super(specfilereaderGUI, self).__init__(parent)
-        uic.loadUi("specfilereader.ui", self)
+        import os
+        dir_path = os.path.dirname(os.path.realpath(__file__)) + "/"
+        formfile = os.path.join(dir_path, "ui/specfilereader.ui")
+        uic.loadUi(formfile, self)
         self.chooseInputFileBtn.clicked.connect(self.getAndOpenFile)
         self.okBtn.clicked.connect(self.emittit)
         self._specReaderDict = {}

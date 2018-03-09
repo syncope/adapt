@@ -40,16 +40,24 @@ class iintGUI(QtGui.QMainWindow):
     
     def __init__(self, parent=None):
         super(iintGUI, self).__init__(parent)
-        uic.loadUi("iint-gui.ui", self)
+        uic.loadUi("iint_main.ui", self)
 
         # the steering helper object
         self._control = interactiveProcessingControl.InteractiveProcessingControl()
 
         # the core independent variable in iint:
         self._motorname = ""
+    
+        self._tasklist = [ chooseConfiguration(),
+                           specfilereader.specfilereaderGUI() ]
+        for task in self._tasklist:
+            self.listWidget.addItem(task.windowTitle())
+            self.stackedWidget.addWidget(task)
+        self.listWidget.itemClicked.connect(self.showit)
+    
+    def showit(self, item):
+        pass
 
-        # the adapt processes
-        self._specReaderGUI = specfilereader.specfilereaderGUI()
         #~ self._observableProc = iintdefinition.iintdefinition()
         #~ self._despiker = filter1d.filter1d()
         #~ self._bkgSelector = subsequenceselection.subsequenceselection()
@@ -68,37 +76,37 @@ class iintGUI(QtGui.QMainWindow):
 
         # define the connections
         # input section:
-        self.chooseInputFileBtn.clicked.connect(self.getAndOpenFile)
-        self.dataSelectionBtn.clicked.connect(self.readDataFromFile)
-
-        # output section
-        self.chooseOutputFileBtn.clicked.connect(self.defineOutput)
-
-        # observable section
-        self.observableDetectorCB.activated.connect(self.setObservable)
-        self.observableMonitorCB.activated.connect(self.setMonitor)
-        self.observableTimeCB.activated.connect(self.setTime)
-        self._useAttenuationFactor = False
-        self.observableAttFaccheck.stateChanged.connect(self.toggleAttFac)
-        self.observableAttFacCB.setDisabled(True)
-        self.observableAttFacCB.activated.connect(self.setAttFac)
-        self.observableCalcBtn.clicked.connect(self.calculateObservable)
-        self.despikeCheckBox.stateChanged.connect(self.toggleDespiking)
-        self.applyDespikeBtn.clicked.connect(self.despike)
-        self.observableVIEW.clicked.connect(self.viewSimple)
-
-        # background section
-        self.subtractBkgCheckBox.stateChanged.connect(self.toggleBKGsubtraction)
-        self.bkgStartPointsSB.setKeyboardTracking(False)
-        self.bkgStartPointsSB.valueChanged.connect(self.selectStartBKG)
-        self.bkgEndPointsSB.setKeyboardTracking(False)
-        self.bkgEndPointsSB.valueChanged.connect(self.selectEndBKG)
-        self.fitBKGbtn.clicked.connect(self.selectAndFitBackground)
-        self.subtractBkgCheckBox.stateChanged.connect(self.subtractBackground)
-
-        # signal section
-        self.openFitPanelPushBtn.clicked.connect(self.showFitPanel)
-        # processing section
+        #~ self.chooseInputFileBtn.clicked.connect(self.getAndOpenFile)
+        #~ self.dataSelectionBtn.clicked.connect(self.readDataFromFile)
+#~ 
+        #~ # output section
+        #~ self.chooseOutputFileBtn.clicked.connect(self.defineOutput)
+#~ 
+        #~ # observable section
+        #~ self.observableDetectorCB.activated.connect(self.setObservable)
+        #~ self.observableMonitorCB.activated.connect(self.setMonitor)
+        #~ self.observableTimeCB.activated.connect(self.setTime)
+        #~ self._useAttenuationFactor = False
+        #~ self.observableAttFaccheck.stateChanged.connect(self.toggleAttFac)
+        #~ self.observableAttFacCB.setDisabled(True)
+        #~ self.observableAttFacCB.activated.connect(self.setAttFac)
+        #~ self.observableCalcBtn.clicked.connect(self.calculateObservable)
+        #~ self.despikeCheckBox.stateChanged.connect(self.toggleDespiking)
+        #~ self.applyDespikeBtn.clicked.connect(self.despike)
+        #~ self.observableVIEW.clicked.connect(self.viewSimple)
+#~ 
+        #~ # background section
+        #~ self.subtractBkgCheckBox.stateChanged.connect(self.toggleBKGsubtraction)
+        #~ self.bkgStartPointsSB.setKeyboardTracking(False)
+        #~ self.bkgStartPointsSB.valueChanged.connect(self.selectStartBKG)
+        #~ self.bkgEndPointsSB.setKeyboardTracking(False)
+        #~ self.bkgEndPointsSB.valueChanged.connect(self.selectEndBKG)
+        #~ self.fitBKGbtn.clicked.connect(self.selectAndFitBackground)
+        #~ self.subtractBkgCheckBox.stateChanged.connect(self.subtractBackground)
+#~ 
+        #~ # signal section
+        #~ self.openFitPanelPushBtn.clicked.connect(self.showFitPanel)
+        #~ # processing section
 
     def getAndOpenFile(self):
         self._file = QtGui.QFileDialog.getOpenFileName(self, 'Choose spec file', '.', "SPEC files (*.spc *.spe *.spec)")
@@ -428,6 +436,12 @@ class gaussianModelFitParameterDialog(QtGui.QDialog):
 #~ trapintegrate_out
 #~ polarizationanalysis
 #~ finalize_in
+
+class chooseConfiguration(QtGui.QWidget):
+    
+    def __init__(self, parent=None):
+        super(chooseConfiguration, self).__init__(parent)
+        uic.loadUi("configurationChoice.ui", self)
 
 if __name__ == "__main__":
     import sys
