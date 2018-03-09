@@ -33,10 +33,10 @@ class iintdefinition(IProcess):
         self._monitorPar = ProcessParameter("monitor_column", str)
         self._exposure_timePar = ProcessParameter("exposureTime_column", str)
         self._attfacPar = ProcessParameter("attenuationFactor_column", str, optional=True)
-        self._trackedstuffPar = ProcessParameter("columns_log", list)
-        self._tracked_headersPar = ProcessParameter("headers_log", list)
+        #~ self._trackedstuffPar = ProcessParameter("columns_log", list)
+        #~ self._tracked_headersPar = ProcessParameter("headers_log", list)
         self._observableoutputPar = ProcessParameter("observableoutput", str)
-        self._motorOutPar = ProcessParameter("motoroutput", str)
+        #~ self._motorOutPar = ProcessParameter("motoroutput", str)
         self._idPar = ProcessParameter("id", str)
         self._parameters.add(self._inputPar)
         self._parameters.add(self._motorPar)
@@ -44,10 +44,10 @@ class iintdefinition(IProcess):
         self._parameters.add(self._monitorPar)
         self._parameters.add(self._exposure_timePar)
         self._parameters.add(self._attfacPar)
-        self._parameters.add(self._trackedstuffPar)
-        self._parameters.add(self._tracked_headersPar)
+        #~ self._parameters.add(self._trackedstuffPar)
+        #~ self._parameters.add(self._tracked_headersPar)
         self._parameters.add(self._observableoutputPar)
-        self._parameters.add(self._motorOutPar)
+        #~ self._parameters.add(self._motorOutPar)
         self._parameters.add(self._idPar)
 
     def initialize(self):
@@ -57,10 +57,10 @@ class iintdefinition(IProcess):
         self._monitor =self._monitorPar.get()
         self._exposure_time = self._exposure_timePar.get()
         self._attfac = self._attfacPar.get()
-        self._trackedstuff = self._trackedstuffPar.get()
-        self._tracked_headers = self._tracked_headersPar.get()
+        #~ self._trackedstuff = self._trackedstuffPar.get()
+        #~ self._tracked_headers = self._tracked_headersPar.get()
         self._observableoutput = self._observableoutputPar.get()
-        self._motorOut = self._motorOutPar.get()
+        #~ self._motorOut = self._motorOutPar.get()
         self._id = self._idPar.get()
 
     def execute(self, data):
@@ -77,13 +77,13 @@ class iintdefinition(IProcess):
 
         observable = detector*mean_monitor*attenfac/monitor/time
         data.addData(self._observableoutput, observable)
-        data.addData(self._motorOut, motor)
-        trackedcolumns = [ datum.getArray(name) for name in self._trackedstuff ]
+        #~ data.addData(self._motorOut, motor)
+        #~ trackedcolumns = [ datum.getArray(name) for name in self._trackedstuff ]
 
-        for key in self._trackedstuff:
-            data.addData(key, datum.getArray(key))
-        for key in self._tracked_headers:
-            data.addData(key, datum.getCustomVar(key))
+        #~ for key in self._trackedstuff:
+            #~ data.addData(key, datum.getArray(key))
+        #~ for key in self._tracked_headers:
+            #~ data.addData(key, datum.getCustomVar(key))
         if self._id == "scannumber":
             data.addData(self._id, datum.getScanNumber())
         else:
@@ -97,7 +97,7 @@ class iintdefinition(IProcess):
 
 
 class iintdefinitionGUI(QtGui.QWidget):
-    execute = QtCore.pyqtSignal(int)
+    pDict = QtCore.pyqtSignal(dict)
 
     def __init__(self, parent=None):
         super(iintdefinitionGUI, self).__init__(parent)
@@ -105,17 +105,34 @@ class iintdefinitionGUI(QtGui.QWidget):
         dir_path = os.path.dirname(os.path.realpath(__file__)) + "/"
         formfile = os.path.join(dir_path, "ui/iintdefinition.ui")
         uic.loadUi(formfile, self)
-        #~ self.observableDetectorCB.activated.connect(self.setObservable)
-        #~ self.observableMonitorCB.activated.connect(self.setMonitor)
-        #~ self.observableTimeCB.activated.connect(self.setTime)
-        #~ self._useAttenuationFactor = False
-        #~ self.observableAttFaccheck.stateChanged.connect(self.toggleAttFac)
-        #~ self.observableAttFacCB.setDisabled(True)
-        #~ self.observableAttFacCB.activated.connect(self.setAttFac)
-        #~ self.observableCalcBtn.clicked.connect(self.calculateObservable)
-        #~ self.despikeCheckBox.stateChanged.connect(self.toggleDespiking)
-        #~ self.applyDespikeBtn.clicked.connect(self.despike)
+        self._det = ""
+        self._mon = ""
+        self._expt = ""
+        self._attF = ""
+        self.observableDetectorCB.activated.connect(self.setDet)
+        self.observableMonitorCB.activated.connect(self.setMon)
+        self.observableTimeCB.activated.connect(self.setExpT)
+        self._useAttenuationFactor = False
+        self.observableAttFaccheck.stateChanged.connect(self.toggleAttFac)
+        self.observableAttFacCB.setDisabled(True)
+        self.observableAttFacCB.activated.connect(self.setAttF)
         self._iintDefDict = {}
+
+    def setDet(self, index):
+        pass
+
+    def setMon(self, index):
+        pass
+
+    def setExpT(self, index):
+        pass
+
+    def toggleAttFac(self):
+        self.observableAttFacCB.setDisabled(self._useAttenuationFactor)
+        self._useAttenuationFactor = not self._useAttenuationFactor
+
+    def setAttF(self, index):
+        pass
 
     def getParameterDict(self):
         return self._iintDefDict
@@ -124,15 +141,17 @@ class iintdefinitionGUI(QtGui.QWidget):
          self._iintDefDict = paramDict
 
     def emittit(self):
-        #~ self._specReaderDict["filename"] =  self._file
-        #~ self._specReaderDict["scanlist"] = self.scanSelectionInput.text()
-        #~ self._specReaderDict["outputdata"] = "_specfiledata"
-        self.execute.emit(1)
-
-
-
-
-
+        self._iintDefDict["type"] = "iintdefinition"
+        self._iintDefDict["input"] = "default"
+        self._iintDefDict["motor_column"] = "motor"
+        self._iintDefDict["detector_column"] = self._det
+        self._iintDefDict["monitor_column"] = self._mon
+        self._iintDefDict["exposureTime_column"] = self._expt
+        if self._useAttenuationFactor:
+            self._iintDefDict["attenuationFactor_column"] = self._attF
+        self._iintDefDict["observableoutput"] = "default"
+        self._iintDefDict["id"] = "id"
+        self.pDict.emit(self._iintDefDict)
 
 
 
