@@ -34,7 +34,7 @@ from adapt.processes import filter1d
 #~ from adapt import processData
 #~ from adapt.utilities import iintData
 
-__version__ ="0.0.1alpha"
+__version__ ="0.0.2alpha"
 
 class iintGUI(QtGui.QMainWindow):
     
@@ -47,6 +47,7 @@ class iintGUI(QtGui.QMainWindow):
 
         # the core independent variable in iint:
         self._motorname = ""
+        self._rawdataobject = None
     
         self._tasklist = [ chooseConfiguration(),
                            specfilereader.specfilereaderGUI(),
@@ -55,13 +56,49 @@ class iintGUI(QtGui.QMainWindow):
         for task in self._tasklist:
             self.listWidget.addItem(task.windowTitle())
             self.stackedWidget.addWidget(task)
-            try:
-                task.pDict.connect(self.doMagic)
-            except AttributeError:
-                print("the task has no pDict")
+        
+        self._tasklist[0].choice.connect(print)
+        self._tasklist[1].pDict.connect(self.runFileReader)
+        #~ self._tasklist[2].obsDict.connect()
 
-    def doMagic(self, pDict):
-        print(" magic in the making: " + str(pDict))
+    def nextWidget(self):
+        ci = self.stackedWidget.currentIndex()
+        self.stackedWidget.setCurrentIndex(ci+1)
+        cr = self.listWidget.currentRow()
+        self.listWidget.setCurrentRow(cr+1)
+
+    def runFileReader(self, pDict):
+        sfr = self._control.createAndInitialize(pDict)
+        self._control.convertToDataList(sfr.getData(),"rawdata")
+        self.nextWidget()
+        
+        # to set the displayed columns etc. one element of the selected data is needed
+        self._rawdataobject = self._control.getDataList()[0].getData("rawdata")
+        self._motorname = self._rawdataobject.getStartIdentifier(2)
+
+        #~ currentdataLabels = exampleData.getLabels()
+        #~ self.observableMotorLabel.setStyleSheet("color: blue;")
+        
+        #~ for scan in theRawData:
+            #~ scanid = scan.getScanNumber()
+            #~ newdata = iintData.IintData(scanid = scanid, 
+                                        #~ scantype = scan.getStartIdentifier(1),
+                                        #~ motor = self._motorname)
+            #~ newdata.setRaw(scan)
+            #~ newdata.setMotor(scan.getArray(self._motorname))
+            #~ self._dataKeeper[scanid] = newdata
+
+        # now set the texts and labels
+        #~ self.observableMotorLabel.setText(self._motorname)
+        #~ self.observableDetectorCB.clear()
+        #~ self.observableMonitorCB.clear()
+        #~ self.observableTimeCB.clear()
+        #~ self.observableAttFacCB.clear()
+        #~ self.observableDetectorCB.addItems(self._currentdataLabels)
+        #~ self.observableMonitorCB.addItems(self._currentdataLabels)
+        #~ self.observableTimeCB.addItems(self._currentdataLabels)
+        #~ self.observableAttFacCB.addItems(self._currentdataLabels)
+        #~ 
         
         #~ self._observableProc = iintdefinition.iintdefinition()
         #~ self._despiker = filter1d.filter1d()
@@ -336,119 +373,108 @@ class iintGUI(QtGui.QMainWindow):
     def showFitPanel(self):
         self._fitPanel.show()
 
-class simpleDataPlot(QtGui.QDialog):
-    import pyqtgraph as pg
-    showNext = QtCore.pyqtSignal(int)
-    showPrevious = QtCore.pyqtSignal(int)
-    showNumber = QtCore.pyqtSignal(int)
-    mouseposition = QtCore.pyqtSignal(float,float)
-
-    def __init__(self, parent=None,minimum=1,maximum=1000):
-        super(simpleDataPlot, self).__init__(parent)
-        uic.loadUi("iint_simplePlot.ui", self)
-        self.scanIDspinbox.setMinimum(minimum)
-        self.scanIDspinbox.setMaximum(maximum)
-        self.scanIDspinbox.setKeyboardTracking(False)
-        self.scanIDspinbox.valueChanged.connect(self.showNumber.emit)
-        self.showPreviousBtn.clicked.connect(self.showPrevious.emit)
-        self.showNextBtn.clicked.connect(self.showNext.emit)
-        self.viewPart.scene().sigMouseClicked.connect(self.mouse_click)
-        
-    def setMinimum(self, minimum):
-        self.scanIDspinbox.setMinimum(minimum)
-
-    def setMaximum(self, maximum):
-        self.scanIDspinbox.setMaximum(maximum)
-
-    def plot(self, xdata, ydata, scanid):
-        self.scanIDspinbox.setValue(scanid)
-        self.viewPart.clear()
-        self._plot = self.viewPart.plot(xdata, ydata, pen=None, symbolPen='w', symbolBrush='w', symbol='+')
-
-    def addDespike(self, xdata, despikeData):
-        self.viewPart.plot(xdata, despikeData, pen=None, symbolPen='y', symbolBrush='y', symbol='o')
-
-    def mouse_click(self, mouseclick):
-        mousepos = self._plot.mapFromScene(mouseclick.pos())
-        xdata = mousepos.x()
-        ydata = mousepos.y()
-        self.mouseposition.emit(xdata, ydata)
-
-class firstFitPanel(QtGui.QDialog):
-    def __init__(self, parent=None, dataview=None):
-        super(firstFitPanel, self).__init__(parent)
-        uic.loadUi("fitpanel.ui", self)
-        self._paramDialog = gaussianModelFitParameterDialog()
-        self.configureModelPushBtn.clicked.connect(self.showFitParamDialog)
-        self.modelCB.addItems(list(curvefitting.FitModels.keys()))
-        self.selectModelPushBtn.clicked.connect(self.selectCurrentModel)
-        self.reftoplot = dataview
-        self.reftoplot.mouseposition.connect(self.useMouseClick)
+#~ class simpleDataPlot(QtGui.QDialog):
+    #~ import pyqtgraph as pg
+    #~ showNext = QtCore.pyqtSignal(int)
+    #~ showPrevious = QtCore.pyqtSignal(int)
+    #~ showNumber = QtCore.pyqtSignal(int)
+    #~ mouseposition = QtCore.pyqtSignal(float,float)
+#~ 
+    #~ def __init__(self, parent=None,minimum=1,maximum=1000):
+        #~ super(simpleDataPlot, self).__init__(parent)
+        #~ uic.loadUi("iint_simplePlot.ui", self)
+        #~ self.scanIDspinbox.setMinimum(minimum)
+        #~ self.scanIDspinbox.setMaximum(maximum)
+        #~ self.scanIDspinbox.setKeyboardTracking(False)
+        #~ self.scanIDspinbox.valueChanged.connect(self.showNumber.emit)
+        #~ self.showPreviousBtn.clicked.connect(self.showPrevious.emit)
+        #~ self.showNextBtn.clicked.connect(self.showNext.emit)
+        #~ self.viewPart.scene().sigMouseClicked.connect(self.mouse_click)
+        #~ 
+    #~ def setMinimum(self, minimum):
+        #~ self.scanIDspinbox.setMinimum(minimum)
+#~ 
+    #~ def setMaximum(self, maximum):
+        #~ self.scanIDspinbox.setMaximum(maximum)
+#~ 
+    #~ def plot(self, xdata, ydata, scanid):
+        #~ self.scanIDspinbox.setValue(scanid)
+        #~ self.viewPart.clear()
+        #~ self._plot = self.viewPart.plot(xdata, ydata, pen=None, symbolPen='w', symbolBrush='w', symbol='+')
+#~ 
+    #~ def addDespike(self, xdata, despikeData):
+        #~ self.viewPart.plot(xdata, despikeData, pen=None, symbolPen='y', symbolBrush='y', symbol='o')
+#~ 
+    #~ def mouse_click(self, mouseclick):
+        #~ mousepos = self._plot.mapFromScene(mouseclick.pos())
+        #~ xdata = mousepos.x()
+        #~ ydata = mousepos.y()
+        #~ self.mouseposition.emit(xdata, ydata)
+#~ 
+#~ class firstFitPanel(QtGui.QDialog):
+    #~ def __init__(self, parent=None, dataview=None):
+        #~ super(firstFitPanel, self).__init__(parent)
+        #~ uic.loadUi("fitpanel.ui", self)
+        #~ self._paramDialog = gaussianModelFitParameterDialog()
+        #~ self.configureModelPushBtn.clicked.connect(self.showFitParamDialog)
+        #~ self.modelCB.addItems(list(curvefitting.FitModels.keys()))
+        #~ self.selectModelPushBtn.clicked.connect(self.selectCurrentModel)
+        #~ self.reftoplot = dataview
+        #~ self.reftoplot.mouseposition.connect(self.useMouseClick)
         #~ self.configDonePushBtn.clicked.connect(self.hideDialog)
-        
-    def showFitParamDialog(self):
-        self._paramDialog.show()
+        #~ 
+    #~ def showFitParamDialog(self):
+        #~ self._paramDialog.show()
+#~ 
+#~ 
+    #~ def selectCurrentModel(self):
+        #~ self.currentModelName.setText(self.modelCB.currentText())
+#~ 
+    #~ def useMouseClick(self, x, y):
+        #~ print( " i have seen the truth at: " + str(x) + " // " + str(y))
 
-
-    def selectCurrentModel(self):
-        self.currentModelName.setText(self.modelCB.currentText())
-
-    def useMouseClick(self, x, y):
-        print( " i have seen the truth at: " + str(x) + " // " + str(y))
-
-class gaussianModelFitParameterDialog(QtGui.QDialog):
-    pickPosition = QtCore.pyqtSignal(int)
-    parameterValues = QtCore.pyqtSignal(str, float, int, float, float)
-
-    def __init__(self, parent=None):
-        super(gaussianModelFitParameterDialog, self).__init__(parent)
-        uic.loadUi("gaussModelFitParameters.ui", self)
+#~ class gaussianModelFitParameterDialog(QtGui.QDialog):
+    #~ pickPosition = QtCore.pyqtSignal(int)
+    #~ parameterValues = QtCore.pyqtSignal(str, float, int, float, float)
+#~ 
+    #~ def __init__(self, parent=None):
+        #~ super(gaussianModelFitParameterDialog, self).__init__(parent)
+        #~ uic.loadUi("gaussModelFitParameters.ui", self)
         #~ self.pickMeanAmplitudeBtn.clicked.connect(self.pickMeanAmplitude)
         #~ self.pickFWHMBtn.clicked.connect(self.pickFWHM)
-        self.configDonePushBtn.clicked.connect(self.returnParameterValues)
-    
-    def pickMeanAmplitude(self):
-        pass
-
-    def pickFWHM(self):
-        pass
-
-    def returnParameterValues(self):
-        pass
-
-
-#~ # iint - gui is an extremely customized program
-#~ # its first purpose is to provide a program usable to p09 users
-#~ # along these lines there a some general points to be learnt from it
+        #~ self.configDonePushBtn.clicked.connect(self.returnParameterValues)
+    #~ 
+    #~ def pickMeanAmplitude(self):
+        #~ pass
 #~ 
+    #~ def pickFWHM(self):
+        #~ pass
 #~ 
-#~ fileread_out
-#~ observable_in
-#~ observable_out
-#~ despike_in
-#~ despike_out
-#~ bkgselect_in
-#~ bkgselect_out
-#~ bkgfit_in
-#~ bkgfit_out
-#~ calcbkgpoints_in
-#~ calcbkgpoints_out
-#~ bkgsubtract_in
-#~ bkgsubtract_out
-#~ curvefit_in
-#~ curvefit_out
-#~ trapintegrate_in
-#~ trapintegrate_out
-#~ polarizationanalysis
-#~ finalize_in
+    #~ def returnParameterValues(self):
+        #~ pass
+#~ 
 
 class chooseConfiguration(QtGui.QWidget):
+    choice = QtCore.pyqtSignal(str)
 
     def __init__(self, parent=None):
         super(chooseConfiguration, self).__init__(parent)
         uic.loadUi("configurationChoice.ui", self)
+        self.useLast.clicked.connect(self.uselast)
+        self.chooseFile.clicked.connect(self.choosefile)
+        self.createNew.clicked.connect(self.createnew)
+
+    def uselast(self, num):
+        print("use the last config " + str(num))
+
+    def choosefile(self, num):
+        print("choose config file " + str(num))
+
+    def createnew(self, num):
+        print("new config " + str(num))
 
 class observableDefinition(QtGui.QWidget):
+    observableDicts = QtCore.pyqtSignal(dict, dict)
 
     def __init__(self, parent=None):
         super(observableDefinition, self).__init__(parent)
@@ -459,7 +485,8 @@ class observableDefinition(QtGui.QWidget):
         self.setLayout(vlayout)
 
 class backgroundHandling(QtGui.QWidget):
-    
+    bkgDict = QtCore.pyqtSignal(dict)
+
     def __init__(self, parent=None):
         super(backgroundHandling, self).__init__(parent)
         uic.loadUi("linearbackground.ui", self)

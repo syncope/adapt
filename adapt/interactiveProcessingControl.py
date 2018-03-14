@@ -31,20 +31,31 @@ class InteractiveProcessingControl():
 
     def __init__(self):
         self._procControl = processingControl.ProcessingControl()
+        self._procBuilder = processBuilder.ProcessBuilder()
         self._dataList = []
         self._processList = []
         
     def getProcessTypeList(self):
         return self._procControl.getProcessTypeList()
 
+    def convertToDataList(self, data, name):
+        for datum in data:
+            pd = processData.ProcessData()
+            pd.addData(name, datum)
+            self._dataList.append(pd)
+    
     def getDataList(self):
         return self._dataList
 
-#~ 
-    #~ def build(self, processConfig):
-        #~ # this is a potentially raw object
-        #~ # TODO: dismantle and check before instantiating anything!
- #~ 
+    def createAndInitialize(self, pdict):
+        proc = self._procBuilder.createProcessFromDictionary(pdict)
+        proc.initialize()
+        return proc
+
+    def createAndBulkExecute(self, pDict):
+        proc = self._procBuilder.createProcessFromDictionary(pDict)
+        proc.initialize()
+        proc.loopExecute(self._dataList)
         #~ execOrder = processConfig.getOrderOfExecution()
         #~ pDefs = processConfig.getProcessDefinitions()
 #~ 
