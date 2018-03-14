@@ -48,18 +48,25 @@ class iintGUI(QtGui.QMainWindow):
         # the core independent variable in iint:
         self._motorname = ""
         self._rawdataobject = None
-    
-        self._tasklist = [ chooseConfiguration(),
-                           specfilereader.specfilereaderGUI(),
-                           observableDefinition(),
-                           backgroundHandling()]
+        
+        self._chooseConfig = chooseConfiguration()
+        self._sfrGUI = specfilereader.specfilereaderGUI()
+        self._obsDef = observableDefinition()
+        self._bkgHandling = backgroundHandling()
+
+        self._tasklist = [ self._chooseConfig,
+                           self._sfrGUI,
+                           self._obsDef,
+                           self._bkgHandling]
         for task in self._tasklist:
             self.listWidget.addItem(task.windowTitle())
             self.stackedWidget.addWidget(task)
+
+        self.listWidget.currentRowChanged.connect(self._distributeInfo)
         
-        self._tasklist[0].choice.connect(print)
-        self._tasklist[1].pDict.connect(self.runFileReader)
-        #~ self._tasklist[2].obsDict.connect()
+        self._chooseConfig.choice.connect(print)
+        self._sfrGUI.pDict.connect(self.runFileReader)
+        self._obsDef.observableDicts.connect(self.runObservable)
 
     def nextWidget(self):
         ci = self.stackedWidget.currentIndex()
@@ -70,12 +77,15 @@ class iintGUI(QtGui.QMainWindow):
     def runFileReader(self, pDict):
         sfr = self._control.createAndInitialize(pDict)
         self._control.convertToDataList(sfr.getData(),"rawdata")
-        self.nextWidget()
         
         # to set the displayed columns etc. one element of the selected data is needed
         self._rawdataobject = self._control.getDataList()[0].getData("rawdata")
         self._motorname = self._rawdataobject.getStartIdentifier(2)
 
+        self.nextWidget()
+
+    def runObservable(self, obsDict, despDict):
+        print("Observing. " + str(obsDict) + " and " + str(despDict))
         #~ currentdataLabels = exampleData.getLabels()
         #~ self.observableMotorLabel.setStyleSheet("color: blue;")
         
@@ -124,18 +134,7 @@ class iintGUI(QtGui.QMainWindow):
         #~ # output section
         #~ self.chooseOutputFileBtn.clicked.connect(self.defineOutput)
 #~ 
-        #~ # observable section
-        #~ self.observableDetectorCB.activated.connect(self.setObservable)
-        #~ self.observableMonitorCB.activated.connect(self.setMonitor)
-        #~ self.observableTimeCB.activated.connect(self.setTime)
-        #~ self._useAttenuationFactor = False
-        #~ self.observableAttFaccheck.stateChanged.connect(self.toggleAttFac)
-        #~ self.observableAttFacCB.setDisabled(True)
-        #~ self.observableAttFacCB.activated.connect(self.setAttFac)
-        #~ self.observableCalcBtn.clicked.connect(self.calculateObservable)
-        #~ self.despikeCheckBox.stateChanged.connect(self.toggleDespiking)
-        #~ self.applyDespikeBtn.clicked.connect(self.despike)
-        #~ self.observableVIEW.clicked.connect(self.viewSimple)
+
 #~ 
         #~ # background section
         #~ self.subtractBkgCheckBox.stateChanged.connect(self.toggleBKGsubtraction)
@@ -150,81 +149,15 @@ class iintGUI(QtGui.QMainWindow):
         #~ self.openFitPanelPushBtn.clicked.connect(self.showFitPanel)
         #~ # processing section
 
+    def _distributeInfo(self):
+        self._obsDef.passInfo(self._rawdataobject)
+
     def getAndOpenFile(self):
         self._file = QtGui.QFileDialog.getOpenFileName(self, 'Choose spec file', '.', "SPEC files (*.spc *.spe *.spec)")
         self.inputFileLE.setText(self._file)
 
-    def readDataFromFile(self):
-        # clear all existing data -- if new data is read, nothing is known
-        self.data.clearAll()
-        
-        # steering of the spec reader:
-        self.configureSpecReader()
-        
-        # call the spec reader only to get the data of choice; this is stored as a list!
-        self._specReader.initialize()
-        theRawData = self._specReader.getData()
-
-        # to set the displayed columns etc. one element of the selected data is needed
-        exampleData = theRawData[0]
-        self._currentdataLabels = exampleData.getLabels()
-        self.observableMotorLabel.setStyleSheet("color: blue;")
-        self._motorname = exampleData.getStartIdentifier(2)
-        
-        for scan in theRawData:
-            scanid = scan.getScanNumber()
-            newdata = iintData.IintData(scanid = scanid, 
-                                        scantype = scan.getStartIdentifier(1),
-                                        motor = self._motorname)
-            newdata.setRaw(scan)
-            newdata.setMotor(scan.getArray(self._motorname))
-            self._dataKeeper[scanid] = newdata
-
-        # create a sorted bookkeeping list of the scan ids to allow easier handling
-        self._dKidlist = list(self._dataKeeper.keys())
-        self._dKidlist.sort()
-        self.setCurrentScanID(exampleData.getScanNumber())
-
-        # now set the texts and labels
-        self.observableMotorLabel.setText(self._motorname)
-        self.observableDetectorCB.clear()
-        self.observableMonitorCB.clear()
-        self.observableTimeCB.clear()
-        self.observableAttFacCB.clear()
-        self.observableDetectorCB.addItems(self._currentdataLabels)
-        self.observableMonitorCB.addItems(self._currentdataLabels)
-        self.observableTimeCB.addItems(self._currentdataLabels)
-        self.observableAttFacCB.addItems(self._currentdataLabels)
-
-    def configureSpecReader(self):
-        specReaderDict = { "filename" : self._file,
-                           "scanlist" : self.scanSelectionInput.text(),
-                           "outputdata" : "_specfiledata" }
-        self._specReader.setParameterValues(specReaderDict)
-
     def defineOutput(self):
         self._outfile = QtGui.QFileDialog.getOpenFileName(self, 'Select output file', '.')
-
-    def setObservable(self, obsindex):
-        self._detname = self._currentdataLabels[obsindex]
-
-    def setMonitor(self, monindex):
-        self._monname = self._currentdataLabels[monindex]
-
-    def setTime(self, timeindex):
-        self._timename = self._currentdataLabels[timeindex]
-
-    def toggleAttFac(self):
-        self.observableAttFacCB.setDisabled(self._useAttenuationFactor)
-        self._useAttenuationFactor = not self._useAttenuationFactor
-
-    def setAttFac(self, attfacindex):
-        if(self._useAttenuationFactor):
-            self._attenfname = self._currentdataLabels[attfacindex]
-
-    def toggleDespiking(self):
-        self._despike = not self._despike
-        self.applyDespikeBtn.setEnabled(self._despike)
 
     def toggleBKGsubtraction(self):
         self._subtractBackground = not self._subtractBackground
@@ -256,49 +189,6 @@ class iintGUI(QtGui.QMainWindow):
         except KeyError:
             self.setCurrentScanID(self._dKidlist[-1])
         self.viewSimple()
-
-    def configureObservable(self):
-        observableDict = { "input" : "_rawdata",
-                           "motor_column" : self._motorname,
-                           "detector_column" : self._detname,
-                           "monitor_column" : self._monname,
-                           "exposureTime_column" : self._timename,
-                           "columns_log" : ["petra_beamcurrent", "lks340_outputchannela", "lks340_outputchannelb"], # CHANGE !
-                           "headers_log" : ["pr1chi", "pr2chi", "ptth", "peta"], # CHANGE!
-                           "observableoutput" : self._observableName,
-                           "motoroutput" : self._motorname,
-                           "id" : "scannumber" }
-        if(self._useAttenuationFactor):
-            observableDict["attenuationFactor_column"] = self._attenfname
-
-        self._observableProc.setParameterValues(observableDict)
-
-    def calculateObservable(self):
-        self.configureObservable()
-        obsData = processData.ProcessData()
-        self._observableProc.initialize()
-        for scan in self._dataKeeper.values():
-            obsData.addData("_rawdata", scan.getRaw())
-            self._observableProc.execute(obsData)
-            scan.setObservable(obsData.getData(self._observableName))
-            scan.setMotor(obsData.getData(self._motorname))
-            obsData.clearCurrent()
-
-    def configureDespiker(self):
-        despikeDict = { "input" : self._observableName, 
-                        "output" : self._processedObservableName,
-                        "method" : "p09despiking"}
-        self._despiker.setParameterValues(despikeDict)
-
-    def despike(self):
-        self.configureDespiker()
-        despData = processData.ProcessData()
-        self._despiker.initialize()
-        for scan in self._dataKeeper.values():
-            despData.addData(self._observableName, scan.getObservable())
-            self._despiker.execute(despData)
-            scan.setDespiked(despData.getData(self._processedObservableName))
-            despData.clearCurrent()
 
     def selectStartBKG(self, value):
         self._bkgStartPoints  = value
@@ -479,11 +369,91 @@ class observableDefinition(QtGui.QWidget):
     def __init__(self, parent=None):
         super(observableDefinition, self).__init__(parent)
         self.setWindowTitle("Observable definition")
-        vlayout = QtGui.QVBoxLayout()
-        vlayout.addWidget(iintdefinition.iintdefinitionGUI())
-        vlayout.addWidget(filter1d.filter1dGUI())
-        self.setLayout(vlayout)
+        uic.loadUi("iintobservable.ui", self)
+        self._obsDict = {}
+        self._despikeDict = {}
+        self.observableDetectorCB.activated.connect(self.setObservable)
+        self.observableMonitorCB.activated.connect(self.setMonitor)
+        self.observableTimeCB.activated.connect(self.setTime)
+        self._useAttenuationFactor = False
+        self.observableAttFaccheck.stateChanged.connect(self.toggleAttFac)
+        self.observableAttFacCB.setDisabled(True)
+        self.observableAttFacCB.activated.connect(self.setAttFac)
+        self.despikeCheckBox.stateChanged.connect(self.toggleDespiking)
+        self._despike = False
+        self._notEnabled(True)
+        self.obsNextBtn.clicked.connect(self.emittit)
+        self._observableName = 'observable'
 
+    def passInfo(self, dataobject):
+        if dataobject == None:
+            self._notEnabled(True)
+            return
+        else:
+            self._notEnabled(False)
+
+        self._currentdataLabels = dataobject.getLabels()
+        self.observableMotorLabel.setStyleSheet("color: blue;")
+        self._motorname = dataobject.getStartIdentifier(2)
+        # now set the texts and labels
+        self.observableMotorLabel.setText(self._motorname)
+        self.observableDetectorCB.clear()
+        self.observableMonitorCB.clear()
+        self.observableTimeCB.clear()
+        self.observableAttFacCB.clear()
+        self.observableDetectorCB.addItems(self._currentdataLabels)
+        self.observableMonitorCB.addItems(self._currentdataLabels)
+        self.observableTimeCB.addItems(self._currentdataLabels)
+        self.observableAttFacCB.addItems(self._currentdataLabels)
+    
+    def _notEnabled(self, state):
+        self.observableMotorLabel.setDisabled(state)
+        self.observableDetectorCB.setDisabled(state)
+        self.observableMonitorCB.setDisabled(state)
+        self.observableTimeCB.setDisabled(state)
+        self.observableAttFaccheck.setDisabled(state)
+        self.despikeCheckBox.setDisabled(state)
+
+    def toggleAttFac(self):
+        self.observableAttFacCB.setDisabled(self._useAttenuationFactor)
+        self._useAttenuationFactor = not self._useAttenuationFactor
+
+    def setObservable(self, obsindex):
+        self._detname = self._currentdataLabels[obsindex]
+
+    def setMonitor(self, monindex):
+        self._monname = self._currentdataLabels[monindex]
+
+    def setTime(self, timeindex):
+        self._timename = self._currentdataLabels[timeindex]
+
+    def setAttFac(self, attfacindex):
+        if(self._useAttenuationFactor):
+            self._attenfname = self._currentdataLabels[attfacindex]
+
+    def toggleDespiking(self):
+        self._despike = not self._despike
+
+    def emittit(self):
+        self._obsDict["type"] = "iintdefinition"
+        self._obsDict["input"] = "rawdata"
+        self._obsDict["motor_column"] = self._motorname
+        self._obsDict["detector_column"] = self._detname
+        self._obsDict["monitor_column"] = self._monname
+        self._obsDict["exposureTime_column"] = self._timename
+        self._obsDict["observableoutput"] = self._observableName
+        self._obsDict["id"] = "scannumber"
+        if(self._useAttenuationFactor):
+            self._obsDict["attenuationFactor_column"] = self._attenfname
+
+        self._despikeDict["type"] = "filter1d"
+        self._despikeDict["method"] = "p09despiking"
+        self._despikeDict["input"] = "observable"
+        self._despikeDict["output"] = "despikedObservable"
+        
+        self.observableDicts.emit( self._obsDict, self._despikeDict)
+
+        
 class backgroundHandling(QtGui.QWidget):
     bkgDict = QtCore.pyqtSignal(dict)
 
