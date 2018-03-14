@@ -33,10 +33,7 @@ class iintdefinition(IProcess):
         self._monitorPar = ProcessParameter("monitor_column", str)
         self._exposure_timePar = ProcessParameter("exposureTime_column", str)
         self._attfacPar = ProcessParameter("attenuationFactor_column", str, optional=True)
-        #~ self._trackedstuffPar = ProcessParameter("columns_log", list)
-        #~ self._tracked_headersPar = ProcessParameter("headers_log", list)
         self._observableoutputPar = ProcessParameter("observableoutput", str)
-        #~ self._motorOutPar = ProcessParameter("motoroutput", str)
         self._idPar = ProcessParameter("id", str)
         self._parameters.add(self._inputPar)
         self._parameters.add(self._motorPar)
@@ -44,10 +41,7 @@ class iintdefinition(IProcess):
         self._parameters.add(self._monitorPar)
         self._parameters.add(self._exposure_timePar)
         self._parameters.add(self._attfacPar)
-        #~ self._parameters.add(self._trackedstuffPar)
-        #~ self._parameters.add(self._tracked_headersPar)
         self._parameters.add(self._observableoutputPar)
-        #~ self._parameters.add(self._motorOutPar)
         self._parameters.add(self._idPar)
 
     def initialize(self):
@@ -57,10 +51,7 @@ class iintdefinition(IProcess):
         self._monitor =self._monitorPar.get()
         self._exposure_time = self._exposure_timePar.get()
         self._attfac = self._attfacPar.get()
-        #~ self._trackedstuff = self._trackedstuffPar.get()
-        #~ self._tracked_headers = self._tracked_headersPar.get()
         self._observableoutput = self._observableoutputPar.get()
-        #~ self._motorOut = self._motorOutPar.get()
         self._id = self._idPar.get()
 
     def execute(self, data):
@@ -77,13 +68,7 @@ class iintdefinition(IProcess):
 
         observable = detector*mean_monitor*attenfac/monitor/time
         data.addData(self._observableoutput, observable)
-        #~ data.addData(self._motorOut, motor)
-        #~ trackedcolumns = [ datum.getArray(name) for name in self._trackedstuff ]
 
-        #~ for key in self._trackedstuff:
-            #~ data.addData(key, datum.getArray(key))
-        #~ for key in self._tracked_headers:
-            #~ data.addData(key, datum.getCustomVar(key))
         if self._id == "scannumber":
             data.addData(self._id, datum.getScanNumber())
         else:
