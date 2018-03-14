@@ -578,7 +578,7 @@
         </spacer>
        </item>
        <item>
-        <widget class="QPushButton" name="okBtn_2">
+        <widget class="QPushButton" name="obsNextBtn">
          <property name="text">
           <string>Next</string>
          </property>
