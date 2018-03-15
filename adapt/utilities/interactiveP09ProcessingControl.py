@@ -19,9 +19,9 @@
 # the central control class for interactive processing
 # it holds an instance of the batch processing master
 
-from . import processingControl
-from . import processData
-from . import processBuilder
+from adapt import processingControl
+from adapt import processData
+from adapt import processBuilder
 
 
 class InteractiveP09ProcessingControl():
@@ -34,7 +34,18 @@ class InteractiveP09ProcessingControl():
         self._procBuilder = processBuilder.ProcessBuilder()
         self._dataList = []
         self._processList = []
-        
+        self.observableName = "observable"
+        self.motorName = ""
+    
+    def getObservableName(self):
+        return self.observableName
+
+    def getMotorName(self):
+        return self.motorName
+
+    def setMotorName(self, motor):
+        self.motorName = motor
+    
     def getProcessTypeList(self):
         return self._procControl.getProcessTypeList()
 
@@ -53,6 +64,8 @@ class InteractiveP09ProcessingControl():
         return proc
 
     def createAndBulkExecute(self, pDict):
+        if pDict is None:
+            return
         proc = self._procBuilder.createProcessFromDictionary(pDict)
         proc.initialize()
         proc.loopExecute(self._dataList)
