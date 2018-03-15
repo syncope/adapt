@@ -22,7 +22,7 @@
 import sys
 from PyQt4 import QtCore, QtGui, uic
 
-from adapt import interactiveProcessingControl
+from adapt.utilities import interactiveP09ProcessingControl
 from adapt.processes import specfilereader
 from adapt.processes import iintdefinition
 from adapt.processes import filter1d
@@ -43,7 +43,7 @@ class iintGUI(QtGui.QMainWindow):
         uic.loadUi("iint_main.ui", self)
 
         # the steering helper object
-        self._control = interactiveProcessingControl.InteractiveProcessingControl()
+        self._control = interactiveP09ProcessingControl.InteractiveP09ProcessingControl()
 
         # the core independent variable in iint:
         self._motorname = ""
@@ -82,19 +82,24 @@ class iintGUI(QtGui.QMainWindow):
         # to set the displayed columns etc. one element of the selected data is needed
         self._rawdataobject = self._control.getDataList()[0].getData("rawdata")
         self._motorname = self._rawdataobject.getStartIdentifier(2)
-
+        self._control.setMotorName(self._motorname)
         self.nextWidget()
 
     def runObservable(self, obsDict, despDict):
-        print("Observing. " + str(obsDict) + " and " + str(despDict))
-
+        self._control.createAndBulkExecute(obsDict)
+        if despDict != {}:
+            self._control.createAndBulkExecute(despDict)
+        self.plotit()
         self.nextWidget()
 
+    def plotit(self):
         # pyqt helper stuff
-        #~ self._simpleImageView = simpleDataPlot(parent=self)
-        #~ self._simpleImageView.showNext.connect(self.incrementCurrentScanID)
-        #~ self._simpleImageView.showPrevious.connect(self.decrementCurrentScanID)
-        #~ self._simpleImageView.showNumber.connect(self.setCurrentScanID)
+        self._simpleImageView = simpleDataPlot(parent=self)
+        self._simpleImageView.passControl(self._control)
+        self._simpleImageView.plot()
+        self._simpleImageView.show()
+
+
         #~ self._fitPanel = firstFitPanel(parent=self, dataview=self._simpleImageView)
 
         #~ # background section
@@ -121,17 +126,6 @@ class iintGUI(QtGui.QMainWindow):
 
     def toggleBKGsubtraction(self):
         self._subtractBackground = not self._subtractBackground
-
-    def viewSimple(self):
-        self._simpleImageView.setMinimum(self._dKidlist[0])
-        self._simpleImageView.setMaximum(self._dKidlist[-1])
-        self._simpleImageView.show()
-        self._simpleImageView.plot( xdata= self._currentScan.getMotor(), 
-                                    ydata = self._currentScan.getObservable(),
-                                    scanid= self._currentScan.getScanID())
-        despike = self._currentScan.getDespiked()
-        if(despike is not None):
-            self._simpleImageView.addDespike(self._currentScan.getMotor(),despike )
 
     def setCurrentScanID(self, identifier):
         self._currentScan = self._dataKeeper[identifier]
@@ -222,45 +216,54 @@ class iintGUI(QtGui.QMainWindow):
 
     def showFitPanel(self):
         self._fitPanel.show()
+ 
+class simpleDataPlot(QtGui.QDialog):
+    import pyqtgraph as pg
+    showNext = QtCore.pyqtSignal(int)
+    showPrevious = QtCore.pyqtSignal(int)
+    showNumber = QtCore.pyqtSignal(int)
+    mouseposition = QtCore.pyqtSignal(float,float)
 
-#~ class simpleDataPlot(QtGui.QDialog):
-    #~ import pyqtgraph as pg
-    #~ showNext = QtCore.pyqtSignal(int)
-    #~ showPrevious = QtCore.pyqtSignal(int)
-    #~ showNumber = QtCore.pyqtSignal(int)
-    #~ mouseposition = QtCore.pyqtSignal(float,float)
-#~ 
-    #~ def __init__(self, parent=None,minimum=1,maximum=1000):
-        #~ super(simpleDataPlot, self).__init__(parent)
-        #~ uic.loadUi("iint_simplePlot.ui", self)
-        #~ self.scanIDspinbox.setMinimum(minimum)
-        #~ self.scanIDspinbox.setMaximum(maximum)
-        #~ self.scanIDspinbox.setKeyboardTracking(False)
-        #~ self.scanIDspinbox.valueChanged.connect(self.showNumber.emit)
-        #~ self.showPreviousBtn.clicked.connect(self.showPrevious.emit)
-        #~ self.showNextBtn.clicked.connect(self.showNext.emit)
-        #~ self.viewPart.scene().sigMouseClicked.connect(self.mouse_click)
-        #~ 
-    #~ def setMinimum(self, minimum):
-        #~ self.scanIDspinbox.setMinimum(minimum)
-#~ 
-    #~ def setMaximum(self, maximum):
-        #~ self.scanIDspinbox.setMaximum(maximum)
-#~ 
-    #~ def plot(self, xdata, ydata, scanid):
-        #~ self.scanIDspinbox.setValue(scanid)
-        #~ self.viewPart.clear()
-        #~ self._plot = self.viewPart.plot(xdata, ydata, pen=None, symbolPen='w', symbolBrush='w', symbol='+')
-#~ 
+    def __init__(self, parent=None,minimum=1,maximum=1000):
+        super(simpleDataPlot, self).__init__(parent)
+        uic.loadUi("iint_simplePlot.ui", self)
+        self.scanIDspinbox.setMinimum(minimum)
+        self.scanIDspinbox.setMaximum(maximum)
+        self.scanIDspinbox.setKeyboardTracking(False)
+        self.scanIDspinbox.valueChanged.connect(self.showNumber.emit)
+        self.showPreviousBtn.clicked.connect(self.showPrevious.emit)
+        self.showNextBtn.clicked.connect(self.showNext.emit)
+        self.viewPart.scene().sigMouseClicked.connect(self.mouse_click)
+        self._control = None
+        
+    def setMinimum(self, minimum):
+        self.scanIDspinbox.setMinimum(minimum)
+
+    def setMaximum(self, maximum):
+        self.scanIDspinbox.setMaximum(maximum)
+
+    def passControl(self, control):
+        self._control = control
+        self._dataList = control.getDataList()
+
+    def plot(self, scanid = 0):
+        xdata = self._dataList[scanid].getData(self._control.getObservableName())
+        ydata = self._dataList[scanid].getData(self._control.getMotorName())
+        self.viewPart.plot(xdata, ydata, pen=None, symbolPen='w', symbolBrush='w', symbol='+')
+        
+        #~ self._simpleImageView.showNext.connect(self.incrementCurrentScanID)
+        #~ self._simpleImageView.showPrevious.connect(self.decrementCurrentScanID)
+        #~ self._simpleImageView.showNumber.connect(self.setCurrentScanID)
+
     #~ def addDespike(self, xdata, despikeData):
         #~ self.viewPart.plot(xdata, despikeData, pen=None, symbolPen='y', symbolBrush='y', symbol='o')
-#~ 
-    #~ def mouse_click(self, mouseclick):
-        #~ mousepos = self._plot.mapFromScene(mouseclick.pos())
-        #~ xdata = mousepos.x()
-        #~ ydata = mousepos.y()
-        #~ self.mouseposition.emit(xdata, ydata)
-#~ 
+
+    def mouse_click(self, mouseclick):
+        mousepos = self._plot.mapFromScene(mouseclick.pos())
+        xdata = mousepos.x()
+        ydata = mousepos.y()
+        self.mouseposition.emit(xdata, ydata)
+
 #~ class firstFitPanel(QtGui.QDialog):
     #~ def __init__(self, parent=None, dataview=None):
         #~ super(firstFitPanel, self).__init__(parent)
@@ -373,6 +376,7 @@ class observableDefinition(QtGui.QWidget):
         self.observableTimeCB.setDisabled(state)
         self.observableAttFaccheck.setDisabled(state)
         self.despikeCheckBox.setDisabled(state)
+        self.obsPlotIt.setDisabled(state)
         self.obsNextBtn.setDisabled(state)
 
     def toggleAttFac(self):
@@ -413,9 +417,8 @@ class observableDefinition(QtGui.QWidget):
             self._despikeDict["input"] = "observable"
             self._despikeDict["output"] = "despikedObservable"
         
-        self.observableDicts.emit( self._obsDict, self._despikeDict)
+        self.observableDicts.emit(self._obsDict, self._despikeDict)
 
-        
 class backgroundHandling(QtGui.QWidget):
     bkgDict = QtCore.pyqtSignal(dict)
 
