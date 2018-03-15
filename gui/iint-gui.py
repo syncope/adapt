@@ -62,8 +62,9 @@ class iintGUI(QtGui.QMainWindow):
             self.listWidget.addItem(task.windowTitle())
             self.stackedWidget.addWidget(task)
 
+        # workaround for now: pass info to observable ... (always at change!)
         self.listWidget.currentRowChanged.connect(self._distributeInfo)
-        
+
         self._chooseConfig.choice.connect(print)
         self._sfrGUI.pDict.connect(self.runFileReader)
         self._obsDef.observableDicts.connect(self.runObservable)
@@ -77,7 +78,7 @@ class iintGUI(QtGui.QMainWindow):
     def runFileReader(self, pDict):
         sfr = self._control.createAndInitialize(pDict)
         self._control.convertToDataList(sfr.getData(),"rawdata")
-        
+
         # to set the displayed columns etc. one element of the selected data is needed
         self._rawdataobject = self._control.getDataList()[0].getData("rawdata")
         self._motorname = self._rawdataobject.getStartIdentifier(2)
@@ -86,38 +87,8 @@ class iintGUI(QtGui.QMainWindow):
 
     def runObservable(self, obsDict, despDict):
         print("Observing. " + str(obsDict) + " and " + str(despDict))
-        #~ currentdataLabels = exampleData.getLabels()
-        #~ self.observableMotorLabel.setStyleSheet("color: blue;")
-        
-        #~ for scan in theRawData:
-            #~ scanid = scan.getScanNumber()
-            #~ newdata = iintData.IintData(scanid = scanid, 
-                                        #~ scantype = scan.getStartIdentifier(1),
-                                        #~ motor = self._motorname)
-            #~ newdata.setRaw(scan)
-            #~ newdata.setMotor(scan.getArray(self._motorname))
-            #~ self._dataKeeper[scanid] = newdata
 
-        # now set the texts and labels
-        #~ self.observableMotorLabel.setText(self._motorname)
-        #~ self.observableDetectorCB.clear()
-        #~ self.observableMonitorCB.clear()
-        #~ self.observableTimeCB.clear()
-        #~ self.observableAttFacCB.clear()
-        #~ self.observableDetectorCB.addItems(self._currentdataLabels)
-        #~ self.observableMonitorCB.addItems(self._currentdataLabels)
-        #~ self.observableTimeCB.addItems(self._currentdataLabels)
-        #~ self.observableAttFacCB.addItems(self._currentdataLabels)
-        #~ 
-        
-        #~ self._observableProc = iintdefinition.iintdefinition()
-        #~ self._despiker = filter1d.filter1d()
-        #~ self._bkgSelector = subsequenceselection.subsequenceselection()
-        #~ self._bkgFitter = curvefitting.curvefitting()
-        #~ self._bkgValues = gendatafromfunction.gendatafromfunction()
-        #~ self._bkgSubtractor = backgroundsubtraction.backgroundsubtraction()
-        #~ self._trapezoidIntegrator = trapezoidintegration.trapezoidintegration()
-        #~ self._finalizer = iintfinalization.iintfinalization()
+        self.nextWidget()
 
         # pyqt helper stuff
         #~ self._simpleImageView = simpleDataPlot(parent=self)
@@ -126,16 +97,6 @@ class iintGUI(QtGui.QMainWindow):
         #~ self._simpleImageView.showNumber.connect(self.setCurrentScanID)
         #~ self._fitPanel = firstFitPanel(parent=self, dataview=self._simpleImageView)
 
-        # define the connections
-        # input section:
-        #~ self.chooseInputFileBtn.clicked.connect(self.getAndOpenFile)
-        #~ self.dataSelectionBtn.clicked.connect(self.readDataFromFile)
-#~ 
-        #~ # output section
-        #~ self.chooseOutputFileBtn.clicked.connect(self.defineOutput)
-#~ 
-
-#~ 
         #~ # background section
         #~ self.subtractBkgCheckBox.stateChanged.connect(self.toggleBKGsubtraction)
         #~ self.bkgStartPointsSB.setKeyboardTracking(False)
@@ -144,10 +105,9 @@ class iintGUI(QtGui.QMainWindow):
         #~ self.bkgEndPointsSB.valueChanged.connect(self.selectEndBKG)
         #~ self.fitBKGbtn.clicked.connect(self.selectAndFitBackground)
         #~ self.subtractBkgCheckBox.stateChanged.connect(self.subtractBackground)
-#~ 
+
         #~ # signal section
         #~ self.openFitPanelPushBtn.clicked.connect(self.showFitPanel)
-        #~ # processing section
 
     def _distributeInfo(self):
         self._obsDef.passInfo(self._rawdataobject)
@@ -413,6 +373,7 @@ class observableDefinition(QtGui.QWidget):
         self.observableTimeCB.setDisabled(state)
         self.observableAttFaccheck.setDisabled(state)
         self.despikeCheckBox.setDisabled(state)
+        self.obsNextBtn.setDisabled(state)
 
     def toggleAttFac(self):
         self.observableAttFacCB.setDisabled(self._useAttenuationFactor)
@@ -446,10 +407,11 @@ class observableDefinition(QtGui.QWidget):
         if(self._useAttenuationFactor):
             self._obsDict["attenuationFactor_column"] = self._attenfname
 
-        self._despikeDict["type"] = "filter1d"
-        self._despikeDict["method"] = "p09despiking"
-        self._despikeDict["input"] = "observable"
-        self._despikeDict["output"] = "despikedObservable"
+        if(self._despike):
+            self._despikeDict["type"] = "filter1d"
+            self._despikeDict["method"] = "p09despiking"
+            self._despikeDict["input"] = "observable"
+            self._despikeDict["output"] = "despikedObservable"
         
         self.observableDicts.emit( self._obsDict, self._despikeDict)
 
