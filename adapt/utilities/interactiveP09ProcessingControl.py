@@ -24,7 +24,7 @@ from . import processData
 from . import processBuilder
 
 
-class InteractiveProcessingControl():
+class InteractiveP09ProcessingControl():
     '''The central control object for interactive processing.
        It holds the elements to build processes from their description,
        the list of processes to be run and the central data exchange object.'''
