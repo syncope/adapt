@@ -81,11 +81,14 @@ class specfilereaderGUI(QtGui.QWidget):
         uic.loadUi(formfile, self)
         self.chooseInputFileBtn.clicked.connect(self.getAndOpenFile)
         self.okBtn.clicked.connect(self.emittit)
+        self.okBtn.setDisabled(True)
         self._specReaderDict = {}
 
     def getAndOpenFile(self):
         self._file = QtGui.QFileDialog.getOpenFileName(self, 'Choose spec file', '.', "SPEC files (*.spc *.spe *.spec)")
         self.inputFileLE.setText(self._file)
+        if self._file is not None:
+            self.okBtn.setDisabled(False)
 
     def getParameterDict(self):
         return self._specReaderDict
