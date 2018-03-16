@@ -66,6 +66,7 @@ class iintGUI(QtGui.QMainWindow):
         self.listWidget.currentRowChanged.connect(self._distributeInfo)
 
         self._chooseConfig.choice.connect(print)
+        self._chooseConfig.newconfig.connect(self.nextWidget)
         self._sfrGUI.pDict.connect(self.runFileReader)
         self._obsDef.observableDicts.connect(self.runObservable)
 
@@ -211,6 +212,10 @@ class simpleDataPlot(QtGui.QDialog):
         self.viewPart.scene().sigMouseClicked.connect(self.mouse_click)
         self._control = None
         self._currentIndex = 0
+        self._showDespike = False
+        self._showBackgroundSubtracted = False
+        self._showBackgroundFit = False
+        
         
     def passData(self, datalist, names):
         self._dataList = datalist
@@ -224,6 +229,16 @@ class simpleDataPlot(QtGui.QDialog):
         ydata = datum.getData(self._names["observableName"])
         self.viewPart.clear()
         self.viewPart.plot(xdata, ydata, pen=None, symbolPen='w', symbolBrush='w', symbol='+')
+        if( self._showdespike ):
+            despikeData = datum.getData(self._names["despikedObservableName"])
+            self.viewPart.plot(xdata, despikeData, pen=None, symbolPen='y', symbolBrush='y', symbol='o')
+        if( self._showBackgroundSubtracted ):
+            bkgSubtracted = datum.getData(self._names["bkgSubtractedName"])
+            self.viewPart.plot(xdata, bkgSubtracted, pen=None, symbolPen='g', symbolBrush='g', symbol='.')
+        if( self._showBackgroundFit ):
+            bkgFit = datum.getData(self._names["bkgFitName"])
+            #~ self.viewPart.plot(xdata, despikeData, pen=None, symbolPen='y', symbolBrush='y', symbol='o')
+            
 
     def incrementCurrentScanID(self):
         self._currentIndex += 1
@@ -238,7 +253,7 @@ class simpleDataPlot(QtGui.QDialog):
         self.plot()
 
     #~ def addDespike(self, xdata, despikeData):
-        #~ self.viewPart.plot(xdata, despikeData, pen=None, symbolPen='y', symbolBrush='y', symbol='o')
+        #~ 
 
     def mouse_click(self, mouseclick):
         mousepos = self._plot.mapFromScene(mouseclick.pos())
@@ -290,23 +305,30 @@ class simpleDataPlot(QtGui.QDialog):
 #~ 
 
 class chooseConfiguration(QtGui.QWidget):
-    choice = QtCore.pyqtSignal(str)
+    choice = QtCore.pyqtSignal(dict)
+    newconfig = QtCore.pyqtSignal()
 
     def __init__(self, parent=None):
         super(chooseConfiguration, self).__init__(parent)
         uic.loadUi("configurationChoice.ui", self)
         self.useLast.clicked.connect(self.uselast)
+        self.useLast.setDisabled(True)
         self.chooseFile.clicked.connect(self.choosefile)
         self.createNew.clicked.connect(self.createnew)
 
     def uselast(self, num):
-        print("use the last config " + str(num))
+        print("use the last config, still trouble determining where the file should be ")
 
     def choosefile(self, num):
-        print("choose config file " + str(num))
+        self._file = QtGui.QFileDialog.getOpenFileName(self, 'Choose spec file', '.', "iint cfg files (*.iint)")
+        
+        if self._file != "":
+            from adapt import configurationHandler
+            handler = configurationHandler.ConfigurationHandler()
+            self.choice.emit(handler.loadConfig(self._file).getProcessDefinitions())
 
     def createnew(self, num):
-        print("new config " + str(num))
+        self.newconfig.emit()
 
 class observableDefinition(QtGui.QWidget):
     observableDicts = QtCore.pyqtSignal(dict, dict)
