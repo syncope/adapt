@@ -34,17 +34,21 @@ class InteractiveP09ProcessingControl():
         self._procBuilder = processBuilder.ProcessBuilder()
         self._dataList = []
         self._processList = []
-        self.observableName = "observable"
-        self.motorName = ""
-    
+        self._names = { "observableName" : "observable",
+                        "motorName" : "",
+                        "despikedObservableName" : ""}
+
+    def getNames(self):
+        return self._names
+
     def getObservableName(self):
-        return self.observableName
+        return self._names["observableName"]
 
     def getMotorName(self):
-        return self.motorName
+        return self._names["motorName"]
 
     def setMotorName(self, motor):
-        self.motorName = motor
+        self._names["motorName"] = motor
     
     def getProcessTypeList(self):
         return self._procControl.getProcessTypeList()

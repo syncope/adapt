@@ -78,7 +78,6 @@ class iintGUI(QtGui.QMainWindow):
     def runFileReader(self, pDict):
         sfr = self._control.createAndInitialize(pDict)
         self._control.convertToDataList(sfr.getData(),"rawdata")
-
         # to set the displayed columns etc. one element of the selected data is needed
         self._rawdataobject = self._control.getDataList()[0].getData("rawdata")
         self._motorname = self._rawdataobject.getStartIdentifier(2)
@@ -95,7 +94,7 @@ class iintGUI(QtGui.QMainWindow):
     def plotit(self):
         # pyqt helper stuff
         self._simpleImageView = simpleDataPlot(parent=self)
-        self._simpleImageView.passControl(self._control)
+        self._simpleImageView.passData(self._control.getDataList(), self._control.getNames())
         self._simpleImageView.plot()
         self._simpleImageView.show()
 
@@ -126,23 +125,6 @@ class iintGUI(QtGui.QMainWindow):
 
     def toggleBKGsubtraction(self):
         self._subtractBackground = not self._subtractBackground
-
-    def setCurrentScanID(self, identifier):
-        self._currentScan = self._dataKeeper[identifier]
-
-    def incrementCurrentScanID(self):
-        try:
-            self.setCurrentScanID(self._currentScan.getScanID() + 1)
-        except KeyError:
-            self.setCurrentScanID(self._dKidlist[0])
-        self.viewSimple()
-
-    def decrementCurrentScanID(self):
-        try:
-            self.setCurrentScanID(self._currentScan.getScanID() - 1)
-        except KeyError:
-            self.setCurrentScanID(self._dKidlist[-1])
-        self.viewSimple()
 
     def selectStartBKG(self, value):
         self._bkgStartPoints  = value
@@ -219,41 +201,41 @@ class iintGUI(QtGui.QMainWindow):
  
 class simpleDataPlot(QtGui.QDialog):
     import pyqtgraph as pg
-    showNext = QtCore.pyqtSignal(int)
-    showPrevious = QtCore.pyqtSignal(int)
-    showNumber = QtCore.pyqtSignal(int)
     mouseposition = QtCore.pyqtSignal(float,float)
 
-    def __init__(self, parent=None,minimum=1,maximum=1000):
+    def __init__(self, parent=None):
         super(simpleDataPlot, self).__init__(parent)
         uic.loadUi("iint_simplePlot.ui", self)
-        self.scanIDspinbox.setMinimum(minimum)
-        self.scanIDspinbox.setMaximum(maximum)
-        self.scanIDspinbox.setKeyboardTracking(False)
-        self.scanIDspinbox.valueChanged.connect(self.showNumber.emit)
-        self.showPreviousBtn.clicked.connect(self.showPrevious.emit)
-        self.showNextBtn.clicked.connect(self.showNext.emit)
+        self.showPreviousBtn.clicked.connect(self.decrementCurrentScanID)
+        self.showNextBtn.clicked.connect(self.incrementCurrentScanID)
         self.viewPart.scene().sigMouseClicked.connect(self.mouse_click)
         self._control = None
+        self._currentIndex = 0
         
-    def setMinimum(self, minimum):
-        self.scanIDspinbox.setMinimum(minimum)
+    def passData(self, datalist, names):
+        self._dataList = datalist
+        self._names = names
 
-    def setMaximum(self, maximum):
-        self.scanIDspinbox.setMaximum(maximum)
-
-    def passControl(self, control):
-        self._control = control
-        self._dataList = control.getDataList()
-
-    def plot(self, scanid = 0):
-        xdata = self._dataList[scanid].getData(self._control.getObservableName())
-        ydata = self._dataList[scanid].getData(self._control.getMotorName())
+    def plot(self):
+        datum = self._dataList[self._currentIndex]
+    
+        self.showID.setText(str(datum.getData("scannumber")))
+        xdata = datum.getData(self._names["motorName"])
+        ydata = datum.getData(self._names["observableName"])
+        self.viewPart.clear()
         self.viewPart.plot(xdata, ydata, pen=None, symbolPen='w', symbolBrush='w', symbol='+')
-        
-        #~ self._simpleImageView.showNext.connect(self.incrementCurrentScanID)
-        #~ self._simpleImageView.showPrevious.connect(self.decrementCurrentScanID)
-        #~ self._simpleImageView.showNumber.connect(self.setCurrentScanID)
+
+    def incrementCurrentScanID(self):
+        self._currentIndex += 1
+        if ( self._currentIndex >= len(self._dataList) ):
+            self._currentIndex -= len(self._dataList)
+        self.plot()
+
+    def decrementCurrentScanID(self):
+        self._currentIndex -= 1
+        if ( self._currentIndex < (-1)*len(self._dataList) ):
+            self._currentIndex += len(self._dataList)
+        self.plot()
 
     #~ def addDespike(self, xdata, despikeData):
         #~ self.viewPart.plot(xdata, despikeData, pen=None, symbolPen='y', symbolBrush='y', symbol='o')
@@ -376,7 +358,6 @@ class observableDefinition(QtGui.QWidget):
         self.observableTimeCB.setDisabled(state)
         self.observableAttFaccheck.setDisabled(state)
         self.despikeCheckBox.setDisabled(state)
-        self.obsPlotIt.setDisabled(state)
         self.obsNextBtn.setDisabled(state)
 
     def toggleAttFac(self):
