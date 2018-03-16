@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>305</width>
-    <height>115</height>
+    <width>640</width>
+    <height>640</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -26,7 +26,11 @@
         </widget>
        </item>
        <item>
-        <widget class="QSpinBox" name="scanIDspinbox"/>
+        <widget class="QLabel" name="showID">
+         <property name="text">
+          <string>None</string>
+         </property>
+        </widget>
        </item>
        <item>
         <spacer name="horizontalSpacer">
