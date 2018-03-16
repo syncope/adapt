@@ -68,6 +68,7 @@ class iintdefinition(IProcess):
 
         observable = detector*mean_monitor*attenfac/monitor/time
         data.addData(self._observableoutput, observable)
+        data.addData(self._motor, motor)
 
         if self._id == "scannumber":
             data.addData(self._id, datum.getScanNumber())
