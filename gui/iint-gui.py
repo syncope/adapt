@@ -65,7 +65,7 @@ class iintGUI(QtGui.QMainWindow):
         # workaround for now: pass info to observable ... (always at change!)
         self.listWidget.currentRowChanged.connect(self._distributeInfo)
 
-        self._chooseConfig.choice.connect(print)
+        self._chooseConfig.choice.connect(self._initializeFromDict)
         self._chooseConfig.newconfig.connect(self.nextWidget)
         self._sfrGUI.pDict.connect(self.runFileReader)
         self._obsDef.observableDicts.connect(self.runObservable)
@@ -75,6 +75,10 @@ class iintGUI(QtGui.QMainWindow):
         self.stackedWidget.setCurrentIndex(ci+1)
         cr = self.listWidget.currentRow()
         self.listWidget.setCurrentRow(cr+1)
+
+    def _initializeFromDict(self, paramDict):
+        print(" i received a parameter dictionary: ")
+        self.nextWidget()
 
     def runFileReader(self, pDict):
         sfr = self._control.createAndInitialize(pDict)
@@ -212,9 +216,9 @@ class simpleDataPlot(QtGui.QDialog):
         self.viewPart.scene().sigMouseClicked.connect(self.mouse_click)
         self._control = None
         self._currentIndex = 0
-        self._showDespike = False
-        self._showBackgroundSubtracted = False
-        self._showBackgroundFit = False
+        self._showdespike = False
+        self._showbkgsubtracted = False
+        self._showbkgfit = False
         
         
     def passData(self, datalist, names):
@@ -232,13 +236,12 @@ class simpleDataPlot(QtGui.QDialog):
         if( self._showdespike ):
             despikeData = datum.getData(self._names["despikedObservableName"])
             self.viewPart.plot(xdata, despikeData, pen=None, symbolPen='y', symbolBrush='y', symbol='o')
-        if( self._showBackgroundSubtracted ):
+        if( self._showbkgsubtracted ):
             bkgSubtracted = datum.getData(self._names["bkgSubtractedName"])
-            self.viewPart.plot(xdata, bkgSubtracted, pen=None, symbolPen='g', symbolBrush='g', symbol='.')
-        if( self._showBackgroundFit ):
+            #~ self.viewPart.plot(xdata, bkgSubtracted, pen=None, symbolPen='g', symbolBrush='g', symbol='.')
+        if( self._showbkgfit ):
             bkgFit = datum.getData(self._names["bkgFitName"])
             #~ self.viewPart.plot(xdata, despikeData, pen=None, symbolPen='y', symbolBrush='y', symbol='o')
-            
 
     def incrementCurrentScanID(self):
         self._currentIndex += 1
@@ -251,9 +254,6 @@ class simpleDataPlot(QtGui.QDialog):
         if ( self._currentIndex < (-1)*len(self._dataList) ):
             self._currentIndex += len(self._dataList)
         self.plot()
-
-    #~ def addDespike(self, xdata, despikeData):
-        #~ 
 
     def mouse_click(self, mouseclick):
         mousepos = self._plot.mapFromScene(mouseclick.pos())

@@ -34,6 +34,7 @@ class InteractiveP09ProcessingControl():
         self._procBuilder = processBuilder.ProcessBuilder()
         self._dataList = []
         self._processList = []
+        self._processes = {}
         self._names = { "observableName" : "observable",
                         "motorName" : "",
                         "despikedObservableName" : ""}
@@ -49,7 +50,7 @@ class InteractiveP09ProcessingControl():
 
     def setMotorName(self, motor):
         self._names["motorName"] = motor
-    
+
     def getProcessTypeList(self):
         return self._procControl.getProcessTypeList()
 
@@ -58,7 +59,7 @@ class InteractiveP09ProcessingControl():
             pd = processData.ProcessData()
             pd.addData(name, datum)
             self._dataList.append(pd)
-    
+
     def getDataList(self):
         return self._dataList
 
@@ -73,30 +74,4 @@ class InteractiveP09ProcessingControl():
         proc = self._procBuilder.createProcessFromDictionary(pDict)
         proc.initialize()
         proc.loopExecute(self._dataList)
-        #~ execOrder = processConfig.getOrderOfExecution()
-        #~ pDefs = processConfig.getProcessDefinitions()
-#~ 
-        #~ for pname in execOrder:
-            #~ self._batchExecutionlist.append( self._procBuilder.createProcessFromDictionary(pDefs[pname]) )
-#~ 
-    #~ def execute(self):
-        #~ self._runInitialization()
-        #~ self._runLoop()
-        #~ self._runFinalization()
-#~ 
-    #~ def _runInitialization(self):
-        #~ for proc in self._batchExecutionlist:
-            #~ proc.initialize(self._data)
-#~ 
-    #~ def _runLoop(self):
-        #~ try:
-            #~ while(1):
-                #~ for proc in self._batchExecutionlist:
-                    #~ proc.execute(self._data)
-                #~ self._data.clearCurrent()
-        #~ except StopIteration:
-            #~ return
-#~ 
-    #~ def _runFinalization(self):
-        #~ for proc in self._batchExecutionlist:
-            #~ proc.finalize(self._data)
+
