@@ -54,11 +54,12 @@ class iintGUI(QtGui.QMainWindow):
         self._obsDef = observableDefinition()
         self._bkgHandling = backgroundHandling()
 
-        self._tasklist = [ self._chooseConfig,
-                           self._sfrGUI,
-                           self._obsDef,
-                           self._bkgHandling]
-        for task in self._tasklist:
+        self._elementlist = [ self._chooseConfig,
+                              self._sfrGUI,
+                              self._obsDef,
+                              self._bkgHandling]
+
+        for task in self._elementlist:
             self.listWidget.addItem(task.windowTitle())
             self.stackedWidget.addWidget(task)
 
@@ -77,7 +78,7 @@ class iintGUI(QtGui.QMainWindow):
         self.listWidget.setCurrentRow(cr+1)
 
     def _initializeFromDict(self, paramDict):
-        print(" i received a parameter dictionary: ")
+        self._control.loadConfigDict(paramDict)
         self.nextWidget()
 
     def runFileReader(self, pDict):
@@ -99,7 +100,14 @@ class iintGUI(QtGui.QMainWindow):
     def plotit(self):
         # pyqt helper stuff
         self._simpleImageView = simpleDataPlot(parent=self)
-        self._simpleImageView.passData(self._control.getDataList(), self._control.getNames())
+        #~ datalist, motorname, obsname, despobsname, bkgname, signalname):
+        self._simpleImageView.passData( self._control.getDataList(), 
+                                        self._control.getMotorName(),
+                                        self._control.getObservableName(),
+                                        self._control.getDespikedObservableName(),
+                                        self._control.getBackgroundName(),
+                                        self._control.getSignalName()
+                                        )
         self._simpleImageView.plot()
         self._simpleImageView.show()
 
@@ -120,13 +128,6 @@ class iintGUI(QtGui.QMainWindow):
 
     def _distributeInfo(self):
         self._obsDef.passInfo(self._rawdataobject)
-
-    def getAndOpenFile(self):
-        self._file = QtGui.QFileDialog.getOpenFileName(self, 'Choose spec file', '.', "SPEC files (*.spc *.spe *.spec)")
-        self.inputFileLE.setText(self._file)
-
-    def defineOutput(self):
-        self._outfile = QtGui.QFileDialog.getOpenFileName(self, 'Select output file', '.')
 
     def toggleBKGsubtraction(self):
         self._subtractBackground = not self._subtractBackground
@@ -221,26 +222,30 @@ class simpleDataPlot(QtGui.QDialog):
         self._showbkgfit = False
         
         
-    def passData(self, datalist, names):
+    def passData(self, datalist, motorname, obsname, despobsname, bkgname, signalname):
         self._dataList = datalist
-        self._names = names
+        self._motorName = motorname
+        self._observableName = obsname
+        self._despObservableName = despobsname
+        self._backgroundPointsName = bkgname
+        self._signalName = signalname
 
     def plot(self):
         datum = self._dataList[self._currentIndex]
     
         self.showID.setText(str(datum.getData("scannumber")))
-        xdata = datum.getData(self._names["motorName"])
-        ydata = datum.getData(self._names["observableName"])
+        xdata = datum.getData(self._motorName)
+        ydata = datum.getData(self._observableName)
         self.viewPart.clear()
         self.viewPart.plot(xdata, ydata, pen=None, symbolPen='w', symbolBrush='w', symbol='+')
         if( self._showdespike ):
-            despikeData = datum.getData(self._names["despikedObservableName"])
+            despikeData = datum.getData(self._despObservableName)
             self.viewPart.plot(xdata, despikeData, pen=None, symbolPen='y', symbolBrush='y', symbol='o')
         if( self._showbkgsubtracted ):
-            bkgSubtracted = datum.getData(self._names["bkgSubtractedName"])
+            bkgSubtracted = datum.getData(self._signalName)
             #~ self.viewPart.plot(xdata, bkgSubtracted, pen=None, symbolPen='g', symbolBrush='g', symbol='.')
-        if( self._showbkgfit ):
-            bkgFit = datum.getData(self._names["bkgFitName"])
+        #~ if( self._showbkgfit ):
+            #~ bkgFit = datum.getData(self._names["bkgFitName"])
             #~ self.viewPart.plot(xdata, despikeData, pen=None, symbolPen='y', symbolBrush='y', symbol='o')
 
     def incrementCurrentScanID(self):
@@ -320,7 +325,7 @@ class chooseConfiguration(QtGui.QWidget):
         print("use the last config, still trouble determining where the file should be ")
 
     def choosefile(self, num):
-        self._file = QtGui.QFileDialog.getOpenFileName(self, 'Choose spec file', '.', "iint cfg files (*.iint)")
+        self._file = QtGui.QFileDialog.getOpenFileName(self, 'Choose iint config file', '.', "iint cfg files (*.iint)")
         
         if self._file != "":
             from adapt import configurationHandler
