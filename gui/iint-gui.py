@@ -214,14 +214,23 @@ class simpleDataPlot(QtGui.QDialog):
         uic.loadUi("iint_simplePlot.ui", self)
         self.showPreviousBtn.clicked.connect(self.decrementCurrentScanID)
         self.showNextBtn.clicked.connect(self.incrementCurrentScanID)
+        self.showRAW.stateChanged.connect(self._toggleRAW)
+        self.showDES.stateChanged.connect(self._toggleDES)
+        self.showBKG.stateChanged.connect(self._toggleBKG)
+        self.showSIG.stateChanged.connect(self._toggleSIG)
+        self.showRAW.stateChanged.connect(self.plot)
+        self.showDES.stateChanged.connect(self.plot)
+        self.showBKG.stateChanged.connect(self.plot)
+        self.showSIG.stateChanged.connect(self.plot)
         self.viewPart.scene().sigMouseClicked.connect(self.mouse_click)
         self._control = None
         self._currentIndex = 0
+        self._showraw = True
         self._showdespike = False
+        self._showbkg = False
         self._showbkgsubtracted = False
-        self._showbkgfit = False
-        
-        
+        #~ self._showbkgfit = False
+
     def passData(self, datalist, motorname, obsname, despobsname, bkgname, signalname):
         self._dataList = datalist
         self._motorName = motorname
@@ -229,6 +238,26 @@ class simpleDataPlot(QtGui.QDialog):
         self._despObservableName = despobsname
         self._backgroundPointsName = bkgname
         self._signalName = signalname
+        self._checkDataAvailability()
+
+    def _checkDataAvailability(self):
+        datum = self._dataList[0]
+        try:
+            datum.getData(self._observableName)
+        except KeyError:
+            self.showRAW.setDisabled(True)
+        try:
+            datum.getData(self._despObservableName)
+        except KeyError:
+            self.showDES.setDisabled(True)
+        try:
+            datum.getData(self._backgroundPointsName)
+        except KeyError:
+            self.showBKG.setDisabled(True)
+        try:
+            datum.getData(self._signalName)
+        except KeyError:
+            self.showSIG.setDisabled(True)
 
     def plot(self):
         datum = self._dataList[self._currentIndex]
@@ -237,16 +266,33 @@ class simpleDataPlot(QtGui.QDialog):
         xdata = datum.getData(self._motorName)
         ydata = datum.getData(self._observableName)
         self.viewPart.clear()
-        self.viewPart.plot(xdata, ydata, pen=None, symbolPen='w', symbolBrush='w', symbol='+')
+        if( self._showraw):
+            self.viewPart.plot(xdata, ydata, pen=None, symbolPen='w', symbolBrush='w', symbol='+')
         if( self._showdespike ):
             despikeData = datum.getData(self._despObservableName)
-            self.viewPart.plot(xdata, despikeData, pen=None, symbolPen='y', symbolBrush='y', symbol='o')
+            self.viewPart.plot(xdata, despikeData, pen=None, symbolPen='y', symbolBrush='y', symbol='.')
+        if( self._showbkg ):
+            bkg = datum.getData(self._backgroundPointsName)
+            self.viewPart.plot(xdata, bkg, pen=None, symbolPen='r', symbolBrush='r', symbol='+')
         if( self._showbkgsubtracted ):
-            bkgSubtracted = datum.getData(self._signalName)
-            #~ self.viewPart.plot(xdata, bkgSubtracted, pen=None, symbolPen='g', symbolBrush='g', symbol='.')
+            signal = datum.getData(self._signalName)
+            self.viewPart.plot(xdata, signal, pen=None, symbolPen='b', symbolBrush='b', symbol='o')
         #~ if( self._showbkgfit ):
             #~ bkgFit = datum.getData(self._names["bkgFitName"])
             #~ self.viewPart.plot(xdata, despikeData, pen=None, symbolPen='y', symbolBrush='y', symbol='o')
+
+    def _toggleRAW(self):
+        self._showraw = not self._showraw 
+
+    def _toggleDES(self):
+        self._showdespike = not self._showdespike 
+
+    def _toggleBKG(self):
+        self._showbkg = not self._showbkg
+
+    def _toggleSIG(self):
+        self._showbkgsubtracted = not self._showbkgsubtracted 
+
 
     def incrementCurrentScanID(self):
         self._currentIndex += 1
