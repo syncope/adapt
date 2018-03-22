@@ -36,16 +36,16 @@ class specfilereader(IProcess):
         self._inPar = ProcessParameter("filename", str)
         self._outPar = ProcessParameter("outputdata", str)
         self._scanlistPar = ProcessParameter("scanlist", str, None, optional=True)
-        self._stridePar = ProcessParameter("stride", int, 1, optional=True)
+        #~ self._stridePar = ProcessParameter("stride", int, 1, optional=True)
         self._parameters.add(self._inPar)
         self._parameters.add(self._outPar)
         self._parameters.add(self._scanlistPar)
-        self._parameters.add(self._stridePar)
+        #~ self._parameters.add(self._stridePar)
 
     def initialize(self):
         self._scanlist = self._scanlistPar.get()
         self.data = dataHandler.DataHandler(self._inPar.get(), typehint="spec").getFileHandler().getAll(self._scanlist)
-        self._stride = self._stridePar.get()
+        #~ self._stride = self._stridePar.get()
         self.dataIterator = iter(self.data)
 
     def execute(self, data):
@@ -71,7 +71,7 @@ class specfilereader(IProcess):
 
 
 class specfilereaderGUI(QtGui.QWidget):
-    pDict = QtCore.pyqtSignal(dict)
+    valuesSet = QtCore.pyqtSignal()
 
     def __init__(self, parent=None):
         super(specfilereaderGUI, self).__init__(parent)
@@ -80,7 +80,7 @@ class specfilereaderGUI(QtGui.QWidget):
         formfile = os.path.join(dir_path, "ui/specfilereader.ui")
         uic.loadUi(formfile, self)
         self.chooseInputFileBtn.clicked.connect(self.getAndOpenFile)
-        self.okBtn.clicked.connect(self.emittit)
+        self.okBtn.clicked.connect(self.valuesSet.emit)
         self.okBtn.setDisabled(True)
         self._specReaderDict = {}
 
@@ -91,16 +91,18 @@ class specfilereaderGUI(QtGui.QWidget):
             self.okBtn.setDisabled(False)
 
     def getParameterDict(self):
-        return self._specReaderDict
-
-    def setParameterDict(self, paramDict):
-         self._specReaderDict = paramDict
-         self.inputFileLE.setText(self._specReaderDict["filename"])
-         self.scanSelectionInput.setText(self._specReaderDict["scanlist"])
-
-    def emittit(self):
         self._specReaderDict["type"] = "specfilereader"
         self._specReaderDict["filename"] =  self._file
         self._specReaderDict["scanlist"] = self.scanSelectionInput.text()
         self._specReaderDict["outputdata"] = "default"
-        self.pDict.emit(self._specReaderDict)
+        return self._specReaderDict
+
+    def setParameterDict(self, paramDict):
+        self._specReaderDict = paramDict
+        self._file = self._specReaderDict["filename"]
+        self.inputFileLE.setText(self._file)
+        self.scanSelectionInput.setText(self._specReaderDict["scanlist"])
+        self.okBtn.setDisabled(False)
+
+    #~ def emittit(self):
+        #~ self.pDict.emit(self._specReaderDict)
