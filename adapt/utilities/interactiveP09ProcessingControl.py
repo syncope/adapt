@@ -22,6 +22,7 @@
 from adapt import processingControl
 from adapt import processData
 from adapt import processBuilder
+
 from adapt.processes import specfilereader
 from adapt.processes import iintdefinition
 from adapt.processes import filter1d
@@ -44,6 +45,7 @@ class InteractiveP09ProcessingControl():
         self._dataList = []
         self._processList = []
         self._motorName = ""
+        self._rawName = "rawdata"
         self._observableName = "observable"
         self._despObservableName = "despikedobservable"
         self._backgroundPointsName = "bkgPoints"
@@ -55,67 +57,71 @@ class InteractiveP09ProcessingControl():
                                "bkgfit",
                                "calcbkgpoints",
                                "bkgsubtract",
-                               "curvefit",
+                               "signalcurvefit",
                                "trapint",
                                "finalize" ]
-        self._processHelper = {}
-        self._setupProcessHelper()
+        self._procRunList = []
+        self._processParameters = {}
+        self._setupProcessParameters()
         self._setupDefaultNames()
 
-    def _setupProcessHelper(self):
-        self._processHelper["read"] = iintGUIhelper("read", specfilereader.specfilereader().getProcessParameters().keys())
-        self._processHelper["observabledef"] = iintGUIhelper("observabledef", iintdefinition.iintdefinition().getProcessParameters().keys())
-        self._processHelper["despike"] = iintGUIhelper("despike", filter1d.filter1d().getProcessParameters().keys())
-        self._processHelper["bkgselect"] = iintGUIhelper("bkgselect", subsequenceselection.subsequenceselection().getProcessParameters().keys())
-        self._processHelper["bkgfit"] = iintGUIhelper("bkgfit", curvefitting.curvefitting().getProcessParameters().keys())
-        self._processHelper["calcbkgpoints"] = iintGUIhelper("calcbkgpoints", gendatafromfunction.gendatafromfunction().getProcessParameters().keys())
-        self._processHelper["bkgsubtract"] = iintGUIhelper("bkgsubtract", backgroundsubtraction.backgroundsubtraction().getProcessParameters().keys()) 
-        self._processHelper["curvefit"] = iintGUIhelper("curvefit", curvefitting.curvefitting().getProcessParameters().keys())
-        self._processHelper["trapint"] = iintGUIhelper("trapint", trapezoidintegration.trapezoidintegration().getProcessParameters().keys()) 
-        self._processHelper["finalize"] = iintGUIhelper("finalize", iintfinalization.iintfinalization().getProcessParameters().keys()) 
+    def _setupProcessParameters(self):
+        self._processParameters["read"] = specfilereader.specfilereader().getProcessParameters()
+        self._processParameters["observabledef"] = iintdefinition.iintdefinition().getProcessParameters()
+        self._processParameters["despike"] = filter1d.filter1d().getProcessParameters()
+        self._processParameters["bkgselect"] = subsequenceselection.subsequenceselection().getProcessParameters()
+        self._processParameters["bkgfit"] = curvefitting.curvefitting().getProcessParameters()
+        self._processParameters["calcbkgpoints"] = gendatafromfunction.gendatafromfunction().getProcessParameters()
+        self._processParameters["bkgsubtract"] =backgroundsubtraction.backgroundsubtraction().getProcessParameters()
+        self._processParameters["signalcurvefit"] =  curvefitting.curvefitting().getProcessParameters()
+        self._processParameters["trapint"] = trapezoidintegration.trapezoidintegration().getProcessParameters()
+        self._processParameters["finalize"] = iintfinalization.iintfinalization().getProcessParameters()
 
     def _setupDefaultNames(self):
-        self._processHelper["read"].setParamValue("outputdata","rawdata")
+        self._processParameters["read"].setValue("outputdata",self._rawName)
         # from out to in:
-        self._processHelper["observabledef"].setParamValue("input","rawdata")
-        self._processHelper["observabledef"].setParamValue("observableoutput", self._observableName)
+        self._processParameters["observabledef"].setValue("input",self._rawName)
+        self._processParameters["observabledef"].setValue("observableoutput", self._observableName)
         # from out to in:
-        self._processHelper["despike"].setParamValue("input", self._observableName)
-        self._processHelper["despike"].setParamValue("method","p09despiking")
-        self._processHelper["despike"].setParamValue("output", self._despObservableName)
+        self._processParameters["despike"].setValue("input", self._observableName)
+        self._processParameters["despike"].setValue("method","p09despiking")
+        self._processParameters["despike"].setValue("output", self._despObservableName)
         # from out to in
-        self._processHelper["bkgselect"].setParamValue("input",[ self._despObservableName, self._motorName])
-        self._processHelper["bkgselect"].setParamValue("output", ["bkgX" ,"bkgY"])
-        self._processHelper["bkgselect"].setParamValue("selectors", ["selectfromstart" ,"selectfromend"])
-        self._processHelper["bkgselect"].setParamValue("startpointnumber", 3)
-        self._processHelper["bkgselect"].setParamValue("endpointnumber", 3)
+        self._processParameters["bkgselect"].setValue("input",[ self._despObservableName, self._motorName])
+        self._processParameters["bkgselect"].setValue("output", ["bkgX" ,"bkgY"])
+        self._processParameters["bkgselect"].setValue("selectors", ["selectfromstart" ,"selectfromend"])
+        self._processParameters["bkgselect"].setValue("startpointnumber", 3)
+        self._processParameters["bkgselect"].setValue("endpointnumber", 3)
         # fit bkg
-        self._processHelper["bkgfit"].setParamValue("xdata","bkgX")
-        self._processHelper["bkgfit"].setParamValue("ydata","bkgY")
-        self._processHelper["bkgfit"].setParamValue("error","None")
-        self._processHelper["bkgfit"].setParamValue("result","bkgfitresult")
-        self._processHelper["bkgfit"].setParamValue("model",{ "linearModel" : {"name" : "lin_"}})
+        self._processParameters["bkgfit"].setValue("xdata","bkgX")
+        self._processParameters["bkgfit"].setValue("ydata","bkgY")
+        self._processParameters["bkgfit"].setValue("error","None")
+        self._processParameters["bkgfit"].setValue("result","bkgfitresult")
+        self._processParameters["bkgfit"].setValue("model",{ "linearModel" : {"name" : "lin_"}})
         # calc bkg points
-        self._processHelper["calcbkgpoints"].setParamValue("fitresult","bkgfitresult")
-        self._processHelper["calcbkgpoints"].setParamValue("xdata",self._motorName)
-        self._processHelper["calcbkgpoints"].setParamValue("output", self._backgroundPointsName)
+        self._processParameters["calcbkgpoints"].setValue("fitresult","bkgfitresult")
+        self._processParameters["calcbkgpoints"].setValue("xdata",self._motorName)
+        self._processParameters["calcbkgpoints"].setValue("output", self._backgroundPointsName)
         # subtract bkg
-        self._processHelper["bkgsubtract"].setParamValue("input", self._despObservableName)
-        self._processHelper["bkgsubtract"].setParamValue("output", self._signalName)
-        self._processHelper["bkgsubtract"].setParamValue("background", self._backgroundPointsName)
+        self._processParameters["bkgsubtract"].setValue("input", self._despObservableName)
+        self._processParameters["bkgsubtract"].setValue("output", self._signalName)
+        self._processParameters["bkgsubtract"].setValue("background", self._backgroundPointsName)
         
     def useNoDespiking(self):
-        self._processHelper["bkgselect"].setParamValue("input", self._observableName)
-        self._processHelper["bkgselect"].setParamValue("input", [self._observableName, self._motorName] )
-        self._processHelper["bkgsubtract"].setParamValue("input", self._observableName)
+        self._processParameters["bkgselect"].setValue("input", self._observableName)
+        self._processParameters["bkgselect"].setValue("input", [self._observableName, self._motorName] )
+        self._processParameters["bkgsubtract"].setValue("input", self._observableName)
         
+    def getRawDataName(self):
+        return self._rawName
+
     def getMotorName(self):
         return self._motorName
 
     def setMotorName(self, motor):
         self._motorName= motor
-        self._processHelper["bkgselect"].setParamValue("input",[ self._despObservableName, self._motorName])
-        self._processHelper["calcbkgpoints"].setParamValue("xdata", self._motorName)
+        self._processParameters["bkgselect"].setValue("input",[ self._despObservableName, self._motorName])
+        self._processParameters["calcbkgpoints"].setValue("xdata", self._motorName)
 
     def getObservableName(self):
         return self._observableName
@@ -132,7 +138,7 @@ class InteractiveP09ProcessingControl():
     def getProcessTypeList(self):
         return self._procControl.getProcessTypeList()
 
-    def convertToDataList(self, data, name):
+    def createDataList(self, data, name):
         for datum in data:
             pd = processData.ProcessData()
             pd.addData(name, datum)
@@ -153,24 +159,18 @@ class InteractiveP09ProcessingControl():
         proc.initialize()
         proc.loopExecute(self._dataList)
 
-    def loadConfigDict(self, someDict):
-        for k,v in someDict.items():
-            print(" key: " + str(k) + " has value: " + str(v))
+    def loadConfig(self, processConfig):
+        self._procRunList.clear()
+        execOrder = processConfig.getOrderOfExecution()
+        pDefs = processConfig.getProcessDefinitions()
+        for proc in execOrder:
+            if proc in self._processNames:
+                self._procRunList.append(proc)
+                for k, v in pDefs[proc].items():
+                    if k != "type":
+                        self._processParameters[proc][k] =v
+            else:
+                print("Wrong configuration file, unrecognized process name/type: " + str(proc))        
 
-class iintGUIhelper():
-
-    def __init__(self, name=None, paramnames=None):
-        self._name = name
-        self._paramDict = {p: None for p in paramnames}
-
-    def setParamValue(self, name, value):
-        try:
-            self._paramDict[name] = value
-        except KeyError:
-            raise KeyError("[helper] setting the value of param " + str(name) + " failed, name is unknown")
-
-    def getParamDict(self):
-        return self._paramDict
-
-    def getName(self):
-        return self._name
+    def getSFRDict(self):
+        return self._processParameters["read"]

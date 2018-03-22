@@ -66,9 +66,9 @@ class iintGUI(QtGui.QMainWindow):
         # workaround for now: pass info to observable ... (always at change!)
         self.listWidget.currentRowChanged.connect(self._distributeInfo)
 
-        self._chooseConfig.choice.connect(self._initializeFromDict)
+        self._chooseConfig.choice.connect(self._initializeFromConfig)
         self._chooseConfig.newconfig.connect(self.nextWidget)
-        self._sfrGUI.pDict.connect(self.runFileReader)
+        self._sfrGUI.valuesSet.connect(self.runFileReader)
         self._obsDef.observableDicts.connect(self.runObservable)
 
     def nextWidget(self):
@@ -77,15 +77,17 @@ class iintGUI(QtGui.QMainWindow):
         cr = self.listWidget.currentRow()
         self.listWidget.setCurrentRow(cr+1)
 
-    def _initializeFromDict(self, paramDict):
-        self._control.loadConfigDict(paramDict)
+    def _initializeFromConfig(self):
+        self._control.loadConfig(self._chooseConfig.getConfig())
+        self._sfrGUI.setParameterDict(self._control.getSFRDict())
         self.nextWidget()
 
-    def runFileReader(self, pDict):
-        sfr = self._control.createAndInitialize(pDict)
-        self._control.convertToDataList(sfr.getData(),"rawdata")
+    def runFileReader(self):
+        sfr = self._control.createAndInitialize(self._sfrGUI.getParameterDict())
+        self._control.createDataList(sfr.getData(), self._control.getRawDataName())
+
         # to set the displayed columns etc. one element of the selected data is needed
-        self._rawdataobject = self._control.getDataList()[0].getData("rawdata")
+        self._rawdataobject = self._control.getDataList()[0].getData(self._control.getRawDataName())
         self._motorname = self._rawdataobject.getStartIdentifier(2)
         self._control.setMotorName(self._motorname)
         self.nextWidget()
@@ -100,7 +102,6 @@ class iintGUI(QtGui.QMainWindow):
     def plotit(self):
         # pyqt helper stuff
         self._simpleImageView = simpleDataPlot(parent=self)
-        #~ datalist, motorname, obsname, despobsname, bkgname, signalname):
         self._simpleImageView.passData( self._control.getDataList(), 
                                         self._control.getMotorName(),
                                         self._control.getObservableName(),
@@ -113,94 +114,11 @@ class iintGUI(QtGui.QMainWindow):
 
 
         #~ self._fitPanel = firstFitPanel(parent=self, dataview=self._simpleImageView)
-
-        #~ # background section
-        #~ self.subtractBkgCheckBox.stateChanged.connect(self.toggleBKGsubtraction)
-        #~ self.bkgStartPointsSB.setKeyboardTracking(False)
-        #~ self.bkgStartPointsSB.valueChanged.connect(self.selectStartBKG)
-        #~ self.bkgEndPointsSB.setKeyboardTracking(False)
-        #~ self.bkgEndPointsSB.valueChanged.connect(self.selectEndBKG)
-        #~ self.fitBKGbtn.clicked.connect(self.selectAndFitBackground)
-        #~ self.subtractBkgCheckBox.stateChanged.connect(self.subtractBackground)
-
         #~ # signal section
         #~ self.openFitPanelPushBtn.clicked.connect(self.showFitPanel)
 
     def _distributeInfo(self):
         self._obsDef.passInfo(self._rawdataobject)
-
-    def toggleBKGsubtraction(self):
-        self._subtractBackground = not self._subtractBackground
-
-    def selectStartBKG(self, value):
-        self._bkgStartPoints  = value
-
-    def selectEndBKG(self, value):
-        self._bkgEndPoints  = value
-
-    def configureBKGselection(self):
-        bkgSelDict = { "input" : [ self._processedObservableName ,self._motorname ],
-                       "output" : [ "bkgY", "bkgX" ] ,
-                       "selectors": [ "selectfromstart" , "selectfromend" ],
-                       "startpointnumber" : self._bkgStartPoints, # CHANGE!
-                       "endpointnumber" : self._bkgEndPoints } # CHANGE!
-        self._bkgSelector.setParameterValues(bkgSelDict)
-
-    def selectAndFitBackground(self):
-        self.configureBKGselection()
-        self.configureBKGFitter()
-        bkgData = processData.ProcessData()
-        self._bkgSelector.initialize()
-        self._bkgFitter.initialize()
-        for scan in self._dataKeeper.values():
-            bkgData.addData(self._processedObservableName, scan.getDespiked())
-            bkgData.addData(self._motorname, scan.getMotor())
-            self._bkgSelector.execute(bkgData)
-            self._bkgFitter.execute(bkgData)
-            scan.setBackground(bkgData.getData("bkgfitresult"))
-            bkgData.clearCurrent()
-        self.subtractBkgCheckBox.setDisabled(False)
-
-    def configureBKGFitter(self):
-        bkfFitDict = { "model" : { "linearModel": { "name" : "lin_"}},
-                       "xdata" : "bkgX",
-                       "ydata" : "bkgY",
-                       "result": "bkgfitresult"}
-        self._bkgFitter.setParameterValues(bkfFitDict)
-
-    def configureBKGDataGenerator(self):
-        bkgGenDict = { "fitresult" : "bkgfitresult",
-                        "xdata" :  "pth", # CHANGE!
-                        "output" : "bkg" }
-        self._bkgValues.setParameterValues(bkgGenDict)
-
-    def configureBKGSubtractor(self):
-        bkgSubtractDict =  { "input" : self._processedObservableName,
-                             "background" : "bkg",
-                             "output" : "despikedSignal" }  # CHANGE!
-        self._bkgSubtractor.setParameterValues(bkgSubtractDict)
-
-    def subtractBackground(self):
-        self.configureBKGDataGenerator()
-        self.configureBKGSubtractor()
-        
-        bkgData = processData.ProcessData()
-        self._bkgValues.initialize()
-        self._bkgSubtractor.initialize()
-        for scan in self._dataKeeper.values():
-            bkgData.addData("bkgfitresult", scan.getBackground())
-            bkgData.addData(self._motorname, scan.getMotor())
-            bkgData.addData(self._processedObservableName, scan.getDespiked())
-            self._bkgValues.execute(bkgData)
-            self._bkgSubtractor.execute(bkgData)
-            scan.setBkgSubtracted(bkgData.getData("despikedSignal"))
-            bkgData.clearCurrent()
-
-    def configureTrapezoidIntegrator(self):
-        trapintDict = { "motor" : "pth", # CHANGE!
-                        "observable" : "observable", # CHANGE!
-                        "output" : "trapint" }
-        self._trapezoidIntegrator.setParameterValues(trapintDict)
 
     def showFitPanel(self):
         self._fitPanel.show()
@@ -356,7 +274,7 @@ class simpleDataPlot(QtGui.QDialog):
 #~ 
 
 class chooseConfiguration(QtGui.QWidget):
-    choice = QtCore.pyqtSignal(dict)
+    choice = QtCore.pyqtSignal()
     newconfig = QtCore.pyqtSignal()
 
     def __init__(self, parent=None):
@@ -366,6 +284,7 @@ class chooseConfiguration(QtGui.QWidget):
         self.useLast.setDisabled(True)
         self.chooseFile.clicked.connect(self.choosefile)
         self.createNew.clicked.connect(self.createnew)
+        self._procconf = None
 
     def uselast(self, num):
         print("use the last config, still trouble determining where the file should be ")
@@ -376,7 +295,11 @@ class chooseConfiguration(QtGui.QWidget):
         if self._file != "":
             from adapt import configurationHandler
             handler = configurationHandler.ConfigurationHandler()
-            self.choice.emit(handler.loadConfig(self._file).getProcessDefinitions())
+            self._procconf = handler.loadConfig(self._file)
+            self.choice.emit()
+
+    def getConfig(self):
+        return self._procconf
 
     def createnew(self, num):
         self.newconfig.emit()
