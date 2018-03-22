@@ -46,6 +46,13 @@ class IProcess():
                 else:
                     raise ValueError("Can't set process parameters, value of name " + str(pp.name) + " is missing.")
 
+    def setParameterValue(self, name, value):
+        '''Set an individual process parameter value by name.'''
+        try:
+            self._parameters[name] = value
+        except KeyError:
+            raise KeyError("There is no parameter of name " + str(name) + " to this process. Please check.")
+
     def _internalCheck(self):
         return True
 

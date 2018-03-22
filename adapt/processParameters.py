@@ -55,3 +55,9 @@ class ProcessParameters(dict):
 
     def add(self, pp : ProcessParameter):
         self[pp.name] = pp
+
+    def setValue(self, name, value):
+        try:
+            self[name] = value
+        except KeyError:
+            raise KeyError("In the dictionary of the process parameters there is no entry with the name " + str(name) + " . Please check.")
