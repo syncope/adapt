@@ -80,6 +80,7 @@ class iintGUI(QtGui.QMainWindow):
     def _initializeFromConfig(self):
         self._control.loadConfig(self._chooseConfig.getConfig())
         self._sfrGUI.setParameterDict(self._control.getSFRDict())
+        self._obsDef.setParameterDict(self._control.getOBSDict())
         self.nextWidget()
 
     def runFileReader(self):
@@ -93,6 +94,7 @@ class iintGUI(QtGui.QMainWindow):
         self.nextWidget()
 
     def runObservable(self, obsDict, despDict):
+        print("running? " + str(obsDict))
         self._control.createAndBulkExecute(obsDict)
         if despDict != {}:
             self._control.createAndBulkExecute(despDict)
@@ -395,6 +397,17 @@ class observableDefinition(QtGui.QWidget):
             self._despikeDict["output"] = "despikedObservable"
         
         self.observableDicts.emit(self._obsDict, self._despikeDict)
+
+    def setParameterDict(self, paramDict):
+        print("setting : " + str(paramDict["motor_column"].get()) + " and someting like: " + str(paramDict["monitor_column"].get()))
+        self.observableMotorLabel.setStyleSheet("color: blue;")
+        self.observableMotorLabel.setText(paramDict["motor_column"].get())
+        self.observableDetectorCB.addItem(paramDict["detector_column"].get())
+        self.observableMonitorCB.addItem(paramDict["monitor_column"].get())
+        self.observableTimeCB.addItem(paramDict["exposureTime_column"].get())
+        #~ self.observableAttFaccheck.addItem(
+        #~ self.despikeCheckBox.addItem(
+        pass
 
 class backgroundHandling(QtGui.QWidget):
     bkgDict = QtCore.pyqtSignal(dict)

@@ -155,7 +155,12 @@ class InteractiveP09ProcessingControl():
     def createAndBulkExecute(self, pDict):
         if pDict is None:
             return
+        print("creating: pDict is " + str(type(pDict)) + " :: " + str(pDict))
+        pname = pDict["name"]
         proc = self._procBuilder.createProcessFromDictionary(pDict)
+        for k, v in pDict.items():
+            if k != "type":
+                self._processParameters[proc].setParameterValue(k, v)
         proc.initialize()
         proc.loopExecute(self._dataList)
 
@@ -174,3 +179,6 @@ class InteractiveP09ProcessingControl():
 
     def getSFRDict(self):
         return self._processParameters["read"]
+
+    def getOBSDict(self):
+        return self._processParameters["observabledef"]
