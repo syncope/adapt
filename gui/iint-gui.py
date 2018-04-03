@@ -63,9 +63,6 @@ class iintGUI(QtGui.QMainWindow):
             self.listWidget.addItem(task.windowTitle())
             self.stackedWidget.addWidget(task)
 
-        # workaround for now: pass info to observable ... (always at change!)
-        self.listWidget.currentRowChanged.connect(self._distributeInfo)
-
         self._chooseConfig.choice.connect(self._initializeFromConfig)
         self._chooseConfig.newconfig.connect(self.nextWidget)
         self._sfrGUI.valuesSet.connect(self.runFileReader)
@@ -80,18 +77,20 @@ class iintGUI(QtGui.QMainWindow):
     def _initializeFromConfig(self):
         self._control.loadConfig(self._chooseConfig.getConfig())
         self._sfrGUI.setParameterDict(self._control.getSFRDict())
-        print("loading... from control: " + str(self._control.getOBSDict()))
-        self._obsDef.setParameterDict(self._control.getOBSDict())
+        self.runFileReader()
         self.nextWidget()
+        self._obsDef.setParameterDict(self._control.getOBSDict())
+        self._obsDef.emittit()
 
     def runFileReader(self):
         sfr = self._control.createAndInitialize(self._sfrGUI.getParameterDict())
         self._control.createDataList(sfr.getData(), self._control.getRawDataName())
-
         # to set the displayed columns etc. one element of the selected data is needed
         self._rawdataobject = self._control.getDataList()[0].getData(self._control.getRawDataName())
         self._motorname = self._rawdataobject.getStartIdentifier(2)
         self._control.setMotorName(self._motorname)
+        # pass info to the observable definition part
+        self._obsDef.passInfo(self._rawdataobject)
         self.nextWidget()
 
     def runObservable(self, obsDict, despDict):
@@ -118,9 +117,6 @@ class iintGUI(QtGui.QMainWindow):
         #~ self._fitPanel = firstFitPanel(parent=self, dataview=self._simpleImageView)
         #~ # signal section
         #~ self.openFitPanelPushBtn.clicked.connect(self.showFitPanel)
-
-    def _distributeInfo(self):
-        self._obsDef.passInfo(self._rawdataobject)
 
     def showFitPanel(self):
         self._fitPanel.show()
@@ -315,13 +311,13 @@ class observableDefinition(QtGui.QWidget):
         uic.loadUi("iintobservable.ui", self)
         self._obsDict = {}
         self._despikeDict = {}
-        self.observableDetectorCB.activated.connect(self.setObservable)
-        self.observableMonitorCB.activated.connect(self.setMonitor)
-        self.observableTimeCB.activated.connect(self.setTime)
+        self.observableDetectorCB.currentIndexChanged.connect(self.setObservable)
+        self.observableMonitorCB.currentIndexChanged.connect(self.setMonitor)
+        self.observableTimeCB.currentIndexChanged.connect(self.setTime)
         self._useAttenuationFactor = False
         self.observableAttFaccheck.stateChanged.connect(self.toggleAttFac)
         self.observableAttFacCB.setDisabled(True)
-        self.observableAttFacCB.activated.connect(self.setAttFac)
+        self.observableAttFacCB.currentIndexChanged.connect(self.setAttFac)
         self.despikeCheckBox.stateChanged.connect(self.toggleDespiking)
         self._despike = False
         self._notEnabled(True)
@@ -338,6 +334,7 @@ class observableDefinition(QtGui.QWidget):
         self._currentdataLabels = dataobject.getLabels()
         self.observableMotorLabel.setStyleSheet("color: blue;")
         self._motorname = dataobject.getStartIdentifier(2)
+
         # now set the texts and labels
         self.observableMotorLabel.setText(self._motorname)
         self.observableDetectorCB.clear()
@@ -401,9 +398,22 @@ class observableDefinition(QtGui.QWidget):
     def setParameterDict(self, paramDict):
         self.observableMotorLabel.setStyleSheet("color: blue;")
         self.observableMotorLabel.setText(paramDict["motor_column"])
-        self.observableDetectorCB.addItem(paramDict["detector_column"])
-        self.observableMonitorCB.addItem(paramDict["monitor_column"])
-        self.observableTimeCB.addItem(paramDict["exposureTime_column"])
+        # first get index of element
+        index = self.observableDetectorCB.findText(paramDict["detector_column"], QtCore.Qt.MatchExactly) 
+        if index >= 0:
+            self.observableDetectorCB.setCurrentIndex(index)
+
+        index = self.observableMonitorCB.findText(paramDict["monitor_column"], QtCore.Qt.MatchExactly) 
+        if index >= 0:
+            self.observableMonitorCB.setCurrentIndex(index)
+
+        index = self.observableTimeCB.findText(paramDict["exposureTime_column"], QtCore.Qt.MatchExactly) 
+        if index >= 0:
+            self.observableTimeCB.setCurrentIndex(index)
+
+        #~ self.observableDetectorCB.addItem(paramDict["detector_column"])
+        #~ self.observableMonitorCB.addItem(paramDict["monitor_column"])
+        #~ self.observableTimeCB.addItem(paramDict["exposureTime_column"])
         #~ self.observableAttFaccheck.addItem(
         #~ self.despikeCheckBox.addItem(
 

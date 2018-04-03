@@ -160,16 +160,13 @@ class InteractiveP09ProcessingControl():
         proc.loopExecute(self._dataList)
 
     def loadConfig(self, processConfig):
-        print("ctrl: loading config")
         self._procRunList.clear()
         execOrder = processConfig.getOrderOfExecution()
         pDefs = processConfig.getProcessDefinitions()
         for proc in execOrder:
             if proc in self._processNames:
-                print("processs: " + str(proc) + " is in the list!" )
                 self._procRunList.append(proc)
                 for k, v in pDefs[proc].items():
-                    print(" accessing: key/value: " + str(k) + " // " + str(v))
                     if k != "type":
                         self._processParameters[proc][k] =v
             else:
