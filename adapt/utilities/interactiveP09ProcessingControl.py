@@ -66,9 +66,9 @@ class InteractiveP09ProcessingControl():
         self._setupDefaultNames()
 
     def _setupProcessParameters(self):
-        self._processParameters["read"] = specfilereader.specfilereader().getProcessParameters()
-        self._processParameters["observabledef"] = iintdefinition.iintdefinition().getProcessParameters()
-        self._processParameters["despike"] = filter1d.filter1d().getProcessParameters()
+        self._processParameters["read"] = specfilereader.specfilereader().getProcessDictionary()
+        self._processParameters["observabledef"] = iintdefinition.iintdefinition().getProcessDictionary()
+        self._processParameters["despike"] = filter1d.filter1d().getProcessDictionary()
         self._processParameters["bkgselect"] = subsequenceselection.subsequenceselection().getProcessParameters()
         self._processParameters["bkgfit"] = curvefitting.curvefitting().getProcessParameters()
         self._processParameters["calcbkgpoints"] = gendatafromfunction.gendatafromfunction().getProcessParameters()
@@ -78,14 +78,14 @@ class InteractiveP09ProcessingControl():
         self._processParameters["finalize"] = iintfinalization.iintfinalization().getProcessParameters()
 
     def _setupDefaultNames(self):
-        self._processParameters["read"].setValue("outputdata",self._rawName)
+        self._processParameters["read"]["outputdata"] = self._rawName
         # from out to in:
-        self._processParameters["observabledef"].setValue("input",self._rawName)
-        self._processParameters["observabledef"].setValue("observableoutput", self._observableName)
+        self._processParameters["observabledef"]["input"] = self._rawName
+        self._processParameters["observabledef"]["observableoutput"] =  self._observableName
         # from out to in:
-        self._processParameters["despike"].setValue("input", self._observableName)
-        self._processParameters["despike"].setValue("method","p09despiking")
-        self._processParameters["despike"].setValue("output", self._despObservableName)
+        self._processParameters["despike"]["input"] =  self._observableName
+        self._processParameters["despike"]["method"] = "p09despiking"
+        self._processParameters["despike"]["output"] =  self._despObservableName
         # from out to in
         self._processParameters["bkgselect"].setValue("input",[ self._despObservableName, self._motorName])
         self._processParameters["bkgselect"].setValue("output", ["bkgX" ,"bkgY"])
@@ -155,23 +155,21 @@ class InteractiveP09ProcessingControl():
     def createAndBulkExecute(self, pDict):
         if pDict is None:
             return
-        print("creating: pDict is " + str(type(pDict)) + " :: " + str(pDict))
-        pname = pDict["name"]
         proc = self._procBuilder.createProcessFromDictionary(pDict)
-        for k, v in pDict.items():
-            if k != "type":
-                self._processParameters[proc].setParameterValue(k, v)
         proc.initialize()
         proc.loopExecute(self._dataList)
 
     def loadConfig(self, processConfig):
+        print("ctrl: loading config")
         self._procRunList.clear()
         execOrder = processConfig.getOrderOfExecution()
         pDefs = processConfig.getProcessDefinitions()
         for proc in execOrder:
             if proc in self._processNames:
+                print("processs: " + str(proc) + " is in the list!" )
                 self._procRunList.append(proc)
                 for k, v in pDefs[proc].items():
+                    print(" accessing: key/value: " + str(k) + " // " + str(v))
                     if k != "type":
                         self._processParameters[proc][k] =v
             else:
