@@ -32,6 +32,9 @@ class IProcess():
         self._parameters = processParameters.ProcessParameters()
         self._parametersset = False
 
+    def getProcessDictionary(self):
+        return { param : value.get() for param, value in self._parameters.items()}
+
     def getProcessParameters(self):
         return self._parameters
 
