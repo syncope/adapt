@@ -32,16 +32,16 @@ class subsequenceselection(IProcess):
         self._selectionmethodsPar = ProcessParameter("selectors", list)
         self._startpointsPar = ProcessParameter("startpointnumber", int, optional=True)
         self._endpointsPar = ProcessParameter("endpointnumber", int, optional=True)
-        self._startendindicesPar = ProcessParameter("startendindices", list, optional=True)
+        #~ self._startendindicesPar = ProcessParameter("startendindices", list, optional=True)
         self._parameters.add(self._inputsPar)
         self._parameters.add(self._outputPar)
         self._parameters.add(self._selectionmethodsPar)
         self._parameters.add(self._startpointsPar)
         self._parameters.add(self._endpointsPar)
-        self._parameters.add(self._startendindicesPar)
+        #~ self._parameters.add(self._startendindicesPar)
         self._methodDict = {"selectfromstart" : self._selectFromStart,
                             "selectfromend" : self._selectFromEnd,
-                            "selectSection" : self._selectSection,
+                            #~ "selectSection" : self._selectSection,
                            }
 
     def initialize(self):
@@ -50,7 +50,7 @@ class subsequenceselection(IProcess):
         self._selectionmethods = self._selectionmethodsPar.get()
         self._startpoints = self._startpointsPar.get()
         self._endpoints = self._endpointsPar.get()
-        self._startendindices = self._startendindicesPar.get()
+        #~ self._startendindices = self._startendindicesPar.get()
 
         # check if the methods are available and parameter logic is correct
         for method in self._selectionmethods:
@@ -63,8 +63,8 @@ class subsequenceselection(IProcess):
             raise ValueError("[subsequenceselection] Method selectfromstart needs a startpointnumber.")
         if "selectfromend" in self._selectionmethods and not self._endpoints:
             raise ValueError("[subsequenceselection] Method selectfromend needs a endpointnumber.")
-        if "selectSection" in self._selectionmethods and not self._startendindices:
-            raise ValueError("[subsequenceselection] Method selectSection needs startendindices.")
+        #~ if "selectSection" in self._selectionmethods and not self._startendindices:
+            #~ raise ValueError("[subsequenceselection] Method selectSection needs startendindices.")
 
     def execute(self, data):
         # outer loop: over the inputs
@@ -77,8 +77,8 @@ class subsequenceselection(IProcess):
             if "selectfromend" in self._selectionmethods:
                 tmp = self._selectFromEnd(sequence, self._endpoints)
                 tempout.append(self._selectFromEnd(sequence, self._endpoints))
-            if "selectSection" in self._selectionmethods:
-                tempout.append(self._selectSection(sequence, self._startendindices))
+            #~ if "selectSection" in self._selectionmethods:
+                #~ tempout.append(self._selectSection(sequence, self._startendindices))
             out = tempout[0]
             for elem in tempout[1:]:
                 out = np.concatenate((out, elem))
@@ -98,5 +98,5 @@ class subsequenceselection(IProcess):
         '''create a subsequence that only has the last num elements of seq'''
         return seq[(-1)*num:]
     
-    def _selectSection(self, seq, indices=[0,-1]):
-        return seq[indices[0]:indices[1]]
+    #~ def _selectSection(self, seq, indices=[0,-1]):
+        #~ return seq[indices[0]:indices[1]]
