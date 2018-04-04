@@ -153,8 +153,6 @@ class InteractiveP09ProcessingControl():
         return proc
 
     def createAndBulkExecute(self, pDict):
-        print("creating and running from dict: " + str(pDict))
-
         if pDict is None:
             return
         proc = self._procBuilder.createProcessFromDictionary(pDict)
@@ -188,8 +186,6 @@ class InteractiveP09ProcessingControl():
             return {}
 
     def getBKGDicts(self):
-        print("getting the DICTS: sel is: " + str(self._processParameters["bkgselect"]))
-        print("getting the DICTS: fit is: " + str(self._processParameters["bkgfit"]))
         try:
             return (self._processParameters["bkgselect"],
                     self._processParameters["bkgfit"],

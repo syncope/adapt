@@ -74,6 +74,7 @@ class iintGUI(QtGui.QMainWindow):
         self._obsDef.setParameterDict(self._control.getOBSDict(), self._control.getDESDict())
         self._obsDef.emittit()
         self._bkgHandling.setParameterDicts( self._control.getBKGDicts())
+        self._bkgHandling.emittem()
 
     def runFileReader(self):
         sfr = self._control.createAndInitialize(self._sfrGUI.getParameterDict())
@@ -98,6 +99,8 @@ class iintGUI(QtGui.QMainWindow):
         self._control.createAndBulkExecute(fitDict)
         self._control.createAndBulkExecute(calcDict)
         self._control.createAndBulkExecute(subtractDict)
+        if( self._simpleImageView != None):
+            self._simpleImageView.update()
 
         #~ self._control.createAndBulkExecute(obsDict)
         #~ if despDict != {}:
@@ -151,6 +154,10 @@ class simpleDataPlot(QtGui.QDialog):
         self._showbkg = False
         self._showbkgsubtracted = False
         #~ self._showbkgfit = False
+
+    def update(self):
+        self._dataList[0].info()
+        self._checkDataAvailability()
 
     def passData(self, datalist, motorname, obsname, despobsname, bkgname, signalname):
         self._dataList = datalist
@@ -215,7 +222,6 @@ class simpleDataPlot(QtGui.QDialog):
 
     def _toggleSIG(self):
         self._showbkgsubtracted = not self._showbkgsubtracted 
-
 
     def incrementCurrentScanID(self):
         self._currentIndex += 1
