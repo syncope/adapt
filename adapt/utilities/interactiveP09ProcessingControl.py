@@ -183,3 +183,12 @@ class InteractiveP09ProcessingControl():
             return self._processParameters["despike"]
         except KeyError:
             return {}
+
+    def getBKGDicts(self):
+        try:
+            return (self._processParameters["bkgselect"],
+                    self._processParameters["bkgfit"],
+                    self._processParameters["calcbkgpoints"],
+                    self._processParameters["bkgsubtract"] )            
+        except KeyError:
+            return ({}, {}, {}, {})

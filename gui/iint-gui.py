@@ -24,17 +24,8 @@ from PyQt4 import QtCore, QtGui, uic
 
 from adapt.utilities import interactiveP09ProcessingControl
 from adapt.processes import specfilereader
-from adapt.processes import iintdefinition
-from adapt.processes import filter1d
-#~ from adapt.processes import subsequenceselection
-#~ from adapt.processes import curvefitting
-#~ from adapt.processes import gendatafromfunction
-#~ from adapt.processes import backgroundsubtraction
-#~ from adapt.processes import trapezoidintegration
-#~ from adapt import processData
-#~ from adapt.utilities import iintData
 
-__version__ ="0.0.2alpha"
+__version__ ="0.0.4alpha"
 
 class iintGUI(QtGui.QMainWindow):
     
@@ -81,6 +72,7 @@ class iintGUI(QtGui.QMainWindow):
         self.nextWidget()
         self._obsDef.setParameterDict(self._control.getOBSDict(), self._control.getDESDict())
         self._obsDef.emittit()
+        self._bkgHandling.setParameterDicts( self._control.getBKGDicts())
 
     def runFileReader(self):
         sfr = self._control.createAndInitialize(self._sfrGUI.getParameterDict())
@@ -427,6 +419,23 @@ class backgroundHandling(QtGui.QWidget):
     def __init__(self, parent=None):
         super(backgroundHandling, self).__init__(parent)
         uic.loadUi("linearbackground.ui", self)
+        self.bkgStartPointsSB.setMinimum(0)
+        self.bkgStartPointsSB.setMaximum(5)
+        self.bkgEndPointsSB.setMinimum(0)
+        self.bkgEndPointsSB.setMaximum(5)
+        self._selectParDict = {}
+        self._fitParDict = {}
+        self._calcParDict = {}
+        self._subtractParDict = {}
+
+    def setParameterDicts(self, dicts):
+        self._selectParDict = dicts[0]
+        self.bkgStartPointsSB.setValue(self._selectParDict["startpointnumber"])
+        self.bkgEndPointsSB.setValue(self._selectParDict["endpointnumber"])
+        self._fitParDict = dicts[1]
+        self._calcParDict = dicts[2]
+        self._subtractParDict = dicts[3]
+
 
 if __name__ == "__main__":
     import sys
