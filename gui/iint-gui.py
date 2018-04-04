@@ -43,7 +43,7 @@ class iintGUI(QtGui.QMainWindow):
         self._chooseConfig = chooseConfiguration()
         self._sfrGUI = specfilereader.specfilereaderGUI()
         self._obsDef = observableDefinition()
-        self._bkgHandling = backgroundHandling()
+        self._bkgHandling = backgroundHandling(self._control.getBKGDicts())
 
         self._elementlist = [ self._chooseConfig,
                               self._sfrGUI,
@@ -58,6 +58,7 @@ class iintGUI(QtGui.QMainWindow):
         self._chooseConfig.newconfig.connect(self.nextWidget)
         self._sfrGUI.valuesSet.connect(self.runFileReader)
         self._obsDef.observableDicts.connect(self.runObservable)
+        self._bkgHandling.bkgDicts.connect(self.runBkgProcessing)
 
     def nextWidget(self):
         ci = self.stackedWidget.currentIndex()
@@ -91,6 +92,18 @@ class iintGUI(QtGui.QMainWindow):
             self._control.createAndBulkExecute(despDict)
         self.plotit()
         self.nextWidget()
+
+    def runBkgProcessing(self, selDict, fitDict, calcDict, subtractDict):
+        self._control.createAndBulkExecute(selDict)
+        self._control.createAndBulkExecute(fitDict)
+        self._control.createAndBulkExecute(calcDict)
+        self._control.createAndBulkExecute(subtractDict)
+
+        #~ self._control.createAndBulkExecute(obsDict)
+        #~ if despDict != {}:
+            #~ self._control.createAndBulkExecute(despDict)
+        #~ self.plotit()
+        #~ self.nextWidget()
 
     def plotit(self):
         # pyqt helper stuff
@@ -414,9 +427,9 @@ class observableDefinition(QtGui.QWidget):
         #~ self.despikeCheckBox.addItem(
 
 class backgroundHandling(QtGui.QWidget):
-    bkgDict = QtCore.pyqtSignal(dict)
+    bkgDicts = QtCore.pyqtSignal(dict, dict, dict, dict)
 
-    def __init__(self, parent=None):
+    def __init__(self, pDicts, parent=None):
         super(backgroundHandling, self).__init__(parent)
         uic.loadUi("linearbackground.ui", self)
         self.bkgStartPointsSB.setMinimum(0)
@@ -427,6 +440,8 @@ class backgroundHandling(QtGui.QWidget):
         self._fitParDict = {}
         self._calcParDict = {}
         self._subtractParDict = {}
+        self.nextBtn.clicked.connect(self.emittem)
+        self.setParameterDicts(pDicts)
 
     def setParameterDicts(self, dicts):
         self._selectParDict = dicts[0]
@@ -436,6 +451,10 @@ class backgroundHandling(QtGui.QWidget):
         self._calcParDict = dicts[2]
         self._subtractParDict = dicts[3]
 
+    def emittem(self):
+        self._selectParDict["startpointnumber"] = self.bkgStartPointsSB.value()
+        self._selectParDict["endpointnumber"] = self.bkgEndPointsSB.value()
+        self.bkgDicts.emit(  self._selectParDict, self._fitParDict, self._calcParDict, self._subtractParDict )
 
 if __name__ == "__main__":
     import sys

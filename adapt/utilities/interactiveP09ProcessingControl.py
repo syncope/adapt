@@ -69,13 +69,13 @@ class InteractiveP09ProcessingControl():
         self._processParameters["read"] = specfilereader.specfilereader().getProcessDictionary()
         self._processParameters["observabledef"] = iintdefinition.iintdefinition().getProcessDictionary()
         self._processParameters["despike"] = filter1d.filter1d().getProcessDictionary()
-        self._processParameters["bkgselect"] = subsequenceselection.subsequenceselection().getProcessParameters()
-        self._processParameters["bkgfit"] = curvefitting.curvefitting().getProcessParameters()
-        self._processParameters["calcbkgpoints"] = gendatafromfunction.gendatafromfunction().getProcessParameters()
-        self._processParameters["bkgsubtract"] =backgroundsubtraction.backgroundsubtraction().getProcessParameters()
-        self._processParameters["signalcurvefit"] =  curvefitting.curvefitting().getProcessParameters()
-        self._processParameters["trapint"] = trapezoidintegration.trapezoidintegration().getProcessParameters()
-        self._processParameters["finalize"] = iintfinalization.iintfinalization().getProcessParameters()
+        self._processParameters["bkgselect"] = subsequenceselection.subsequenceselection().getProcessDictionary()
+        self._processParameters["bkgfit"] = curvefitting.curvefitting().getProcessDictionary()
+        self._processParameters["calcbkgpoints"] = gendatafromfunction.gendatafromfunction().getProcessDictionary()
+        self._processParameters["bkgsubtract"] =backgroundsubtraction.backgroundsubtraction().getProcessDictionary()
+        self._processParameters["signalcurvefit"] =  curvefitting.curvefitting().getProcessDictionary()
+        self._processParameters["trapint"] = trapezoidintegration.trapezoidintegration().getProcessDictionary()
+        self._processParameters["finalize"] = iintfinalization.iintfinalization().getProcessDictionary()
 
     def _setupDefaultNames(self):
         self._processParameters["read"]["outputdata"] = self._rawName
@@ -87,30 +87,30 @@ class InteractiveP09ProcessingControl():
         self._processParameters["despike"]["method"] = "p09despiking"
         self._processParameters["despike"]["output"] =  self._despObservableName
         # from out to in
-        self._processParameters["bkgselect"].setValue("input",[ self._despObservableName, self._motorName])
-        self._processParameters["bkgselect"].setValue("output", ["bkgX" ,"bkgY"])
-        self._processParameters["bkgselect"].setValue("selectors", ["selectfromstart" ,"selectfromend"])
-        self._processParameters["bkgselect"].setValue("startpointnumber", 3)
-        self._processParameters["bkgselect"].setValue("endpointnumber", 3)
+        self._processParameters["bkgselect"]["input"] = [ self._despObservableName, self._motorName]
+        self._processParameters["bkgselect"]["output"] =  ["bkgX" ,"bkgY"]
+        self._processParameters["bkgselect"]["selectors"] =  ["selectfromstart" ,"selectfromend"]
+        self._processParameters["bkgselect"]["startpointnumber"] =  3
+        self._processParameters["bkgselect"]["endpointnumber"] =  3
         # fit bkg
-        self._processParameters["bkgfit"].setValue("xdata","bkgX")
-        self._processParameters["bkgfit"].setValue("ydata","bkgY")
-        self._processParameters["bkgfit"].setValue("error","None")
-        self._processParameters["bkgfit"].setValue("result","bkgfitresult")
-        self._processParameters["bkgfit"].setValue("model",{ "linearModel" : {"name" : "lin_"}})
+        self._processParameters["bkgfit"]["xdata"] = "bkgX"
+        self._processParameters["bkgfit"]["ydata"] = "bkgY"
+        self._processParameters["bkgfit"]["error"] = "None"
+        self._processParameters["bkgfit"]["result"] = "bkgfitresult"
+        self._processParameters["bkgfit"]["model"] = { "linearModel" : {"name" : "lin_"}}
         # calc bkg points
-        self._processParameters["calcbkgpoints"].setValue("fitresult","bkgfitresult")
-        self._processParameters["calcbkgpoints"].setValue("xdata",self._motorName)
-        self._processParameters["calcbkgpoints"].setValue("output", self._backgroundPointsName)
+        self._processParameters["calcbkgpoints"]["fitresult"] = "bkgfitresult"
+        self._processParameters["calcbkgpoints"]["xdata"] = self._motorName
+        self._processParameters["calcbkgpoints"]["output"] =  self._backgroundPointsName
         # subtract bkg
-        self._processParameters["bkgsubtract"].setValue("input", self._despObservableName)
-        self._processParameters["bkgsubtract"].setValue("output", self._signalName)
-        self._processParameters["bkgsubtract"].setValue("background", self._backgroundPointsName)
+        self._processParameters["bkgsubtract"]["input"] =  self._despObservableName
+        self._processParameters["bkgsubtract"]["output"] =  self._signalName
+        self._processParameters["bkgsubtract"]["background"] =  self._backgroundPointsName
         
     def useNoDespiking(self):
-        self._processParameters["bkgselect"].setValue("input", self._observableName)
-        self._processParameters["bkgselect"].setValue("input", [self._observableName, self._motorName] )
-        self._processParameters["bkgsubtract"].setValue("input", self._observableName)
+        self._processParameters["bkgselect"]["input"] =  self._observableName
+        self._processParameters["bkgselect"]["input"] =  [self._observableName, self._motorName] 
+        self._processParameters["bkgsubtract"]["input"] =  self._observableName
         
     def getRawDataName(self):
         return self._rawName
@@ -120,8 +120,8 @@ class InteractiveP09ProcessingControl():
 
     def setMotorName(self, motor):
         self._motorName= motor
-        self._processParameters["bkgselect"].setValue("input",[ self._despObservableName, self._motorName])
-        self._processParameters["calcbkgpoints"].setValue("xdata", self._motorName)
+        self._processParameters["bkgselect"]["input"] = [ self._despObservableName, self._motorName]
+        self._processParameters["calcbkgpoints"]["xdata"] =  self._motorName
 
     def getObservableName(self):
         return self._observableName
@@ -153,6 +153,8 @@ class InteractiveP09ProcessingControl():
         return proc
 
     def createAndBulkExecute(self, pDict):
+        print("creating and running from dict: " + str(pDict))
+
         if pDict is None:
             return
         proc = self._procBuilder.createProcessFromDictionary(pDict)
@@ -167,8 +169,9 @@ class InteractiveP09ProcessingControl():
             if proc in self._processNames:
                 self._procRunList.append(proc)
                 for k, v in pDefs[proc].items():
-                    if k != "type":
-                        self._processParameters[proc][k] =v
+                    #~ if k != "type":
+                        #~ self._processParameters[proc][k] =v
+                    self._processParameters[proc][k] =v
             else:
                 print("Wrong configuration file, unrecognized process name/type: " + str(proc))        
 
@@ -185,6 +188,8 @@ class InteractiveP09ProcessingControl():
             return {}
 
     def getBKGDicts(self):
+        print("getting the DICTS: sel is: " + str(self._processParameters["bkgselect"]))
+        print("getting the DICTS: fit is: " + str(self._processParameters["bkgfit"]))
         try:
             return (self._processParameters["bkgselect"],
                     self._processParameters["bkgfit"],
