@@ -188,7 +188,7 @@ class simpleDataPlot(QtGui.QDialog):
             self.viewPart.plot(xdata, ydata, pen=None, symbolPen='w', symbolBrush='w', symbol='+')
         if( self._showdespike ):
             despikeData = datum.getData(self._despObservableName)
-            self.viewPart.plot(xdata, despikeData, pen=None, symbolPen='y', symbolBrush='y', symbol='.')
+            self.viewPart.plot(xdata, despikeData, pen=None, symbolPen='y', symbolBrush='y', symbol='o')
         if( self._showbkg ):
             bkg = datum.getData(self._backgroundPointsName)
             self.viewPart.plot(xdata, bkg, pen=None, symbolPen='r', symbolBrush='r', symbol='+')
