@@ -47,7 +47,7 @@ class InteractiveP09ProcessingControl():
         self._motorName = ""
         self._rawName = "rawdata"
         self._observableName = "observable"
-        self._despObservableName = "despikedobservable"
+        self._despObservableName = "despikedObservable"
         self._backgroundPointsName = "bkgPoints"
         self._signalName = "signalObservable"
         self._processNames = [ "read", 
@@ -177,3 +177,9 @@ class InteractiveP09ProcessingControl():
 
     def getOBSDict(self):
         return self._processParameters["observabledef"]
+
+    def getDESDict(self):
+        try:
+            return self._processParameters["despike"]
+        except KeyError:
+            return {}

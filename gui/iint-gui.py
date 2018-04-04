@@ -79,7 +79,7 @@ class iintGUI(QtGui.QMainWindow):
         self._sfrGUI.setParameterDict(self._control.getSFRDict())
         self.runFileReader()
         self.nextWidget()
-        self._obsDef.setParameterDict(self._control.getOBSDict())
+        self._obsDef.setParameterDict(self._control.getOBSDict(), self._control.getDESDict())
         self._obsDef.emittit()
 
     def runFileReader(self):
@@ -160,10 +160,12 @@ class simpleDataPlot(QtGui.QDialog):
         datum = self._dataList[0]
         try:
             datum.getData(self._observableName)
+            self.showRAW.setDisabled(False)
         except KeyError:
             self.showRAW.setDisabled(True)
         try:
             datum.getData(self._despObservableName)
+            self.showDES.setDisabled(False)
         except KeyError:
             self.showDES.setDisabled(True)
         try:
@@ -395,23 +397,25 @@ class observableDefinition(QtGui.QWidget):
         
         self.observableDicts.emit(self._obsDict, self._despikeDict)
 
-    def setParameterDict(self, paramDict):
+    def setParameterDict(self, obsDict, despDict):
         self.observableMotorLabel.setStyleSheet("color: blue;")
-        self.observableMotorLabel.setText(paramDict["motor_column"])
+        self.observableMotorLabel.setText(obsDict["motor_column"])
         # first get index of element
-        index = self.observableDetectorCB.findText(paramDict["detector_column"], QtCore.Qt.MatchExactly) 
+        index = self.observableDetectorCB.findText(obsDict["detector_column"], QtCore.Qt.MatchExactly) 
         if index >= 0:
             self.observableDetectorCB.setCurrentIndex(index)
 
-        index = self.observableMonitorCB.findText(paramDict["monitor_column"], QtCore.Qt.MatchExactly) 
+        index = self.observableMonitorCB.findText(obsDict["monitor_column"], QtCore.Qt.MatchExactly) 
         if index >= 0:
             self.observableMonitorCB.setCurrentIndex(index)
 
-        index = self.observableTimeCB.findText(paramDict["exposureTime_column"], QtCore.Qt.MatchExactly) 
+        index = self.observableTimeCB.findText(obsDict["exposureTime_column"], QtCore.Qt.MatchExactly) 
         if index >= 0:
             self.observableTimeCB.setCurrentIndex(index)
 
-        #~ self.observableDetectorCB.addItem(paramDict["detector_column"])
+        if ( despDict != {} ):
+            self.despikeCheckBox.setChecked(True)
+            #~ self.observableDetectorCB.addItem(paramDict["detector_column"])
         #~ self.observableMonitorCB.addItem(paramDict["monitor_column"])
         #~ self.observableTimeCB.addItem(paramDict["exposureTime_column"])
         #~ self.observableAttFaccheck.addItem(
