@@ -156,7 +156,6 @@ class simpleDataPlot(QtGui.QDialog):
         #~ self._showbkgfit = False
 
     def update(self):
-        self._dataList[0].info()
         self._checkDataAvailability()
 
     def passData(self, datalist, motorname, obsname, despobsname, bkgname, signalname):
@@ -182,10 +181,12 @@ class simpleDataPlot(QtGui.QDialog):
             self.showDES.setDisabled(True)
         try:
             datum.getData(self._backgroundPointsName)
+            self.showBKG.setDisabled(False)
         except KeyError:
             self.showBKG.setDisabled(True)
         try:
             datum.getData(self._signalName)
+            self.showSIG.setDisabled(False)
         except KeyError:
             self.showSIG.setDisabled(True)
 
