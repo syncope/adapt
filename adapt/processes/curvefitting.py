@@ -20,7 +20,7 @@
 from adapt.iProcess import *
 
 import numpy as np
-import lmfit.models, lmfit
+from pensant.models import FitModels
 
 class curvefitting(IProcess):
 
@@ -105,11 +105,3 @@ class curvefitting(IProcess):
         for m in mlist:
             self.model += m
         self.model.params = self.model.make_params()
-
-FitModels = { "constantModel" : lmfit.models.ConstantModel,
-              "linearModel" : lmfit.models.LinearModel,
-              "quadraticModel" : lmfit.models.QuadraticModel,
-              "gaussianModel" : lmfit.models.GaussianModel,
-              "lorentzianModel" : lmfit.models.LorentzianModel,
-              "psvModel" : lmfit.models.PseudoVoigtModel,
-            }
