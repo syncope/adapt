@@ -44,11 +44,13 @@ class iintGUI(QtGui.QMainWindow):
         self._sfrGUI = specfilereader.specfilereaderGUI()
         self._obsDef = observableDefinition()
         self._bkgHandling = backgroundHandling(self._control.getBKGDicts())
+        self._signalHandling = signalHandling(self._control.getSIGDict())
 
         self._elementlist = [ self._chooseConfig,
                               self._sfrGUI,
                               self._obsDef,
-                              self._bkgHandling]
+                              self._bkgHandling,
+                              self._signalHandling]
 
         for task in self._elementlist:
             self.listWidget.addItem(task.windowTitle())
@@ -462,6 +464,23 @@ class backgroundHandling(QtGui.QWidget):
         self._selectParDict["startpointnumber"] = self.bkgStartPointsSB.value()
         self._selectParDict["endpointnumber"] = self.bkgEndPointsSB.value()
         self.bkgDicts.emit(  self._selectParDict, self._fitParDict, self._calcParDict, self._subtractParDict )
+
+class signalHandling(QtGui.QWidget):
+    #~ bkgDicts = QtCore.pyqtSignal(dict, dict, dict, dict)
+
+    def __init__(self, pDict, parent=None):
+        super(signalHandling, self).__init__(parent)
+        uic.loadUi("fitpanel.ui", self)
+        self.setParameterDict(pDict)
+        
+    def setParameterDict(self, pDict):
+        self._parDict = pDict
+
+    def emitit(self):
+        pass
+        #~ self._selectParDict["startpointnumber"] = self.bkgStartPointsSB.value()
+        #~ self._selectParDict["endpointnumber"] = self.bkgEndPointsSB.value()
+        #~ self.bkgDicts.emit(  self._selectParDict, self._fitParDict, self._calcParDict, self._subtractParDict )
 
 if __name__ == "__main__":
     import sys

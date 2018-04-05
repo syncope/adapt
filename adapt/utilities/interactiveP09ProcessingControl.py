@@ -106,7 +106,14 @@ class InteractiveP09ProcessingControl():
         self._processParameters["bkgsubtract"]["input"] =  self._despObservableName
         self._processParameters["bkgsubtract"]["output"] =  self._signalName
         self._processParameters["bkgsubtract"]["background"] =  self._backgroundPointsName
-        
+        # signal fitting
+        self._processParameters["signalcurvefit"]
+        self._processParameters["signalcurvefit"]["xdata"] = self._motorName
+        self._processParameters["signalcurvefit"]["ydata"] = self._signalName
+        self._processParameters["signalcurvefit"]["error"] = "None"
+        self._processParameters["signalcurvefit"]["result"] = "signalcurvefitresult"
+        self._processParameters["signalcurvefit"]["model"] = { "gaussianModel" : { "name": "g_"}}
+
     def useNoDespiking(self):
         self._processParameters["bkgselect"]["input"] =  self._observableName
         self._processParameters["bkgselect"]["input"] =  [self._observableName, self._motorName] 
@@ -193,3 +200,10 @@ class InteractiveP09ProcessingControl():
                     self._processParameters["bkgsubtract"] )            
         except KeyError:
             return ({}, {}, {}, {})
+
+    def getSIGDict(self):
+        try:
+            return self._processParameters["signalcurvefit"]
+        except KeyError:
+            return {}
+
