@@ -45,6 +45,8 @@ class iintGUI(QtGui.QMainWindow):
         self._obsDef = observableDefinition()
         self._bkgHandling = backgroundHandling(self._control.getBKGDicts())
         self._signalHandling = signalHandling(self._control.getSIGDict())
+        self._signalHandling.passModels(self._control.getFitModels())
+        self._signalHandling.modelcfg.connect(self.openFitDialog)
 
         self._elementlist = [ self._chooseConfig,
                               self._sfrGUI,
@@ -103,12 +105,10 @@ class iintGUI(QtGui.QMainWindow):
         self._control.createAndBulkExecute(subtractDict)
         if( self._simpleImageView != None):
             self._simpleImageView.update()
+        self.nextWidget()
 
-        #~ self._control.createAndBulkExecute(obsDict)
-        #~ if despDict != {}:
-            #~ self._control.createAndBulkExecute(despDict)
-        #~ self.plotit()
-        #~ self.nextWidget()
+    def runSignalFitting(self, fitDict):
+        self._control.createAndBulkExecute(fitDict)
 
     def plotit(self):
         # pyqt helper stuff
@@ -130,7 +130,11 @@ class iintGUI(QtGui.QMainWindow):
 
     def showFitPanel(self):
         self._fitPanel.show()
- 
+
+    def openFitDialog(self, modelname):
+        self._fitWidget = self._control.getFitModel(modelname)
+        self._fitWidget.show()
+        
 class simpleDataPlot(QtGui.QDialog):
     import pyqtgraph as pg
     mouseposition = QtCore.pyqtSignal(float,float)
@@ -466,21 +470,30 @@ class backgroundHandling(QtGui.QWidget):
         self.bkgDicts.emit(  self._selectParDict, self._fitParDict, self._calcParDict, self._subtractParDict )
 
 class signalHandling(QtGui.QWidget):
-    #~ bkgDicts = QtCore.pyqtSignal(dict, dict, dict, dict)
+    modelcfg = QtCore.pyqtSignal(str)
 
     def __init__(self, pDict, parent=None):
         super(signalHandling, self).__init__(parent)
         uic.loadUi("fitpanel.ui", self)
         self.setParameterDict(pDict)
+        self.configureFitModel.clicked.connect(self.emitmodelconfig)
         
     def setParameterDict(self, pDict):
         self._parDict = pDict
+
+    def passModels(self, modelDict):
+        self._modelnames = sorted([key for key in modelDict.keys()])
+        self.modelsCB.addItems(self._modelnames)
 
     def emitit(self):
         pass
         #~ self._selectParDict["startpointnumber"] = self.bkgStartPointsSB.value()
         #~ self._selectParDict["endpointnumber"] = self.bkgEndPointsSB.value()
         #~ self.bkgDicts.emit(  self._selectParDict, self._fitParDict, self._calcParDict, self._subtractParDict )
+
+    def emitmodelconfig(self):
+        index = self.modelsCB.currentIndex()
+        self.modelcfg.emit(self._modelnames[index])
 
 if __name__ == "__main__":
     import sys

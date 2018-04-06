@@ -76,6 +76,7 @@ class InteractiveP09ProcessingControl():
         self._processParameters["signalcurvefit"] =  curvefitting.curvefitting().getProcessDictionary()
         self._processParameters["trapint"] = trapezoidintegration.trapezoidintegration().getProcessDictionary()
         self._processParameters["finalize"] = iintfinalization.iintfinalization().getProcessDictionary()
+        self._fitmodels = curvefitting.curvefitting().getFitModels()
 
     def _setupDefaultNames(self):
         self._processParameters["read"]["outputdata"] = self._rawName
@@ -207,3 +208,9 @@ class InteractiveP09ProcessingControl():
         except KeyError:
             return {}
 
+    def getFitModels(self):
+        return curvefitting.curvefitting().getFitModels()
+
+    def getFitModel(self, modelname):
+        self._signalfitter = self._fitmodels[modelname]()
+        return self._signalfitter.getWidget()
