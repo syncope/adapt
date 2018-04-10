@@ -55,8 +55,8 @@ class curvefitting(IProcess):
         else:
             variableWeight = 1./data.getData(errorname)
         # TODO !!! define paramaters by guessing !!! 
-        #~ if(self.model._name == "linear"):
-            #~ self.model.params = self.model.guess(dependentVariable, x=independentVariable)
+        if(self.model._name == "linear"):
+            self.model.params = self.model.guess(dependentVariable, x=independentVariable)
         # fit the data using the guessed value
         self._result = self.model.fit(dependentVariable, self.model.params, weights=variableWeight, x=independentVariable)
         data.addData(self._resultPar.get(), self._result)
