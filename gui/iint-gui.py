@@ -123,11 +123,6 @@ class iintGUI(QtGui.QMainWindow):
         self._simpleImageView.plot()
         self._simpleImageView.show()
 
-
-        #~ self._fitPanel = firstFitPanel(parent=self, dataview=self._simpleImageView)
-        #~ # signal section
-        #~ self.openFitPanelPushBtn.clicked.connect(self.showFitPanel)
-
     def showFitPanel(self):
         self._fitPanel.show()
 
@@ -433,11 +428,6 @@ class observableDefinition(QtGui.QWidget):
 
         if ( despDict != {} ):
             self.despikeCheckBox.setChecked(True)
-            #~ self.observableDetectorCB.addItem(paramDict["detector_column"])
-        #~ self.observableMonitorCB.addItem(paramDict["monitor_column"])
-        #~ self.observableTimeCB.addItem(paramDict["exposureTime_column"])
-        #~ self.observableAttFaccheck.addItem(
-        #~ self.despikeCheckBox.addItem(
 
 class backgroundHandling(QtGui.QWidget):
     bkgDicts = QtCore.pyqtSignal(dict, dict, dict, dict)
@@ -476,14 +466,14 @@ class signalHandling(QtGui.QWidget):
         super(signalHandling, self).__init__(parent)
         uic.loadUi("fitpanel.ui", self)
         self.setParameterDict(pDict)
-        self.configureFitModel.clicked.connect(self.emitmodelconfig)
+        self.configureFirst.clicked.connect(self.emitmodelconfig)
         
     def setParameterDict(self, pDict):
         self._parDict = pDict
 
     def passModels(self, modelDict):
         self._modelnames = sorted([key for key in modelDict.keys()])
-        self.modelsCB.addItems(self._modelnames)
+        self.firstModelCB.addItems(self._modelnames)
 
     def emitit(self):
         pass
@@ -492,7 +482,7 @@ class signalHandling(QtGui.QWidget):
         #~ self.bkgDicts.emit(  self._selectParDict, self._fitParDict, self._calcParDict, self._subtractParDict )
 
     def emitmodelconfig(self):
-        index = self.modelsCB.currentIndex()
+        index = self.firstModelCB.currentIndex()
         self.modelcfg.emit(self._modelnames[index])
 
 if __name__ == "__main__":
