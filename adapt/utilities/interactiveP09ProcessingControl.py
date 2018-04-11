@@ -214,3 +214,11 @@ class InteractiveP09ProcessingControl():
     def getFitModel(self, modelname):
         self._signalfitter = self._fitmodels[modelname]()
         return self._signalfitter.getWidget()
+
+class p09Fitting():
+    
+    def __init__(self):
+        self._prefixes = ("m1_", "m2_", "m3_", "m4_")
+        
+
+    
