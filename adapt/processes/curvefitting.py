@@ -29,11 +29,13 @@ class curvefitting(IProcess):
         self._xdataPar = ProcessParameter("xdata", str)
         self._ydataPar = ProcessParameter("ydata", str)
         self._yerrPar = ProcessParameter("error", str, None, optional=True)
+        self._usePreviousResultPar = ProcessParameter("usepreviousresult", int, 0, optional=True)
         self._modelPar = ProcessParameter("model", dict)
         self._resultPar = ProcessParameter("result", str)
         self._parameters.add(self._xdataPar)
         self._parameters.add(self._ydataPar)
         self._parameters.add(self._yerrPar)
+        self._parameters.add(self._usePreviousResultPar)
         self._parameters.add(self._modelPar)
         self._parameters.add(self._resultPar)
 
@@ -44,6 +46,12 @@ class curvefitting(IProcess):
         # their respective values are the parameter names which are keys themselves
         # the values of of the parameter names are the key/value pairs for the parameter hints
         self._updateModel(self._modelPar.get())
+        self._usePreviousResult = self._usePreviousResultPar.get()
+        if ( self._usePreviousResult != 0 ):
+            self._usePreviousResult = True
+        else: 
+            self._usePreviousResult = False
+        self._firstguess = True
 
     def execute(self, data):
         # x and y data
@@ -54,13 +62,18 @@ class curvefitting(IProcess):
             variableWeight = np.sqrt(np.clip(dependentVariable, 0., None))
         else:
             variableWeight = 1./data.getData(errorname)
-        # TODO !!! define paramaters by guessing !!! 
-        if(self.model._name == "linear"):
-            self.model.params = self.model.guess(dependentVariable, x=independentVariable)
+
+        if not self._usePreviousResult or self._firstguess:
+            try:
+                self.model.params = self.model.guess(dependentVariable, x=independentVariable)
+                self._firstguess = False
+            except NotImplementedError:
+                print("The given model doesn't have a guess method implemented.")
+
         # fit the data using the guessed value
         self._result = self.model.fit(dependentVariable, self.model.params, weights=variableWeight, x=independentVariable)
         data.addData(self._resultPar.get(), self._result)
-        
+
     def finalize(self, data):
         pass
 
