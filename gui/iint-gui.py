@@ -39,6 +39,9 @@ class iintGUI(QtGui.QMainWindow):
         # the core independent variable in iint:
         self._motorname = ""
         self._rawdataobject = None
+
+        self._simpleImageView = simpleDataPlot(parent=self)
+        self._simpleImageView.currentIndex.connect(print)
         
         self._chooseConfig = chooseConfiguration()
         self._sfrGUI = specfilereader.specfilereaderGUI()
@@ -112,7 +115,6 @@ class iintGUI(QtGui.QMainWindow):
 
     def plotit(self):
         # pyqt helper stuff
-        self._simpleImageView = simpleDataPlot(parent=self)
         self._simpleImageView.passData( self._control.getDataList(), 
                                         self._control.getMotorName(),
                                         self._control.getObservableName(),
@@ -127,12 +129,14 @@ class iintGUI(QtGui.QMainWindow):
         self._fitPanel.show()
 
     def openFitDialog(self, modelname):
-        self._fitWidget = self._control.getFitModel(modelname)
+        self._fitWidget = self._control.getFitModel(modelname, self._simpleImageView.getCurrentSignal())
+        
         self._fitWidget.show()
         
 class simpleDataPlot(QtGui.QDialog):
     import pyqtgraph as pg
     mouseposition = QtCore.pyqtSignal(float,float)
+    currentIndex = QtCore.pyqtSignal(int)
 
     def __init__(self, parent=None):
         super(simpleDataPlot, self).__init__(parent)
@@ -150,6 +154,7 @@ class simpleDataPlot(QtGui.QDialog):
         self.viewPart.scene().sigMouseClicked.connect(self.mouse_click)
         self._control = None
         self._currentIndex = 0
+        self.currentIndex.emit(self._currentIndex)
         self._showraw = True
         self._showdespike = False
         self._showbkg = False
@@ -209,9 +214,6 @@ class simpleDataPlot(QtGui.QDialog):
         if( self._showbkgsubtracted ):
             signal = datum.getData(self._signalName)
             self.viewPart.plot(xdata, signal, pen=None, symbolPen='b', symbolBrush='b', symbol='o')
-        #~ if( self._showbkgfit ):
-            #~ bkgFit = datum.getData(self._names["bkgFitName"])
-            #~ self.viewPart.plot(xdata, despikeData, pen=None, symbolPen='y', symbolBrush='y', symbol='o')
 
     def _toggleRAW(self):
         self._showraw = not self._showraw 
@@ -229,12 +231,14 @@ class simpleDataPlot(QtGui.QDialog):
         self._currentIndex += 1
         if ( self._currentIndex >= len(self._dataList) ):
             self._currentIndex -= len(self._dataList)
+        self.currentIndex.emit(self._currentIndex)
         self.plot()
 
     def decrementCurrentScanID(self):
         self._currentIndex -= 1
         if ( self._currentIndex < (-1)*len(self._dataList) ):
             self._currentIndex += len(self._dataList)
+        self.currentIndex.emit(self._currentIndex)
         self.plot()
 
     def mouse_click(self, mouseclick):
@@ -243,6 +247,13 @@ class simpleDataPlot(QtGui.QDialog):
         ydata = mousepos.y()
         self.mouseposition.emit(xdata, ydata)
 
+    def getCurrentIndex(self):
+        return self._currentIndex
+
+    def getCurrentSignal(self):
+        datum = self._dataList[self._currentIndex]
+        return datum.getData(self._motorName), datum.getData(self._signalName)
+        
 #~ class firstFitPanel(QtGui.QDialog):
     #~ def __init__(self, parent=None, dataview=None):
         #~ super(firstFitPanel, self).__init__(parent)
@@ -467,13 +478,41 @@ class signalHandling(QtGui.QWidget):
         uic.loadUi("fitpanel.ui", self)
         self.setParameterDict(pDict)
         self.configureFirst.clicked.connect(self.emitmodelconfig)
-        
+        self._inactive = [ False, True, True, True ] 
+        self.useFirst.stateChanged.connect(self._toggleFirst)
+        self.useSecond.stateChanged.connect(self._toggleSecond)
+        self.useThird.stateChanged.connect(self._toggleThird)
+        self.useFourth.stateChanged.connect(self._toggleFourth)
+
+    def _toggleFirst(self):
+        self._inactive[0] = not self._inactive[0]
+        self.firstModelCB.setDisabled(self._inactive[0])
+        self.configureFirst.setDisabled(self._inactive[0])
+
+    def _toggleSecond(self):
+        self._inactive[1] = not self._inactive[1]
+        self.secondModelCB.setDisabled(self._inactive[1])
+        self.configureSecond.setDisabled(self._inactive[1])
+
+    def _toggleThird(self):
+        self._inactive[2] = not self._inactive[2]
+        self.thirdModelCB.setDisabled(self._inactive[2])
+        self.configureThird.setDisabled(self._inactive[2])
+
+    def _toggleFourth(self):
+        self._inactive[3] = not self._inactive[3]
+        self.fourthModelCB.setDisabled(self._inactive[3])
+        self.configureFourth.setDisabled(self._inactive[3])
+
     def setParameterDict(self, pDict):
         self._parDict = pDict
 
     def passModels(self, modelDict):
         self._modelnames = sorted([key for key in modelDict.keys()])
         self.firstModelCB.addItems(self._modelnames)
+        self.secondModelCB.addItems(self._modelnames)
+        self.thirdModelCB.addItems(self._modelnames)
+        self.fourthModelCB.addItems(self._modelnames)
 
     def emitit(self):
         pass
