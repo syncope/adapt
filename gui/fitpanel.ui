@@ -23,6 +23,9 @@
          <property name="text">
           <string/>
          </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
         </widget>
        </item>
        <item>
@@ -60,7 +63,11 @@
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="secondModelCB"/>
+        <widget class="QComboBox" name="secondModelCB">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+        </widget>
        </item>
        <item>
         <spacer name="horizontalSpacer_5">
@@ -77,6 +84,9 @@
        </item>
        <item>
         <widget class="QPushButton" name="configureSecond">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="text">
           <string>Configure</string>
          </property>
@@ -94,7 +104,11 @@
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="thirdModelCB"/>
+        <widget class="QComboBox" name="thirdModelCB">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+        </widget>
        </item>
        <item>
         <spacer name="horizontalSpacer_3">
@@ -111,6 +125,9 @@
        </item>
        <item>
         <widget class="QPushButton" name="configureThird">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="text">
           <string>Configure</string>
          </property>
@@ -128,7 +145,11 @@
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="fourthModelCB"/>
+        <widget class="QComboBox" name="fourthModelCB">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+        </widget>
        </item>
        <item>
         <spacer name="horizontalSpacer_4">
@@ -145,6 +166,9 @@
        </item>
        <item>
         <widget class="QPushButton" name="configureFourth">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="text">
           <string>Configure</string>
          </property>
