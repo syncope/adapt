@@ -130,9 +130,13 @@ class iintGUI(QtGui.QMainWindow):
 
     def openFitDialog(self, modelname):
         self._fitWidget = self._control.getFitModel(modelname, self._simpleImageView.getCurrentSignal())
-        
+        self._fitWidget.updateFit.connect(self._updateCurrentImage)
         self._fitWidget.show()
-        
+
+    def _updateCurrentImage(self):
+        ydata = self._fitWidget.getCurrentFitData()
+        self._simpleImageView.plotFit(ydata)
+
 class simpleDataPlot(QtGui.QDialog):
     import pyqtgraph as pg
     mouseposition = QtCore.pyqtSignal(float,float)
@@ -159,6 +163,7 @@ class simpleDataPlot(QtGui.QDialog):
         self._showdespike = False
         self._showbkg = False
         self._showbkgsubtracted = False
+        self._tmpFit = None
         #~ self._showbkgfit = False
 
     def update(self):
@@ -198,7 +203,7 @@ class simpleDataPlot(QtGui.QDialog):
 
     def plot(self):
         datum = self._dataList[self._currentIndex]
-    
+
         self.showID.setText(str(datum.getData("scannumber")))
         xdata = datum.getData(self._motorName)
         ydata = datum.getData(self._observableName)
@@ -214,6 +219,13 @@ class simpleDataPlot(QtGui.QDialog):
         if( self._showbkgsubtracted ):
             signal = datum.getData(self._signalName)
             self.viewPart.plot(xdata, signal, pen=None, symbolPen='b', symbolBrush='b', symbol='o')
+
+    def plotFit(self, ydata):
+        datum = self._dataList[self._currentIndex]
+        xdata = datum.getData(self._motorName)
+        if self._tmpFit != None:
+            self._tmpFit.clear()
+        self._tmpFit = self.viewPart.plot(xdata, ydata, pen='g') #, symbol='+')
 
     def _toggleRAW(self):
         self._showraw = not self._showraw 
@@ -253,6 +265,7 @@ class simpleDataPlot(QtGui.QDialog):
     def getCurrentSignal(self):
         datum = self._dataList[self._currentIndex]
         return datum.getData(self._motorName), datum.getData(self._signalName)
+
         
 #~ class firstFitPanel(QtGui.QDialog):
     #~ def __init__(self, parent=None, dataview=None):
