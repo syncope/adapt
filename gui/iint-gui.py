@@ -31,7 +31,13 @@ class iintGUI(QtGui.QMainWindow):
     
     def __init__(self, parent=None):
         super(iintGUI, self).__init__(parent)
-        uic.loadUi("iint_main.ui", self)
+        uic.loadUi("iint_main2.ui", self)
+        self._chooseConfig = chooseConfiguration()
+
+        #~ self.actionNew.triggered.connect(self._chooseConfig.createnew)
+        self.actionOpen_file.triggered.connect(self.choosefile)
+        #~ self.actionSave_file.triggered.connect(print)
+        #~ self.actionExit.triggered.connect(exit())
 
         # the steering helper object
         self._control = interactiveP09ProcessingControl.InteractiveP09ProcessingControl()
@@ -43,7 +49,6 @@ class iintGUI(QtGui.QMainWindow):
         self._simpleImageView = simpleDataPlot(parent=self)
         self._simpleImageView.currentIndex.connect(print)
         
-        self._chooseConfig = chooseConfiguration()
         self._sfrGUI = specfilereader.specfilereaderGUI()
         self._obsDef = observableDefinition()
         self._bkgHandling = backgroundHandling(self._control.getBKGDicts())
@@ -51,8 +56,7 @@ class iintGUI(QtGui.QMainWindow):
         self._signalHandling.passModels(self._control.getFitModels())
         self._signalHandling.modelcfg.connect(self.openFitDialog)
 
-        self._elementlist = [ self._chooseConfig,
-                              self._sfrGUI,
+        self._elementlist = [ self._sfrGUI,
                               self._obsDef,
                               self._bkgHandling,
                               self._signalHandling]
@@ -61,11 +65,17 @@ class iintGUI(QtGui.QMainWindow):
             self.listWidget.addItem(task.windowTitle())
             self.stackedWidget.addWidget(task)
 
-        self._chooseConfig.choice.connect(self._initializeFromConfig)
-        self._chooseConfig.newconfig.connect(self.nextWidget)
         self._sfrGUI.valuesSet.connect(self.runFileReader)
         self._obsDef.observableDicts.connect(self.runObservable)
         self._bkgHandling.bkgDicts.connect(self.runBkgProcessing)
+
+    def choosefile(self, num):
+        self._file = QtGui.QFileDialog.getOpenFileName(self, 'Choose iint config file', '.', "iint cfg files (*.iint)")
+        if self._file != "":
+            from adapt import configurationHandler
+            handler = configurationHandler.ConfigurationHandler()
+            self._procconf = handler.loadConfig(self._file)
+            self._initializeFromConfig()
 
     def nextWidget(self):
         ci = self.stackedWidget.currentIndex()
@@ -74,7 +84,7 @@ class iintGUI(QtGui.QMainWindow):
         self.listWidget.setCurrentRow(cr+1)
 
     def _initializeFromConfig(self):
-        self._control.loadConfig(self._chooseConfig.getConfig())
+        self._control.loadConfig(self._procconf)
         self._sfrGUI.setParameterDict(self._control.getSFRDict())
         self.runFileReader()
         self.nextWidget()
@@ -310,33 +320,11 @@ class simpleDataPlot(QtGui.QDialog):
         #~ pass
 #~ 
 
-class chooseConfiguration(QtGui.QWidget):
-    choice = QtCore.pyqtSignal()
-    newconfig = QtCore.pyqtSignal()
+class chooseConfiguration():
 
-    def __init__(self, parent=None):
-        super(chooseConfiguration, self).__init__(parent)
-        uic.loadUi("configurationChoice.ui", self)
-        self.useLast.clicked.connect(self.uselast)
-        self.useLast.setDisabled(True)
-        self.chooseFile.clicked.connect(self.choosefile)
-        self.createNew.clicked.connect(self.createnew)
+    def __init__(self):
         self._procconf = None
-
-    def uselast(self, num):
-        print("use the last config, still trouble determining where the file should be ")
-
-    def choosefile(self, num):
-        self._file = QtGui.QFileDialog.getOpenFileName(self, 'Choose iint config file', '.', "iint cfg files (*.iint)")
         
-        if self._file != "":
-            from adapt import configurationHandler
-            handler = configurationHandler.ConfigurationHandler()
-            self._procconf = handler.loadConfig(self._file)
-            self.choice.emit()
-
-    def getConfig(self):
-        return self._procconf
 
     def createnew(self, num):
         self.newconfig.emit()
