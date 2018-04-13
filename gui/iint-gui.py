@@ -276,55 +276,10 @@ class simpleDataPlot(QtGui.QDialog):
         datum = self._dataList[self._currentIndex]
         return datum.getData(self._motorName), datum.getData(self._signalName)
 
-        
-#~ class firstFitPanel(QtGui.QDialog):
-    #~ def __init__(self, parent=None, dataview=None):
-        #~ super(firstFitPanel, self).__init__(parent)
-        #~ uic.loadUi("fitpanel.ui", self)
-        #~ self._paramDialog = gaussianModelFitParameterDialog()
-        #~ self.configureModelPushBtn.clicked.connect(self.showFitParamDialog)
-        #~ self.modelCB.addItems(list(curvefitting.FitModels.keys()))
-        #~ self.selectModelPushBtn.clicked.connect(self.selectCurrentModel)
-        #~ self.reftoplot = dataview
-        #~ self.reftoplot.mouseposition.connect(self.useMouseClick)
-        #~ self.configDonePushBtn.clicked.connect(self.hideDialog)
-        #~ 
-    #~ def showFitParamDialog(self):
-        #~ self._paramDialog.show()
-#~ 
-#~ 
-    #~ def selectCurrentModel(self):
-        #~ self.currentModelName.setText(self.modelCB.currentText())
-#~ 
-    #~ def useMouseClick(self, x, y):
-        #~ print( " i have seen the truth at: " + str(x) + " // " + str(y))
-
-#~ class gaussianModelFitParameterDialog(QtGui.QDialog):
-    #~ pickPosition = QtCore.pyqtSignal(int)
-    #~ parameterValues = QtCore.pyqtSignal(str, float, int, float, float)
-#~ 
-    #~ def __init__(self, parent=None):
-        #~ super(gaussianModelFitParameterDialog, self).__init__(parent)
-        #~ uic.loadUi("gaussModelFitParameters.ui", self)
-        #~ self.pickMeanAmplitudeBtn.clicked.connect(self.pickMeanAmplitude)
-        #~ self.pickFWHMBtn.clicked.connect(self.pickFWHM)
-        #~ self.configDonePushBtn.clicked.connect(self.returnParameterValues)
-    #~ 
-    #~ def pickMeanAmplitude(self):
-        #~ pass
-#~ 
-    #~ def pickFWHM(self):
-        #~ pass
-#~ 
-    #~ def returnParameterValues(self):
-        #~ pass
-#~ 
-
 class chooseConfiguration():
 
     def __init__(self):
         self._procconf = None
-        
 
     def createnew(self, num):
         self.newconfig.emit()
@@ -419,7 +374,7 @@ class observableDefinition(QtGui.QWidget):
             self._despikeDict["method"] = "p09despiking"
             self._despikeDict["input"] = "observable"
             self._despikeDict["output"] = "despikedObservable"
-        
+
         self.observableDicts.emit(self._obsDict, self._despikeDict)
 
     def setParameterDict(self, obsDict, despDict):
