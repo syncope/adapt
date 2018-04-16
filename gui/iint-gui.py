@@ -55,6 +55,7 @@ class iintGUI(QtGui.QMainWindow):
         self._signalHandling = signalHandling(self._control.getSIGDict())
         self._signalHandling.passModels(self._control.getFitModels())
         self._signalHandling.modelcfg.connect(self.openFitDialog)
+        self._signalHandling.performFitPushBtn.clicked.connect(self._prepareSignalFitting)
 
         self._elementlist = [ self._sfrGUI,
                               self._obsDef,
@@ -120,9 +121,6 @@ class iintGUI(QtGui.QMainWindow):
             self._simpleImageView.update()
         self.nextWidget()
 
-    def runSignalFitting(self, fitDict):
-        self._control.createAndBulkExecute(fitDict)
-
     def plotit(self):
         # pyqt helper stuff
         self._simpleImageView.passData( self._control.getDataList(), 
@@ -142,6 +140,13 @@ class iintGUI(QtGui.QMainWindow):
         self._fitWidget = self._control.getFitModel(modelname, self._simpleImageView.getCurrentSignal())
         self._fitWidget.updateFit.connect(self._updateCurrentImage)
         self._fitWidget.show()
+        self._fitWidget.update()
+
+    def _prepareSignalFitting(self):
+        pass
+
+    def runSignalFitting(self, fitDict):
+        self._control.createAndBulkExecute(fitDict)
 
     def _updateCurrentImage(self):
         ydata = self._fitWidget.getCurrentFitData()
