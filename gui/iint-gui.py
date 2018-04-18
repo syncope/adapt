@@ -142,13 +142,15 @@ class iintGUI(QtGui.QMainWindow):
         self._keepFitList(self._fitWidget)
 
     def _prepareSignalFitting(self):
-        self.fitDict = {'model' : {}}
+        fitDict =  {}
         for fit in self._fitList:
-            self.fitDict['model'].update(fit.getCurrentParameterDict())
-        print("the prepared dict is: " + str(self.fitDict))
+            fitDict.update(fit.getCurrentParameterDict())
+        self.runSignalFitting(fitDict)
 
     def runSignalFitting(self, fitDict):
-        self._control.createAndBulkExecute(fitDict)
+        rundict = self._control.getSIGDict()
+        rundict['model'] = fitDict
+        self._control.createAndBulkExecute(rundict)
 
     def _updateCurrentImage(self):
         ydata = self._fitWidget.getCurrentFitData()

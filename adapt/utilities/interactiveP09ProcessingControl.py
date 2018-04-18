@@ -98,7 +98,7 @@ class InteractiveP09ProcessingControl():
         self._processParameters["bkgfit"]["ydata"] = "bkgY"
         self._processParameters["bkgfit"]["error"] = "None"
         self._processParameters["bkgfit"]["result"] = "bkgfitresult"
-        self._processParameters["bkgfit"]["model"] = { "linearModel" : {"name" : "lin_"}}
+        self._processParameters["bkgfit"]["model"] = { "lin_" : {"modeltype" : "linearModel"}}
         # calc bkg points
         self._processParameters["calcbkgpoints"]["fitresult"] = "bkgfitresult"
         self._processParameters["calcbkgpoints"]["xdata"] = self._motorName
@@ -108,12 +108,12 @@ class InteractiveP09ProcessingControl():
         self._processParameters["bkgsubtract"]["output"] =  self._signalName
         self._processParameters["bkgsubtract"]["background"] =  self._backgroundPointsName
         # signal fitting
-        self._processParameters["signalcurvefit"]
+        #~ self._processParameters["signalcurvefit"]
         self._processParameters["signalcurvefit"]["xdata"] = self._motorName
         self._processParameters["signalcurvefit"]["ydata"] = self._signalName
         self._processParameters["signalcurvefit"]["error"] = "None"
         self._processParameters["signalcurvefit"]["result"] = "signalcurvefitresult"
-        self._processParameters["signalcurvefit"]["model"] = { "gaussianModel" : { "name": "g_"}}
+        self._processParameters["signalcurvefit"]["model"] = { "m0_" : { "modeltype": "gaussianModel"}}
 
     def useNoDespiking(self):
         self._processParameters["bkgselect"]["input"] =  self._observableName
@@ -130,6 +130,7 @@ class InteractiveP09ProcessingControl():
         self._motorName= motor
         self._processParameters["bkgselect"]["input"] = [ self._despObservableName, self._motorName]
         self._processParameters["calcbkgpoints"]["xdata"] =  self._motorName
+        self._processParameters["signalcurvefit"]["xdata"] = self._motorName
 
     def getObservableName(self):
         return self._observableName
