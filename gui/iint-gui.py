@@ -56,6 +56,7 @@ class iintGUI(QtGui.QMainWindow):
         self._signalHandling.passModels(self._control.getFitModels())
         self._signalHandling.modelcfg.connect(self.openFitDialog)
         self._signalHandling.performFitPushBtn.clicked.connect(self._prepareSignalFitting)
+        self._fitList = []
 
         self._elementlist = [ self._sfrGUI,
                               self._obsDef,
@@ -133,17 +134,18 @@ class iintGUI(QtGui.QMainWindow):
         self._simpleImageView.plot()
         self._simpleImageView.show()
 
-    def showFitPanel(self):
-        self._fitPanel.show()
-
-    def openFitDialog(self, modelname):
-        self._fitWidget = self._control.getFitModel(modelname, self._simpleImageView.getCurrentSignal())
+    def openFitDialog(self, modelname, index):
+        self._fitWidget = self._control.getFitModel(modelname, self._simpleImageView.getCurrentSignal(), index=index)
         self._fitWidget.updateFit.connect(self._updateCurrentImage)
         self._fitWidget.show()
         self._fitWidget.update()
+        self._keepFitList(self._fitWidget)
 
     def _prepareSignalFitting(self):
-        pass
+        self.fitDict = {'model' : {}}
+        for fit in self._fitList:
+            self.fitDict['model'].update(fit.getCurrentParameterDict())
+        print("the prepared dict is: " + str(self.fitDict))
 
     def runSignalFitting(self, fitDict):
         self._control.createAndBulkExecute(fitDict)
@@ -151,6 +153,13 @@ class iintGUI(QtGui.QMainWindow):
     def _updateCurrentImage(self):
         ydata = self._fitWidget.getCurrentFitData()
         self._simpleImageView.plotFit(ydata)
+
+    def _keepFitList(self, fitwidget):
+        # remove if index is already there
+        for fit in self._fitList:
+            if fitwidget.getIndex() == fit.getIndex():
+                self._fitList.remove(fit)
+        self._fitList.append(fitwidget)
 
 class simpleDataPlot(QtGui.QDialog):
     import pyqtgraph as pg
@@ -432,14 +441,21 @@ class backgroundHandling(QtGui.QWidget):
         self.bkgDicts.emit(  self._selectParDict, self._fitParDict, self._calcParDict, self._subtractParDict )
 
 class signalHandling(QtGui.QWidget):
-    modelcfg = QtCore.pyqtSignal(str)
+    modelcfg = QtCore.pyqtSignal(str, int)
 
     def __init__(self, pDict, parent=None):
         super(signalHandling, self).__init__(parent)
         uic.loadUi("fitpanel.ui", self)
         self.setParameterDict(pDict)
-        self.configureFirst.clicked.connect(self.emitmodelconfig)
-        self._inactive = [ False, True, True, True ] 
+        self.configureFirst.clicked.connect(self.emitfirstmodelconfig)
+        self.configureSecond.clicked.connect(self.emitsecondmodelconfig)
+        self.configureThird.clicked.connect(self.emitthirdmodelconfig)
+        self.configureFourth.clicked.connect(self.emitfourthmodelconfig)
+        self._inactive = [ False, True, True, True ]
+        self._firstModelDict = {}
+        self._secondModelDict = {}
+        self._thirdModelDict = {}
+        self._fourthModelDict = {}
         self.useFirst.stateChanged.connect(self._toggleFirst)
         self.useSecond.stateChanged.connect(self._toggleSecond)
         self.useThird.stateChanged.connect(self._toggleThird)
@@ -475,15 +491,27 @@ class signalHandling(QtGui.QWidget):
         self.thirdModelCB.addItems(self._modelnames)
         self.fourthModelCB.addItems(self._modelnames)
 
-    def emitit(self):
+    def emittit(self):
         pass
         #~ self._selectParDict["startpointnumber"] = self.bkgStartPointsSB.value()
         #~ self._selectParDict["endpointnumber"] = self.bkgEndPointsSB.value()
         #~ self.bkgDicts.emit(  self._selectParDict, self._fitParDict, self._calcParDict, self._subtractParDict )
 
-    def emitmodelconfig(self):
+    def emitfirstmodelconfig(self):
         index = self.firstModelCB.currentIndex()
-        self.modelcfg.emit(self._modelnames[index])
+        self.modelcfg.emit(self._modelnames[index], 0)
+
+    def emitsecondmodelconfig(self):
+        index = self.secondModelCB.currentIndex()
+        self.modelcfg.emit(self._modelnames[index], 1)
+
+    def emitthirdmodelconfig(self):
+        index = self.thirdModelCB.currentIndex()
+        self.modelcfg.emit(self._modelnames[index], 2)
+
+    def emitfourthmodelconfig(self):
+        index = self.fourthModelCB.currentIndex()
+        self.modelcfg.emit(self._modelnames[index], 3)
 
 if __name__ == "__main__":
     import sys
