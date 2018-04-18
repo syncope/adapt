@@ -85,9 +85,10 @@ class curvefitting(IProcess):
         # the model description consists of nested dictionaries
         # first level are the models, second layer are the attributes:
         # name and as another dictionary info on the parameters of that model
-        for m, mdesc in modelDict.items():
+        for model, mdesc in modelDict.items():
+            prefix=model
             try:
-                prefix=mdesc['name']
+                m = mdesc['modeltype']
             except KeyError:
                 print("[EXCEPTION::curvefitting] Building FitModel " + str(m) + " failed. A name is mandatory!")
                 exit()

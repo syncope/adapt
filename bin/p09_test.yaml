@@ -38,8 +38,8 @@ bkgselect:
 bkgfit:
     type: curvefitting
     model:
-        linearModel:
-            name: lin_
+        lin_:
+            modeltype: linearModel
     xdata: bkgX
     ydata: bkgY
     result: bkgfitresult
@@ -59,8 +59,8 @@ bkgsubtract:
 signalcurvefit:
     type: curvefitting
     model:
-        gaussianModel:
-            name: g_
+        g1_:
+            modeltype : gaussianModel
             center: 
                 value: 45.
             amplitude:
