@@ -50,6 +50,8 @@ class InteractiveP09ProcessingControl():
         self._despObservableName = "despikedObservable"
         self._backgroundPointsName = "bkgPoints"
         self._signalName = "signalObservable"
+        self._fittedSignalName = "signalcurvefitresult"
+        self._fitSignalPointsName = "signalFitPoints"
         self._processNames = [ "read", 
                                "observabledef",
                                "despike",
@@ -58,6 +60,7 @@ class InteractiveP09ProcessingControl():
                                "calcbkgpoints",
                                "bkgsubtract",
                                "signalcurvefit",
+                               "calcfitpoints",
                                "trapint",
                                "finalize" ]
         self._procRunList = []
@@ -74,6 +77,7 @@ class InteractiveP09ProcessingControl():
         self._processParameters["calcbkgpoints"] = gendatafromfunction.gendatafromfunction().getProcessDictionary()
         self._processParameters["bkgsubtract"] =backgroundsubtraction.backgroundsubtraction().getProcessDictionary()
         self._processParameters["signalcurvefit"] =  curvefitting.curvefitting().getProcessDictionary()
+        self._processParameters["calcfitpoints"] = gendatafromfunction.gendatafromfunction().getProcessDictionary()
         self._processParameters["trapint"] = trapezoidintegration.trapezoidintegration().getProcessDictionary()
         self._processParameters["finalize"] = iintfinalization.iintfinalization().getProcessDictionary()
         self._fitmodels = curvefitting.curvefitting().getFitModels()
@@ -112,14 +116,18 @@ class InteractiveP09ProcessingControl():
         self._processParameters["signalcurvefit"]["xdata"] = self._motorName
         self._processParameters["signalcurvefit"]["ydata"] = self._signalName
         self._processParameters["signalcurvefit"]["error"] = "None"
-        self._processParameters["signalcurvefit"]["result"] = "signalcurvefitresult"
+        self._processParameters["signalcurvefit"]["result"] = self._fittedSignalName
         self._processParameters["signalcurvefit"]["model"] = { "m0_" : { "modeltype": "gaussianModel"}}
+        # calc fitted signal points
+        self._processParameters["calcfitpoints"]["fitresult"] = self._fittedSignalName
+        self._processParameters["calcfitpoints"]["xdata"] = self._motorName
+        self._processParameters["calcfitpoints"]["output"] =  self._fitSignalPointsName
 
     def useNoDespiking(self):
         self._processParameters["bkgselect"]["input"] =  self._observableName
         self._processParameters["bkgselect"]["input"] =  [self._observableName, self._motorName] 
         self._processParameters["bkgsubtract"]["input"] =  self._observableName
-        
+
     def getRawDataName(self):
         return self._rawName
 
@@ -131,6 +139,7 @@ class InteractiveP09ProcessingControl():
         self._processParameters["bkgselect"]["input"] = [ self._despObservableName, self._motorName]
         self._processParameters["calcbkgpoints"]["xdata"] =  self._motorName
         self._processParameters["signalcurvefit"]["xdata"] = self._motorName
+        self._processParameters["calcfitpoints"]["xdata"] = self._motorName
 
     def getObservableName(self):
         return self._observableName
@@ -143,6 +152,9 @@ class InteractiveP09ProcessingControl():
 
     def getSignalName(self):
         return self._signalName
+
+    def getFittedSignalName(self):
+        return self._fitSignalPointsName
 
     def getProcessTypeList(self):
         return self._procControl.getProcessTypeList()
@@ -216,3 +228,6 @@ class InteractiveP09ProcessingControl():
         # needs different approach // or extension: keep the widgets
         self._signalfitter = self._fitmodels[modelname]()
         return self._signalfitter.getWidget(data[0], data[1], index=index)
+
+    def getSignalFitDict(self):
+        return self._processParameters["calcfitpoints"]

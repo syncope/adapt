@@ -47,7 +47,7 @@ class iintGUI(QtGui.QMainWindow):
         self._rawdataobject = None
 
         self._simpleImageView = simpleDataPlot(parent=self)
-        self._simpleImageView.currentIndex.connect(print)
+        #~ self._simpleImageView.currentIndex.connect(print)
         
         self._sfrGUI = specfilereader.specfilereaderGUI()
         self._obsDef = observableDefinition()
@@ -129,7 +129,8 @@ class iintGUI(QtGui.QMainWindow):
                                         self._control.getObservableName(),
                                         self._control.getDespikedObservableName(),
                                         self._control.getBackgroundName(),
-                                        self._control.getSignalName()
+                                        self._control.getSignalName(),
+                                        self._control.getFittedSignalName(),
                                         )
         self._simpleImageView.plot()
         self._simpleImageView.show()
@@ -151,6 +152,9 @@ class iintGUI(QtGui.QMainWindow):
         rundict = self._control.getSIGDict()
         rundict['model'] = fitDict
         self._control.createAndBulkExecute(rundict)
+        self._control.createAndBulkExecute(self._control.getSignalFitDict())
+        if( self._simpleImageView != None):
+            self._simpleImageView.update()
 
     def _updateCurrentImage(self):
         ydata = self._fitWidget.getCurrentFitData()
@@ -177,10 +181,12 @@ class simpleDataPlot(QtGui.QDialog):
         self.showDES.stateChanged.connect(self._toggleDES)
         self.showBKG.stateChanged.connect(self._toggleBKG)
         self.showSIG.stateChanged.connect(self._toggleSIG)
+        self.showFIT.stateChanged.connect(self._toggleFIT)
         self.showRAW.stateChanged.connect(self.plot)
         self.showDES.stateChanged.connect(self.plot)
         self.showBKG.stateChanged.connect(self.plot)
         self.showSIG.stateChanged.connect(self.plot)
+        self.showFIT.stateChanged.connect(self.plot)
         self.viewPart.scene().sigMouseClicked.connect(self.mouse_click)
         self._control = None
         self._currentIndex = 0
@@ -190,18 +196,19 @@ class simpleDataPlot(QtGui.QDialog):
         self._showbkg = False
         self._showbkgsubtracted = False
         self._tmpFit = None
-        #~ self._showbkgfit = False
+        self._showsigfit = False
 
     def update(self):
         self._checkDataAvailability()
 
-    def passData(self, datalist, motorname, obsname, despobsname, bkgname, signalname):
+    def passData(self, datalist, motorname, obsname, despobsname, bkgname, signalname, fittedsignalname):
         self._dataList = datalist
         self._motorName = motorname
         self._observableName = obsname
         self._despObservableName = despobsname
         self._backgroundPointsName = bkgname
         self._signalName = signalname
+        self._fittedSignalName = fittedsignalname
         self._checkDataAvailability()
 
     def _checkDataAvailability(self):
@@ -226,6 +233,11 @@ class simpleDataPlot(QtGui.QDialog):
             self.showSIG.setDisabled(False)
         except KeyError:
             self.showSIG.setDisabled(True)
+        try:
+            datum.getData(self._fittedSignalName)
+            self.showFIT.setDisabled(False)
+        except KeyError:
+            self.showFIT.setDisabled(True)
 
     def plot(self):
         datum = self._dataList[self._currentIndex]
@@ -245,6 +257,9 @@ class simpleDataPlot(QtGui.QDialog):
         if( self._showbkgsubtracted ):
             signal = datum.getData(self._signalName)
             self.viewPart.plot(xdata, signal, pen=None, symbolPen='b', symbolBrush='b', symbol='o')
+        if( self._showsigfit ):
+            fitdata = datum.getData(self._fittedSignalName)
+            self.viewPart.plot(xdata, fitdata, pen='r')
 
     def plotFit(self, ydata):
         datum = self._dataList[self._currentIndex]
@@ -264,6 +279,9 @@ class simpleDataPlot(QtGui.QDialog):
 
     def _toggleSIG(self):
         self._showbkgsubtracted = not self._showbkgsubtracted 
+
+    def _toggleFIT(self):
+        self._showsigfit = not self._showsigfit
 
     def incrementCurrentScanID(self):
         self._currentIndex += 1

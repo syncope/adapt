@@ -82,7 +82,7 @@
        <item>
         <widget class="QCheckBox" name="showRAW">
          <property name="text">
-          <string>Unchanged</string>
+          <string>Raw</string>
          </property>
          <property name="checked">
           <bool>true</bool>
@@ -107,6 +107,13 @@
         <widget class="QCheckBox" name="showSIG">
          <property name="text">
           <string>Signal</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="showFIT">
+         <property name="text">
+          <string>Fit</string>
          </property>
         </widget>
        </item>
