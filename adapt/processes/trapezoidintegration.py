@@ -29,8 +29,8 @@ class trapezoidintegration(IProcess):
 
     def __init__(self, ptype="trapezoidintegration"):
         super(trapezoidintegration, self).__init__(ptype)
-        self._observablePar = ProcessParameter("motor", str)
-        self._independentvarPar = ProcessParameter("observable", str)
+        self._observablePar = ProcessParameter("observable", str)
+        self._independentvarPar = ProcessParameter("motor", str)
         self._outputPar = ProcessParameter("output", str)
         self._parameters.add(self._observablePar)
         self._parameters.add(self._independentvarPar)
