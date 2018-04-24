@@ -52,6 +52,7 @@ class InteractiveP09ProcessingControl():
         self._signalName = "signalObservable"
         self._fittedSignalName = "signalcurvefitresult"
         self._fitSignalPointsName = "signalFitPoints"
+        self._trapintName = "trapezoidIntegral"
         self._processNames = [ "read", 
                                "observabledef",
                                "despike",
@@ -112,7 +113,6 @@ class InteractiveP09ProcessingControl():
         self._processParameters["bkgsubtract"]["output"] =  self._signalName
         self._processParameters["bkgsubtract"]["background"] =  self._backgroundPointsName
         # signal fitting
-        #~ self._processParameters["signalcurvefit"]
         self._processParameters["signalcurvefit"]["xdata"] = self._motorName
         self._processParameters["signalcurvefit"]["ydata"] = self._signalName
         self._processParameters["signalcurvefit"]["error"] = "None"
@@ -122,6 +122,10 @@ class InteractiveP09ProcessingControl():
         self._processParameters["calcfitpoints"]["fitresult"] = self._fittedSignalName
         self._processParameters["calcfitpoints"]["xdata"] = self._motorName
         self._processParameters["calcfitpoints"]["output"] =  self._fitSignalPointsName
+        # trapezoidal integration
+        self._processParameters["trapint"]["motor"] = self._motorName
+        self._processParameters["trapint"]["observable"] = self._signalName
+        self._processParameters["trapint"]["output"] = self._trapintName
 
     def useNoDespiking(self):
         self._processParameters["bkgselect"]["input"] =  self._observableName
@@ -140,6 +144,7 @@ class InteractiveP09ProcessingControl():
         self._processParameters["calcbkgpoints"]["xdata"] =  self._motorName
         self._processParameters["signalcurvefit"]["xdata"] = self._motorName
         self._processParameters["calcfitpoints"]["xdata"] = self._motorName
+        self._processParameters["trapint"]["motor"] = self._motorName
 
     def getObservableName(self):
         return self._observableName
@@ -155,6 +160,9 @@ class InteractiveP09ProcessingControl():
 
     def getFittedSignalName(self):
         return self._fitSignalPointsName
+
+    def getTrapezoidIntegralName(self):
+        return self._trapintName
 
     def getProcessTypeList(self):
         return self._procControl.getProcessTypeList()
@@ -231,3 +239,6 @@ class InteractiveP09ProcessingControl():
 
     def getSignalFitDict(self):
         return self._processParameters["calcfitpoints"]
+
+    def getTrapIntDict(self):
+        return self._processParameters["trapint"]

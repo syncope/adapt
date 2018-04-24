@@ -120,6 +120,8 @@ class iintGUI(QtGui.QMainWindow):
         self._control.createAndBulkExecute(subtractDict)
         if( self._simpleImageView != None):
             self._simpleImageView.update()
+        if self._obsDef._dotrapint:
+            self._control.createAndBulkExecute(self._control.getTrapIntDict())
         self.nextWidget()
 
     def plotit(self):
@@ -335,7 +337,9 @@ class observableDefinition(QtGui.QWidget):
         self.observableAttFacCB.setDisabled(True)
         self.observableAttFacCB.currentIndexChanged.connect(self.setAttFac)
         self.despikeCheckBox.stateChanged.connect(self.toggleDespiking)
+        self.trapintCheckBox.stateChanged.connect(self.toggleTrapint)
         self._despike = False
+        self._dotrapint = True
         self._notEnabled(True)
         self.obsNextBtn.clicked.connect(self.emittit)
         self._observableName = 'observable'
@@ -369,6 +373,7 @@ class observableDefinition(QtGui.QWidget):
         self.observableTimeCB.setDisabled(state)
         self.observableAttFaccheck.setDisabled(state)
         self.despikeCheckBox.setDisabled(state)
+        self.trapintCheckBox.setDisabled(state)
         self.obsNextBtn.setDisabled(state)
 
     def toggleAttFac(self):
@@ -390,6 +395,9 @@ class observableDefinition(QtGui.QWidget):
 
     def toggleDespiking(self):
         self._despike = not self._despike
+
+    def toggleTrapint(self):
+        self._dotrapint = not self._dotrapint
 
     def emittit(self):
         self._obsDict["type"] = "iintdefinition"
