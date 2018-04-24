@@ -25,13 +25,13 @@ from PyQt4 import QtCore, QtGui, uic
 from adapt.utilities import interactiveP09ProcessingControl
 from adapt.processes import specfilereader
 
-__version__ ="0.0.4alpha"
+__version__ ="0.0.5alpha"
 
 class iintGUI(QtGui.QMainWindow):
     
     def __init__(self, parent=None):
         super(iintGUI, self).__init__(parent)
-        uic.loadUi("iint_main2.ui", self)
+        uic.loadUi("iint_main3.ui", self)
         self._chooseConfig = chooseConfiguration()
 
         #~ self.actionNew.triggered.connect(self._chooseConfig.createnew)
@@ -47,8 +47,9 @@ class iintGUI(QtGui.QMainWindow):
         self._rawdataobject = None
 
         self._simpleImageView = simpleDataPlot(parent=self)
-        #~ self._simpleImageView.currentIndex.connect(print)
-        
+        #~ self.horizontalLayout.addWidget(self._simpleImageView)
+        self.imageWidget = self._simpleImageView
+                
         self._sfrGUI = specfilereader.specfilereaderGUI()
         self._obsDef = observableDefinition()
         self._bkgHandling = backgroundHandling(self._control.getBKGDicts())
@@ -57,15 +58,15 @@ class iintGUI(QtGui.QMainWindow):
         self._signalHandling.modelcfg.connect(self.openFitDialog)
         self._signalHandling.performFitPushBtn.clicked.connect(self._prepareSignalFitting)
         self._fitList = []
+        self._columnMonitoring = columnMonitors()
+        self._loggingBox = loggerBox()
 
-        self._elementlist = [ self._sfrGUI,
-                              self._obsDef,
-                              self._bkgHandling,
-                              self._signalHandling]
-
-        for task in self._elementlist:
-            self.listWidget.addItem(task.windowTitle())
-            self.stackedWidget.addWidget(task)
+        self.verticalLayout.addWidget(self._sfrGUI)
+        self.verticalLayout.addWidget(self._obsDef)
+        self.verticalLayout.addWidget(self._bkgHandling)
+        self.verticalLayout.addWidget(self._signalHandling)
+        self.verticalLayout.addWidget(self._columnMonitoring)
+        self.verticalLayout.addWidget(self._loggingBox)
 
         self._sfrGUI.valuesSet.connect(self.runFileReader)
         self._obsDef.observableDicts.connect(self.runObservable)
@@ -79,17 +80,11 @@ class iintGUI(QtGui.QMainWindow):
             self._procconf = handler.loadConfig(self._file)
             self._initializeFromConfig()
 
-    def nextWidget(self):
-        ci = self.stackedWidget.currentIndex()
-        self.stackedWidget.setCurrentIndex(ci+1)
-        cr = self.listWidget.currentRow()
-        self.listWidget.setCurrentRow(cr+1)
-
     def _initializeFromConfig(self):
         self._control.loadConfig(self._procconf)
         self._sfrGUI.setParameterDict(self._control.getSFRDict())
         self.runFileReader()
-        self.nextWidget()
+        #~ self.nextWidget()
         self._obsDef.setParameterDict(self._control.getOBSDict(), self._control.getDESDict())
         self._obsDef.emittit()
         self._bkgHandling.setParameterDicts( self._control.getBKGDicts())
@@ -98,20 +93,19 @@ class iintGUI(QtGui.QMainWindow):
     def runFileReader(self):
         sfr = self._control.createAndInitialize(self._sfrGUI.getParameterDict())
         self._control.createDataList(sfr.getData(), self._control.getRawDataName())
+
         # to set the displayed columns etc. one element of the selected data is needed
         self._rawdataobject = self._control.getDataList()[0].getData(self._control.getRawDataName())
         self._motorname = self._rawdataobject.getStartIdentifier(2)
         self._control.setMotorName(self._motorname)
         # pass info to the observable definition part
         self._obsDef.passInfo(self._rawdataobject)
-        self.nextWidget()
 
     def runObservable(self, obsDict, despDict):
         self._control.createAndBulkExecute(obsDict)
         if despDict != {}:
             self._control.createAndBulkExecute(despDict)
         self.plotit()
-        self.nextWidget()
 
     def runBkgProcessing(self, selDict, fitDict, calcDict, subtractDict):
         self._control.createAndBulkExecute(selDict)
@@ -122,7 +116,6 @@ class iintGUI(QtGui.QMainWindow):
             self._simpleImageView.update()
         if self._obsDef._dotrapint:
             self._control.createAndBulkExecute(self._control.getTrapIntDict())
-        self.nextWidget()
 
     def plotit(self):
         # pyqt helper stuff
@@ -540,6 +533,23 @@ class signalHandling(QtGui.QWidget):
     def emitfourthmodelconfig(self):
         index = self.fourthModelCB.currentIndex()
         self.modelcfg.emit(self._modelnames[index], 3)
+
+class columnMonitors(QtGui.QWidget):
+
+    def __init__(self, parent=None):
+        super(columnMonitors, self).__init__(parent)
+        uic.loadUi("columnMonitors.ui", self)
+
+    def setParameterDicts(self, dicts):
+        pass
+    def emittem(self):
+        pass
+
+class loggerBox(QtGui.QWidget):
+
+    def __init__(self, parent=None):
+        super(loggerBox, self).__init__(parent)
+        uic.loadUi("logBOX.ui", self)
 
 if __name__ == "__main__":
     import sys
