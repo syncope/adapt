@@ -116,6 +116,7 @@ class InteractiveP09ProcessingControl():
         self._processParameters["signalcurvefit"]["xdata"] = self._motorName
         self._processParameters["signalcurvefit"]["ydata"] = self._signalName
         self._processParameters["signalcurvefit"]["error"] = "None"
+        self._processParameters["signalcurvefit"]["usepreviousresult"] = 1
         self._processParameters["signalcurvefit"]["result"] = self._fittedSignalName
         self._processParameters["signalcurvefit"]["model"] = { "m0_" : { "modeltype": "gaussianModel"}}
         # calc fitted signal points
