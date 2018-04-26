@@ -96,7 +96,7 @@ class iintGUI(QtGui.QMainWindow):
 
         # to set the displayed columns etc. one element of the selected data is needed
         self._rawdataobject = self._control.getDataList()[0].getData(self._control.getRawDataName())
-        self._motorname = self._rawdataobject.getStartIdentifier(2)
+        self._motorname = self._rawdataobject.getMotorName()
         self._control.setMotorName(self._motorname)
         # pass info to the observable definition part
         self._obsDef.passInfo(self._rawdataobject)
@@ -346,7 +346,7 @@ class observableDefinition(QtGui.QWidget):
 
         self._currentdataLabels = dataobject.getLabels()
         self.observableMotorLabel.setStyleSheet("color: blue;")
-        self._motorname = dataobject.getStartIdentifier(2)
+        self._motorname = dataobject.getMotorName()
 
         # now set the texts and labels
         self.observableMotorLabel.setText(self._motorname)
