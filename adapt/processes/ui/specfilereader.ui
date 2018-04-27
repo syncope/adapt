@@ -39,7 +39,7 @@
         <item row="3" column="3">
          <widget class="QPushButton" name="okBtn">
           <property name="text">
-           <string>Load</string>
+           <string>OK</string>
           </property>
          </widget>
         </item>

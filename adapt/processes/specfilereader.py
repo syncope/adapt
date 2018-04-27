@@ -81,6 +81,7 @@ class specfilereaderGUI(QtGui.QWidget):
         uic.loadUi(formfile, self)
         self.chooseInputFileBtn.clicked.connect(self.getAndOpenFile)
         self.okBtn.clicked.connect(self.valuesSet.emit)
+        self.okBtn.clicked.connect(self.close)
         self.okBtn.setDisabled(True)
         self._specReaderDict = {}
 
