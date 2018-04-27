@@ -49,7 +49,8 @@ class iintGUI(QtGui.QMainWindow):
         self._simpleImageView = simpleDataPlot(parent=self)
         #~ self.horizontalLayout.addWidget(self._simpleImageView)
         self.imageWidget = self._simpleImageView
-                
+
+        self._fileDisplay = fileDisplay()
         self._sfrGUI = specfilereader.specfilereaderGUI()
         self._obsDef = observableDefinition()
         self._bkgHandling = backgroundHandling(self._control.getBKGDicts())
@@ -61,16 +62,21 @@ class iintGUI(QtGui.QMainWindow):
         self._columnMonitoring = columnMonitors()
         self._loggingBox = loggerBox()
 
-        self.verticalLayout.addWidget(self._sfrGUI)
+        #~ self.verticalLayout.addWidget(self._sfrGUI)
+        self.verticalLayout.addWidget(self._fileDisplay)
         self.verticalLayout.addWidget(self._obsDef)
         self.verticalLayout.addWidget(self._bkgHandling)
         self.verticalLayout.addWidget(self._signalHandling)
         self.verticalLayout.addWidget(self._columnMonitoring)
         self.verticalLayout.addWidget(self._loggingBox)
 
+        self._fileDisplay.newspecfile.connect(self.showSFRGUI)
         self._sfrGUI.valuesSet.connect(self.runFileReader)
         self._obsDef.observableDicts.connect(self.runObservable)
         self._bkgHandling.bkgDicts.connect(self.runBkgProcessing)
+
+    def showSFRGUI(self):
+        self._sfrGUI.show()
 
     def choosefile(self, num):
         self._file = QtGui.QFileDialog.getOpenFileName(self, 'Choose iint config file', '.', "iint cfg files (*.iint)")
@@ -91,9 +97,11 @@ class iintGUI(QtGui.QMainWindow):
         self._bkgHandling.emittem()
 
     def runFileReader(self):
-        sfr = self._control.createAndInitialize(self._sfrGUI.getParameterDict())
-        self._control.createDataList(sfr.getData(), self._control.getRawDataName())
+        filereaderdict = self._sfrGUI.getParameterDict()
+        self._fileDisplay.setNames(filereaderdict["filename"], filereaderdict["scanlist"])
 
+        sfr = self._control.createAndInitialize(filereaderdict)
+        self._control.createDataList(sfr.getData(), self._control.getRawDataName())
         # to set the displayed columns etc. one element of the selected data is needed
         self._rawdataobject = self._control.getDataList()[0].getData(self._control.getRawDataName())
         self._motorname = self._rawdataobject.getMotorName()
@@ -307,6 +315,26 @@ class simpleDataPlot(QtGui.QDialog):
     def getCurrentSignal(self):
         datum = self._dataList[self._currentIndex]
         return datum.getData(self._motorName), datum.getData(self._signalName)
+
+
+
+class fileDisplay(QtGui.QWidget):
+    newspecfile = QtCore.pyqtSignal()
+
+    def __init__(self, parent=None):
+        super(fileDisplay, self).__init__(parent)
+        self.setWindowTitle("File Display")
+        uic.loadUi("fileDisplay.ui", self)
+        self.changeFile.clicked.connect(self.emitNew)
+
+    def setNames(self, f, s):
+        import os.path
+        self.fileLabel.setText(os.path.basename(f))
+        self.fileLabel.setToolTip(f)
+        self.scanSelectionDisplay.setText(s)
+
+    def emitNew(self):
+        self.newspecfile.emit()
 
 class chooseConfiguration():
 
