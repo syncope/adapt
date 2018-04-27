@@ -103,8 +103,11 @@ class iintGUI(QtGui.QMainWindow):
 
     def runObservable(self, obsDict, despDict):
         self._control.createAndBulkExecute(obsDict)
+        # check whether despiking is activated, otherwise unset names
         if despDict != {}:
             self._control.createAndBulkExecute(despDict)
+        else:
+            self._control.noDespiking()
         self.plotit()
 
     def runBkgProcessing(self, selDict, fitDict, calcDict, subtractDict):
