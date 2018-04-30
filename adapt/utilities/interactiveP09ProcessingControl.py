@@ -44,6 +44,8 @@ class InteractiveP09ProcessingControl():
         self._procBuilder = processBuilder.ProcessBuilder()
         self._dataList = []
         self._processList = []
+        self._nodespike = True
+        self._nobkg = True
         self._motorName = ""
         self._rawName = "rawdata"
         self._observableName = "observable"
@@ -84,10 +86,10 @@ class InteractiveP09ProcessingControl():
         self._fitmodels = curvefitting.curvefitting().getFitModels()
 
     def _setupDefaultNames(self):
-        self._processParameters["read"]["outputdata"] = self._rawName
+        self._processParameters["read"]["output"] = self._rawName
         # from out to in:
         self._processParameters["observabledef"]["input"] = self._rawName
-        self._processParameters["observabledef"]["observableoutput"] =  self._observableName
+        self._processParameters["observabledef"]["output"] =  self._observableName
         # from out to in:
         self._processParameters["despike"]["input"] =  self._observableName
         self._processParameters["despike"]["method"] = "p09despiking"
@@ -103,6 +105,7 @@ class InteractiveP09ProcessingControl():
         self._processParameters["bkgfit"]["ydata"] = "bkgY"
         self._processParameters["bkgfit"]["error"] = "None"
         self._processParameters["bkgfit"]["result"] = "bkgfitresult"
+        self._processParameters["bkgfit"]["usepreviousresult"] = 0
         self._processParameters["bkgfit"]["model"] = { "lin_" : {"modeltype" : "linearModel"}}
         # calc bkg points
         self._processParameters["calcbkgpoints"]["fitresult"] = "bkgfitresult"
@@ -197,7 +200,7 @@ class InteractiveP09ProcessingControl():
             return
         proc = self._procBuilder.createProcessFromDictionary(pDict)
         proc.initialize()
-        proc.loopExecute(self._dataList)
+        proc.loopExecuteWithOverwrite(self._dataList)
 
     def loadConfig(self, processConfig):
         self._procRunList.clear()
