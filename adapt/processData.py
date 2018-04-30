@@ -30,10 +30,18 @@ class ProcessData():
         self.currentdata = {}
 
     def clearCurrent(self, name=None):
-        if name is None:
-            self.currentdata.clear()
+        import collections
+        if isinstance(name, list):
+            for n in name:
+                self.clearCurrent(n)
         else:
-            del self.currentdata[name]
+            if name is None:
+                self.currentdata.clear()
+            else:
+                try:
+                    del self.currentdata[name]
+                except:
+                    pass
 
     def clearAll(self):
         self.currentdata.clear()
