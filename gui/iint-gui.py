@@ -430,7 +430,7 @@ class observableDefinition(QtGui.QWidget):
         self._obsDict["detector_column"] = self._detname
         self._obsDict["monitor_column"] = self._monname
         self._obsDict["exposureTime_column"] = self._timename
-        self._obsDict["observableoutput"] = self._observableName
+        self._obsDict["output"] = self._observableName
         self._obsDict["id"] = "scannumber"
         if(self._useAttenuationFactor):
             self._obsDict["attenuationFactor_column"] = self._attenfname
