@@ -74,6 +74,14 @@ class IProcess():
         for elem in datalist:
             self.execute(elem)
 
+    def loopExecuteWithOverwrite(self, datalist):
+        for elem in datalist:
+            self.clearPreviousData(elem)
+            self.execute(elem)
+
+    def clearPreviousData(self, data):
+        pass
+
     def finalize(self, data):
         pass
 
