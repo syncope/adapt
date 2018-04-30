@@ -120,6 +120,10 @@ class polarintegration(IProcess):
     def check(self, data):
         pass
 
+    def clearPreviousData(self, data):
+        data.clearCurrent(self._dataname)
+
+
 if __name__ == "__main__":
     s = polarintegration()
     for p, k in s._parameters.items():

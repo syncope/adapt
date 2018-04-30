@@ -33,7 +33,7 @@ class iintdefinition(IProcess):
         self._monitorPar = ProcessParameter("monitor_column", str)
         self._exposure_timePar = ProcessParameter("exposureTime_column", str)
         self._attfacPar = ProcessParameter("attenuationFactor_column", str, optional=True)
-        self._observableoutputPar = ProcessParameter("observableoutput", str)
+        self._observableoutputPar = ProcessParameter("output", str)
         self._idPar = ProcessParameter("id", str)
         self._parameters.add(self._inputPar)
         self._parameters.add(self._motorPar)
@@ -48,7 +48,7 @@ class iintdefinition(IProcess):
         self._input = self._inputPar.get()
         self._motor = self._motorPar.get()
         self._detector = self._detectorPar.get()
-        self._monitor =self._monitorPar.get()
+        self._monitor = self._monitorPar.get()
         self._exposure_time = self._exposure_timePar.get()
         self._attfac = self._attfacPar.get()
         self._observableoutput = self._observableoutputPar.get()
@@ -80,6 +80,11 @@ class iintdefinition(IProcess):
 
     def check(self, data):
         pass
+
+    def clearPreviousData(self, data):
+        data.clearCurrent(self._observableoutput)
+        data.clearCurrent(self._motor)
+        data.clearCurrent(self._id)
 
 
 class iintdefinitionGUI(QtGui.QWidget):

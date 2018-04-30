@@ -80,6 +80,9 @@ class curvefitting(IProcess):
     def check(self, data):
         pass
 
+    def clearPreviousData(self, data):
+        data.clearCurrent(self._resultPar.get())
+
     def _updateModel(self, modelDict):
         mlist = []
         # the model description consists of nested dictionaries

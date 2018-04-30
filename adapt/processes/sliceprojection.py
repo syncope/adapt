@@ -28,7 +28,7 @@ class sliceprojection(IProcess):
     def __init__(self, ptype="sliceprojection"):
         super(sliceprojection, self).__init__(ptype)
         self._inputPar = ProcessParameter("input", str)
-        self._datanamePar = ProcessParameter("dataname", str)
+        self._datanamePar = ProcessParameter("output", str)
         self._xminPar = ProcessParameter("fastmin", int)
         self._xmaxPar = ProcessParameter("fastmax", int)
         self._yminPar = ProcessParameter("slowmin", int)
@@ -87,6 +87,9 @@ class sliceprojection(IProcess):
 
     def check(self, data):
         pass
+
+    def clearPreviousData(self, data):
+        data.clearCurrent(self._output)
 
 if __name__ == "__main__":
     s = sliceprojection()

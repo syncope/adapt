@@ -66,6 +66,9 @@ class filter1d(IProcess):
     def check(self, data):
         pass
 
+    def clearPreviousData(self, data):
+        data.clearCurrent(self._output)
+
     def _p09rolling_window(self, data, window):
         shape = data.shape[:-1] + (data.shape[-1] - window + 1, window)
         strides = data.strides + (data.strides[-1],)

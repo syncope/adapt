@@ -52,3 +52,6 @@ class $NAME(iProcess.IProcess):
 
     def check(self, data):
         pass
+
+    def clearPreviousData(self, data):
+        pass

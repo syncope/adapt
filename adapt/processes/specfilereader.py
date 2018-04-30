@@ -34,7 +34,7 @@ class specfilereader(IProcess):
         super(specfilereader, self).__init__(ptype)
 
         self._inPar = ProcessParameter("filename", str)
-        self._outPar = ProcessParameter("outputdata", str)
+        self._outPar = ProcessParameter("output", str)
         self._scanlistPar = ProcessParameter("scanlist", str, None, optional=True)
         #~ self._stridePar = ProcessParameter("stride", int, 1, optional=True)
         self._parameters.add(self._inPar)
@@ -66,8 +66,12 @@ class specfilereader(IProcess):
     def getData(self):
         return self.data
 
+    def clearPreviousData(self, data):
+        data.clearCurrent(self._output)
+
     def getConfigGUI(self):
         return specfilereaderGUI()
+
 
 
 class specfilereaderGUI(QtGui.QWidget):

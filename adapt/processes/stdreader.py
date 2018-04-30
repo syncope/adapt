@@ -34,7 +34,7 @@ class stdreader(IProcess):
     def __init__(self, ptype="stdreader"):
         super(stdreader, self).__init__(ptype)
         self._inputPar = ProcessParameter("input", list)
-        self._datanamePar = ProcessParameter("dataname", str)
+        self._datanamePar = ProcessParameter("output", str)
         self._pathPar = ProcessParameter("path", str, None, optional=True)
         self._attributePar = ProcessParameter("attribute", str, None, optional=True)
         self._parameters.add(self._inputPar)
@@ -70,6 +70,9 @@ class stdreader(IProcess):
 
     def check(self, data):
         pass
+
+    def clearPreviousData(self, data):
+        data.clearCurrent(self._output)
 
 if __name__ == "__main__":
     sd = stdreaderdef()

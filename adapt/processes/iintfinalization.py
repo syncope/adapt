@@ -111,3 +111,6 @@ class iintfinalization(IProcess):
 
     def check(self, data):
         pass
+
+    def clearPreviousData(self, data):
+        data.clearCurrent(self._names)

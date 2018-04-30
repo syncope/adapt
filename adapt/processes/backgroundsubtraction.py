@@ -33,17 +33,20 @@ class backgroundsubtraction(IProcess):
 
     def initialize(self):
         self._in = self._inPar.get()
-        self._out = self._outPar.get()
+        self._output = self._outPar.get()
         self._bkg = self._bkgPar.get()
 
     def execute(self, data):
         element = data.getData(self._in)
         background = data.getData(self._bkg)
         
-        data.addData(self._out, (element - background))
+        data.addData(self._output, (element - background))
 
     def finalize(self, data):
         pass
 
     def check(self, data):
         pass
+
+    def clearPreviousData(self, data):
+        data.clearCurrent(self._output)

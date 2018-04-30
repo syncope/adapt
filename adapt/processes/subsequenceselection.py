@@ -90,6 +90,9 @@ class subsequenceselection(IProcess):
     def check(self, data):
         pass
 
+    def clearPreviousData(self, data):
+        data.clearCurrent(self._output)
+
     def _selectFromStart(self, seq, num):
         '''create a subsequence that only has the first num elements of seq'''
         return seq[:num]
