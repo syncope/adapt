@@ -180,7 +180,7 @@ class iintGUI(QtGui.QMainWindow):
         self._control.createAndBulkExecute(rundict)
         self._control.createAndBulkExecute(self._control.getSignalFitDict())
         if( self._simpleImageView != None):
-            self._simpleImageView.update()
+            self._simpleImageView.update("plotfit")
 
     def _updateCurrentImage(self):
         ydata = self._fitWidget.getCurrentFitData()
@@ -241,8 +241,10 @@ class simpleDataPlot(QtGui.QDialog):
         
         self.viewPart.clear()
 
-    def update(self):
+    def update(self, action=None):
         self._checkDataAvailability()
+        if(action == "plotfit"):
+            self.showFIT.setChecked(True)
 
     def passData(self, datalist, motorname, obsname, despobsname, bkgname, signalname, fittedsignalname):
         self._dataList = datalist
