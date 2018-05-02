@@ -75,7 +75,12 @@ class iintGUI(QtGui.QMainWindow):
         self._bkgHandling.bkgDicts.connect(self.runBkgProcessing)
 
     def _resetAll(self):
-        print("RESETTING EVERYTHING")
+        self._simpleImageView.reset()
+        self._fileDisplay.reset()
+        self._obsDef.reset()
+        self._bkgHandling.reset()
+        self._signalHandling.reset()
+        self._control.resetAll()
 
     def _closeApp(self):
         print("it' closing time")
@@ -86,9 +91,15 @@ class iintGUI(QtGui.QMainWindow):
     def showSFRGUI(self):
         self._sfrGUI.show()
 
-    def choosefile(self, num):
+    def choosefile(self):
+        try:
+            prev = self._file
+        except:
+            prev = None
         self._file = QtGui.QFileDialog.getOpenFileName(self, 'Choose iint config file', '.', "iint cfg files (*.iint)")
         if self._file != "":
+            if prev:
+                self._resetAll()
             from adapt import configurationHandler
             handler = configurationHandler.ConfigurationHandler()
             self._procconf = handler.loadConfig(self._file)
@@ -202,7 +213,6 @@ class simpleDataPlot(QtGui.QDialog):
         self.showSIG.stateChanged.connect(self.plot)
         self.showFIT.stateChanged.connect(self.plot)
         self.viewPart.scene().sigMouseClicked.connect(self.mouse_click)
-        self._control = None
         self._currentIndex = 0
         self.currentIndex.emit(self._currentIndex)
         self._showraw = True
@@ -211,6 +221,24 @@ class simpleDataPlot(QtGui.QDialog):
         self._showbkgsubtracted = False
         self._tmpFit = None
         self._showsigfit = False
+
+    def reset(self):
+        self.showDES.setChecked(False)
+        self.showBKG.setChecked(False)
+        self.showSIG.setChecked(False)
+        self.showFIT.setChecked(False)
+        self.showDES.setDisabled(True)
+        self.showBKG.setDisabled(True)
+        self.showSIG.setDisabled(True)
+        self.showFIT.setDisabled(True)
+        self._currentIndex = 0
+        self._showraw = True
+        self._showdespike = False
+        self._showbkg = False
+        self._showbkgsubtracted = False
+        self._showsigfit = False
+        
+        self.viewPart.clear()
 
     def update(self):
         self._checkDataAvailability()
@@ -223,10 +251,11 @@ class simpleDataPlot(QtGui.QDialog):
         self._backgroundPointsName = bkgname
         self._signalName = signalname
         self._fittedSignalName = fittedsignalname
-        self._checkDataAvailability()
+        self.update()
 
     def _checkDataAvailability(self):
         datum = self._dataList[0]
+        
         try:
             datum.getData(self._observableName)
             self.showRAW.setDisabled(False)
@@ -338,6 +367,11 @@ class fileDisplay(QtGui.QWidget):
         uic.loadUi("fileDisplay.ui", self)
         self.changeFile.clicked.connect(self.emitNew)
 
+    def reset(self):
+        self.fileLabel.setText("No File")
+        self.fileLabel.setToolTip("No File")
+        self.scanSelectionDisplay.setText("No selection")
+
     def setNames(self, f, s):
         import os.path
         self.fileLabel.setText(os.path.basename(f))
@@ -372,6 +406,16 @@ class observableDefinition(QtGui.QWidget):
         self._notEnabled(True)
         self.obsNextBtn.clicked.connect(self.emittit)
         self._observableName = 'observable'
+
+    def reset(self):
+        self._observableName = 'observable'
+        self._obsDict = {}
+        self._despikeDict = {}
+        self._useAttenuationFactor = False
+        self.observableAttFacCB.setDisabled(True)
+        self._despike = False
+        self._dotrapint = True
+        self._notEnabled(True)
 
     def passInfo(self, dataobject):
         if dataobject == None:
@@ -467,6 +511,8 @@ class observableDefinition(QtGui.QWidget):
         if ( despDict != {} ):
             self.despikeCheckBox.setChecked(True)
 
+
+
 class backgroundHandling(QtGui.QWidget):
     bkgDicts = QtCore.pyqtSignal(dict, dict, dict, dict)
 
@@ -484,6 +530,14 @@ class backgroundHandling(QtGui.QWidget):
         self.nextBtn.clicked.connect(self.emittem)
         self.setParameterDicts(pDicts)
 
+    def reset(self):
+        self._selectParDict = {}
+        self._fitParDict = {}
+        self._calcParDict = {}
+        self._subtractParDict = {}
+        self.bkgStartPointsSB.setValue(3)
+        self.bkgEndPointsSB.setValue(3)
+
     def setParameterDicts(self, dicts):
         self._selectParDict = dicts[0]
         self.bkgStartPointsSB.setValue(self._selectParDict["startpointnumber"])
@@ -496,6 +550,8 @@ class backgroundHandling(QtGui.QWidget):
         self._selectParDict["startpointnumber"] = self.bkgStartPointsSB.value()
         self._selectParDict["endpointnumber"] = self.bkgEndPointsSB.value()
         self.bkgDicts.emit(  self._selectParDict, self._fitParDict, self._calcParDict, self._subtractParDict )
+
+
 
 class signalHandling(QtGui.QWidget):
     modelcfg = QtCore.pyqtSignal(str, int)
@@ -517,6 +573,12 @@ class signalHandling(QtGui.QWidget):
         self.useSecond.stateChanged.connect(self._toggleSecond)
         self.useThird.stateChanged.connect(self._toggleThird)
         self.useFourth.stateChanged.connect(self._toggleFourth)
+
+    def reset(self):
+        self._firstModelDict = {}
+        self._secondModelDict = {}
+        self._thirdModelDict = {}
+        self._fourthModelDict = {}
 
     def _toggleFirst(self):
         self._inactive[0] = not self._inactive[0]
@@ -548,8 +610,8 @@ class signalHandling(QtGui.QWidget):
         self.thirdModelCB.addItems(self._modelnames)
         self.fourthModelCB.addItems(self._modelnames)
 
-    def emittit(self):
-        pass
+    #~ def emittit(self):
+        #~ pass
         #~ self._selectParDict["startpointnumber"] = self.bkgStartPointsSB.value()
         #~ self._selectParDict["endpointnumber"] = self.bkgEndPointsSB.value()
         #~ self.bkgDicts.emit(  self._selectParDict, self._fitParDict, self._calcParDict, self._subtractParDict )
@@ -570,6 +632,8 @@ class signalHandling(QtGui.QWidget):
         index = self.fourthModelCB.currentIndex()
         self.modelcfg.emit(self._modelnames[index], 3)
 
+
+
 class columnMonitors(QtGui.QWidget):
 
     def __init__(self, parent=None):
@@ -580,6 +644,8 @@ class columnMonitors(QtGui.QWidget):
         pass
     def emittem(self):
         pass
+
+
 
 class loggerBox(QtGui.QWidget):
 
