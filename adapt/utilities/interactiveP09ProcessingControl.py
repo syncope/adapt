@@ -90,6 +90,10 @@ class InteractiveP09ProcessingControl():
         # from out to in:
         self._processParameters["observabledef"]["input"] = self._rawName
         self._processParameters["observabledef"]["output"] =  self._observableName
+        self._processParameters["observabledef"]["detector_column"] =  "exp_c01"
+        self._processParameters["observabledef"]["monitor_column"] = "sumvfcs_counts"
+        self._processParameters["observabledef"]["exposureTime_column"] = "exp_t01"
+        
         # from out to in:
         self._processParameters["despike"]["input"] =  self._observableName
         self._processParameters["despike"]["method"] = "p09despiking"
