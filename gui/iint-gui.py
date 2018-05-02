@@ -163,6 +163,7 @@ class iintGUI(QtGui.QMainWindow):
     def openFitDialog(self, modelname, index):
         self._fitWidget = self._control.getFitModel(modelname, self._simpleImageView.getCurrentSignal(), index=index)
         self._fitWidget.updateFit.connect(self._updateCurrentImage)
+        self._fitWidget.guessingDone.connect(self._simpleImageView.removeGuess)
         self._fitWidget.show()
         self._fitWidget.update()
         self._keepFitList(self._fitWidget)
@@ -310,6 +311,9 @@ class simpleDataPlot(QtGui.QDialog):
         if self._tmpFit != None:
             self._tmpFit.clear()
         self._tmpFit = self.viewPart.plot(xdata, ydata, pen='g') #, symbol='+')
+
+    def removeGuess(self):
+        self._tmpFit.clear()
 
     def _toggleRAW(self):
         self._showraw = not self._showraw 
