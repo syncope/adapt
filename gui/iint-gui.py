@@ -32,12 +32,11 @@ class iintGUI(QtGui.QMainWindow):
     def __init__(self, parent=None):
         super(iintGUI, self).__init__(parent)
         uic.loadUi("iint_main3.ui", self)
-        self._chooseConfig = chooseConfiguration()
 
-        #~ self.actionNew.triggered.connect(self._chooseConfig.createnew)
+        self.actionNew.triggered.connect(self._resetAll)
         self.actionOpen_file.triggered.connect(self.choosefile)
-        #~ self.actionSave_file.triggered.connect(print)
-        #~ self.actionExit.triggered.connect(exit())
+        self.actionSave_file.triggered.connect(self._saveConfig)
+        self.actionExit.triggered.connect(self._closeApp)
 
         # the steering helper object
         self._control = interactiveP09ProcessingControl.InteractiveP09ProcessingControl()
@@ -62,18 +61,27 @@ class iintGUI(QtGui.QMainWindow):
         self._columnMonitoring = columnMonitors()
         self._loggingBox = loggerBox()
 
-        #~ self.verticalLayout.addWidget(self._sfrGUI)
         self.verticalLayout.addWidget(self._fileDisplay)
         self.verticalLayout.addWidget(self._obsDef)
         self.verticalLayout.addWidget(self._bkgHandling)
         self.verticalLayout.addWidget(self._signalHandling)
-        self.verticalLayout.addWidget(self._columnMonitoring)
+        #~ self.verticalLayout.addWidget(self._columnMonitoring)
         self.verticalLayout.addWidget(self._loggingBox)
+        
 
         self._fileDisplay.newspecfile.connect(self.showSFRGUI)
         self._sfrGUI.valuesSet.connect(self.runFileReader)
         self._obsDef.observableDicts.connect(self.runObservable)
         self._bkgHandling.bkgDicts.connect(self.runBkgProcessing)
+
+    def _resetAll(self):
+        print("RESETTING EVERYTHING")
+
+    def _closeApp(self):
+        print("it' closing time")
+
+    def _saveConfig(self):
+        print("shave me, shave me, shave mmeeeeeee")
 
     def showSFRGUI(self):
         self._sfrGUI.show()
@@ -303,11 +311,14 @@ class simpleDataPlot(QtGui.QDialog):
         self.currentIndex.emit(self._currentIndex)
         self.plot()
 
-    def mouse_click(self, mouseclick):
-        mousepos = self._plot.mapFromScene(mouseclick.pos())
-        xdata = mousepos.x()
-        ydata = mousepos.y()
-        self.mouseposition.emit(xdata, ydata)
+    def mouse_click(self, event):
+        try:
+            mousepos = self.viewPart.mapFromScene(event)
+            xdata = mousepos.x()
+            ydata = mousepos.y()
+            self.mouseposition.emit(xdata, ydata)
+        except:
+            pass
 
     def getCurrentIndex(self):
         return self._currentIndex
@@ -336,13 +347,7 @@ class fileDisplay(QtGui.QWidget):
     def emitNew(self):
         self.newspecfile.emit()
 
-class chooseConfiguration():
 
-    def __init__(self):
-        self._procconf = None
-
-    def createnew(self, num):
-        self.newconfig.emit()
 
 class observableDefinition(QtGui.QWidget):
     observableDicts = QtCore.pyqtSignal(dict, dict)
