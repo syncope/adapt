@@ -71,6 +71,14 @@ class InteractiveP09ProcessingControl():
         self._setupProcessParameters()
         self._setupDefaultNames()
 
+    def resetAll(self):
+        self._setupProcessParameters()
+        self._setupDefaultNames()
+        for elem in self._dataList:
+            elem.clearAll()
+        del self._dataList[:]
+        self._dataList = []
+
     def _setupProcessParameters(self):
         self._processParameters["read"] = specfilereader.specfilereader().getProcessDictionary()
         self._processParameters["observabledef"] = iintdefinition.iintdefinition().getProcessDictionary()
