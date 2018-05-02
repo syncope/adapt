@@ -74,6 +74,9 @@ class iintGUI(QtGui.QMainWindow):
         self._obsDef.observableDicts.connect(self.runObservable)
         self._bkgHandling.bkgDicts.connect(self.runBkgProcessing)
 
+    def message(self, text):
+        self._loggingBox.addText(text)
+
     def _resetAll(self):
         self._simpleImageView.reset()
         self._fileDisplay.reset()
@@ -118,6 +121,7 @@ class iintGUI(QtGui.QMainWindow):
     def runFileReader(self):
         filereaderdict = self._sfrGUI.getParameterDict()
         self._fileDisplay.setNames(filereaderdict["filename"], filereaderdict["scanlist"])
+        self.message("Reading spec file: " + str(filereaderdict["filename"]))
 
         sfr = self._control.createAndInitialize(filereaderdict)
         self._control.createDataList(sfr.getData(), self._control.getRawDataName())
@@ -127,15 +131,20 @@ class iintGUI(QtGui.QMainWindow):
         self._control.setMotorName(self._motorname)
         # pass info to the observable definition part
         self._obsDef.passInfo(self._rawdataobject)
+        self.message("... done.\n")
+        
 
     def runObservable(self, obsDict, despDict):
+        self.message("Computing the observable...")
         self._control.createAndBulkExecute(obsDict)
         # check whether despiking is activated, otherwise unset names
         if despDict != {}:
             self._control.createAndBulkExecute(despDict)
         else:
             self._control.noDespiking()
+        self.message(" and plotting ...")
         self.plotit()
+        self.message(" done.\n")
 
     def runBkgProcessing(self, selDict, fitDict, calcDict, subtractDict):
         self._control.createAndBulkExecute(selDict)
@@ -658,6 +667,9 @@ class loggerBox(QtGui.QWidget):
     def __init__(self, parent=None):
         super(loggerBox, self).__init__(parent)
         uic.loadUi("logBOX.ui", self)
+
+    def addText(self,text):
+        self.messageWindow.insertPlainText(text)
 
 if __name__ == "__main__":
     import sys
