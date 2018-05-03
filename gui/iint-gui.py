@@ -147,6 +147,7 @@ class iintGUI(QtGui.QMainWindow):
         self.message(" done.\n")
 
     def runBkgProcessing(self, selDict, fitDict, calcDict, subtractDict):
+        self.message("Fitting background ...")
         self._control.createAndBulkExecute(selDict)
         self._control.createAndBulkExecute(fitDict)
         self._control.createAndBulkExecute(calcDict)
@@ -155,6 +156,7 @@ class iintGUI(QtGui.QMainWindow):
             self._simpleImageView.update()
         if self._obsDef._dotrapint:
             self._control.createAndBulkExecute(self._control.getTrapIntDict())
+        self.message(" ... done.\n")
 
     def plotit(self):
         # pyqt helper stuff
@@ -184,12 +186,14 @@ class iintGUI(QtGui.QMainWindow):
         self.runSignalFitting(fitDict)
 
     def runSignalFitting(self, fitDict):
+        self.message("Fitting the signal, this can take a while ...")
         rundict = self._control.getSIGDict()
         rundict['model'] = fitDict
         self._control.createAndBulkExecute(rundict)
         self._control.createAndBulkExecute(self._control.getSignalFitDict())
         if( self._simpleImageView != None):
             self._simpleImageView.update("plotfit")
+        self.message(" ... done.\n")
 
     def _updateCurrentImage(self):
         ydata = self._fitWidget.getCurrentFitData()
