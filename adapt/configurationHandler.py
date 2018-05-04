@@ -50,7 +50,7 @@ class ConfigurationHandler(iConfigurationHandler.IConfigurationHandler):
            :param procconf: The processing configuration object'''
         dumpDict = {}
         dumpDict["execlist"] = procconf.getOrderOfExecution()
-        for k,v in procconf.getProcessDefinitions().items:
+        for k,v in procconf.getProcessDefinitions().items():
             dumpDict[k] = v
         with open(filename, 'w') as outfile:
             yaml.dump(dumpDict, outfile, default_flow_style=False)
