@@ -228,6 +228,58 @@ class InteractiveP09ProcessingControl():
             else:
                 print("Wrong configuration file, unrecognized process name/type: " + str(proc))        
 
+    def saveConfig(self, filename):
+        print("trying to save the following into : " + str(self._prepareOutfileName()))
+        print(str(self.getSFRDict()))
+        print(str(self.getOBSDict()))
+        print(str(self.getDESDict()))
+        print(str(self.getTrapIntDict()))
+        print(str(self.getBKGDicts()))
+        print(str(self.getSIGDict()))
+
+
+    def _prepareOutfileName(self):
+        suffix = ".iint"
+        # use the scanlist entries and the input spec file name
+        try:
+            import os.path
+            # TODO: fix the removal of path!
+            basename = os.path.basename(self._processParameters["read"]["filename"]).split('.')[0]
+        except:
+            return
+        # decompose the scanlist parameters
+        scanlist = str(self._processParameters["read"]["scanlist"])
+        stride = None
+        retlist = []
+        if scanlist.find(':') != -1:
+            stride = int(scanlist.split(':')[-1])
+            scanlist = scanlist.split(':')[0]
+        scanlist = scanlist.split('[')[-1]
+        scanlist = scanlist.split(']')[0]
+        try:
+            li = scanlist.split(',')
+        except AttributeError:
+            pass
+        for elem in li:
+            try:
+                retlist.append(int(elem))
+            except ValueError:
+                try:
+                    tmp = elem.split('-')
+                    for i in tmp:
+                        retlist.append(i)
+                except:
+                    pass
+        retlist.sort()
+        startnumber = retlist[0]
+        endnumber = retlist[-1]
+        if stride != None:
+            stridesuffix = "-s" + str(stride)
+        else:
+            stridesuffix = ''
+        return basename + "_S" + str(startnumber) + "E" + str(endnumber) + stridesuffix + suffix
+
+
     def getSFRDict(self):
         return self._processParameters["read"]
 
@@ -268,3 +320,6 @@ class InteractiveP09ProcessingControl():
 
     def getTrapIntDict(self):
         return self._processParameters["trapint"]
+
+    
+    
