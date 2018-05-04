@@ -22,6 +22,7 @@
 from adapt import processingControl
 from adapt import processData
 from adapt import processBuilder
+from adapt import processingConfiguration
 
 from adapt.processes import specfilereader
 from adapt.processes import iintdefinition
@@ -229,13 +230,38 @@ class InteractiveP09ProcessingControl():
                 print("Wrong configuration file, unrecognized process name/type: " + str(proc))        
 
     def saveConfig(self, filename):
-        print("trying to save the following into : " + str(self._prepareOutfileName()))
-        print(str(self.getSFRDict()))
-        print(str(self.getOBSDict()))
-        print(str(self.getDESDict()))
-        print(str(self.getTrapIntDict()))
-        print(str(self.getBKGDicts()))
-        print(str(self.getSIGDict()))
+        try:
+            proposedname = str(self._prepareOutfileName())
+        except AttributeError:
+            return None
+        execlist =  [ "read", "observabledef"]
+        processDict = {}
+        processDict["read"] = self.getSFRDict()
+        processDict["observabledef"] = self.getOBSDict()
+        if not self._nodespike:
+            execlist.append("despike")
+            processDict["despike"] = self.getDESDict()
+        if not self._nobkg:
+            execlist.append("bkgselect")
+            execlist.append("bkgfit")
+            execlist.append("calcbkgpoints")
+            execlist.append("bkgsubtract")
+            ds = self.getBKGDicts()
+            processDict["bkgselect"] = ds[0]
+            processDict["bkgfit"] = ds[1]
+            processDict["calcbkgpoints"] = ds[2]
+            processDict["bkgsubtract"] = ds[3]
+        execlist.append("trapint")
+        processDict["trapint"] = self.getTrapIntDict()
+        execlist.append("signalcurvefit")
+        processDict["signalcurvefit"] = self.getSIGDict()
+        
+        procconfig = processingConfiguration.ProcessingConfiguration()
+        procconfig.addProcessDefinition(processDict)
+        procconfig.setOrderOfExecution(execlist)
+        from adapt import configurationHandler
+        handler = configurationHandler.ConfigurationHandler()
+        handler.writeConfig(proposedname, procconfig)
 
 
     def _prepareOutfileName(self):
