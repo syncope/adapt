@@ -89,7 +89,7 @@ class iintGUI(QtGui.QMainWindow):
         print("it' closing time")
 
     def _saveConfig(self):
-        print("shave me, shave me, shave mmeeeeeee")
+        self._control.saveConfig("test_out.iint")
 
     def showSFRGUI(self):
         self._sfrGUI.show()
@@ -205,6 +205,8 @@ class iintGUI(QtGui.QMainWindow):
             if fitwidget.getIndex() == fit.getIndex():
                 self._fitList.remove(fit)
         self._fitList.append(fitwidget)
+
+
 
 class simpleDataPlot(QtGui.QDialog):
     import pyqtgraph as pg
@@ -674,6 +676,8 @@ class loggerBox(QtGui.QWidget):
 
     def addText(self,text):
         self.messageWindow.insertPlainText(text)
+
+
 
 if __name__ == "__main__":
     import sys
