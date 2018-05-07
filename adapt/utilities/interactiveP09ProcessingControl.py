@@ -230,10 +230,6 @@ class InteractiveP09ProcessingControl():
                 print("Wrong configuration file, unrecognized process name/type: " + str(proc))        
 
     def saveConfig(self, filename):
-        try:
-            proposedname = str(self._prepareOutfileName())
-        except AttributeError:
-            return None
         execlist =  [ "read", "observabledef"]
         processDict = {}
         processDict["read"] = self.getSFRDict()
@@ -261,10 +257,10 @@ class InteractiveP09ProcessingControl():
         procconfig.setOrderOfExecution(execlist)
         from adapt import configurationHandler
         handler = configurationHandler.ConfigurationHandler()
-        handler.writeConfig(proposedname, procconfig)
+        handler.writeConfig(filename, procconfig)
 
 
-    def _prepareOutfileName(self):
+    def proposeConfigfileName(self):
         suffix = ".iint"
         # use the scanlist entries and the input spec file name
         try:

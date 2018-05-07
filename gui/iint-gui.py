@@ -41,6 +41,11 @@ class iintGUI(QtGui.QMainWindow):
         # the steering helper object
         self._control = interactiveP09ProcessingControl.InteractiveP09ProcessingControl()
 
+        # the quit dialog
+        self._quit = quitDialog()
+        self._quit.quitandsave.clicked.connect(self._saveConfig)
+        self._quit.justquit.clicked.connect(exit)
+
         # the core independent variable in iint:
         self._motorname = ""
         self._rawdataobject = None
@@ -86,10 +91,17 @@ class iintGUI(QtGui.QMainWindow):
         self._control.resetAll()
 
     def _closeApp(self):
-        print("it' closing time")
+        self._quit.show()
 
-    def _saveConfig(self):
-        self._control.saveConfig("test_out.iint")
+    def _saveConfig(self, num=None):
+        tempfilename = self._control.proposeConfigfileName()
+        savename = QtGui.QFileDialog.getSaveFileName(self, 'Choose iint config file to save', tempfilename, "iint cfg files (*.iint)")
+        if savename != '':
+            self._control.saveConfig(savename)
+        else:
+            return
+        if num != None:
+            exit()
 
     def showSFRGUI(self):
         self._sfrGUI.show()
@@ -676,6 +688,15 @@ class loggerBox(QtGui.QWidget):
 
     def addText(self,text):
         self.messageWindow.insertPlainText(text)
+
+
+
+class quitDialog(QtGui.QDialog):
+
+    def __init__(self, parent=None):
+        super(quitDialog, self).__init__(parent)
+        uic.loadUi("quitDialog.ui", self)
+        self.cancel.clicked.connect(self.close)
 
 
 
