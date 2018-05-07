@@ -249,7 +249,7 @@ class simpleDataPlot(QtGui.QDialog):
         self._showbkgsubtracted = False
         self._tmpFit = None
         self._showsigfit = False
-        #~ self.setGeometry(
+        self.setGeometry(640,1,840,840)
 
     def reset(self):
         self.showDES.setChecked(False)
