@@ -309,6 +309,8 @@ class InteractiveP09ProcessingControl():
         return self._processParameters["observabledef"]
 
     def getDESDict(self):
+        if self._nodespike:
+            return {}
         try:
             return self._processParameters["despike"]
         except KeyError:
