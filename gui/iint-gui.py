@@ -78,6 +78,9 @@ class iintGUI(QtGui.QMainWindow):
         self._sfrGUI.valuesSet.connect(self.runFileReader)
         self._obsDef.observableDicts.connect(self.runObservable)
         self._bkgHandling.bkgDicts.connect(self.runBkgProcessing)
+        
+        self.setGeometry(0,0,600,840)
+
 
     def message(self, text):
         self._loggingBox.addText(text)
@@ -160,6 +163,9 @@ class iintGUI(QtGui.QMainWindow):
 
     def runBkgProcessing(self, selDict, fitDict, calcDict, subtractDict):
         self.message("Fitting background ...")
+        if selDict == {}:
+            self.message("... nothing to be done.\n")
+            return
         self._control.createAndBulkExecute(selDict)
         self._control.createAndBulkExecute(fitDict)
         self._control.createAndBulkExecute(calcDict)
@@ -705,6 +711,5 @@ if __name__ == "__main__":
     import sys
     app = QtGui.QApplication(sys.argv)
     ui = iintGUI()
-    ui.setGeometry(0,0,480,1)
     ui.show()
     sys.exit(app.exec_())
