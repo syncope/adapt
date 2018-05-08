@@ -26,7 +26,7 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
-        <widget class="QListWidget" name="listWidget_2"/>
+        <widget class="QListWidget" name="listAll"/>
        </item>
        <item>
         <layout class="QVBoxLayout" name="verticalLayout">
@@ -73,7 +73,7 @@
         </layout>
        </item>
        <item>
-        <widget class="QListWidget" name="listWidget"/>
+        <widget class="QListWidget" name="listSelected"/>
        </item>
       </layout>
      </item>
