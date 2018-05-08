@@ -63,14 +63,17 @@ class iintGUI(QtGui.QMainWindow):
         self._signalHandling.modelcfg.connect(self.openFitDialog)
         self._signalHandling.performFitPushBtn.clicked.connect(self._prepareSignalFitting)
         self._fitList = []
-        self._columnMonitoring = columnMonitors()
+        self._inspectAnalyze = inspectAnalyze()
+        self._inspectAnalyze.trackData.clicked.connect(self._dataToTrack)
+        self._inspectAnalyze.polAnalysis.clicked.connect(self._polarizationAnalysis)
+
         self._loggingBox = loggerBox()
 
         self.verticalLayout.addWidget(self._fileDisplay)
         self.verticalLayout.addWidget(self._obsDef)
         self.verticalLayout.addWidget(self._bkgHandling)
         self.verticalLayout.addWidget(self._signalHandling)
-        #~ self.verticalLayout.addWidget(self._columnMonitoring)
+        self.verticalLayout.addWidget(self._inspectAnalyze)
         self.verticalLayout.addWidget(self._loggingBox)
         
 
@@ -223,6 +226,13 @@ class iintGUI(QtGui.QMainWindow):
             if fitwidget.getIndex() == fit.getIndex():
                 self._fitList.remove(fit)
         self._fitList.append(fitwidget)
+
+    def _dataToTrack(self):
+        rawScanData = self._control.getDataList()[0].getData(self._control.getRawDataName())
+        self._trackedDataChoice = chooseTrackedData(rawScanData)
+
+    def _polarizationAnalysis(self):
+        pass
 
 
 
@@ -674,16 +684,24 @@ class signalHandling(QtGui.QWidget):
 
 
 
-class columnMonitors(QtGui.QWidget):
+class inspectAnalyze(QtGui.QWidget):
 
     def __init__(self, parent=None):
-        super(columnMonitors, self).__init__(parent)
-        uic.loadUi("columnMonitors.ui", self)
+        super(inspectAnalyze, self).__init__(parent)
+        uic.loadUi("inspectAnalyze.ui", self)
 
-    def setParameterDicts(self, dicts):
-        pass
-    def emittem(self):
-        pass
+
+
+class chooseTrackedData(QtGui.QWidget):
+
+    def __init__(self, dataelement=None, parent=None):
+        super(chooseTrackedData, self).__init__(parent)
+        uic.loadUi("chooseTrackedData.ui", self)
+        self._data = dataelement
+        self.listAll.addItems(self._data.getLabels())
+        self.listAll.addItems(list(self._data.getCustomKeys()))
+        self.show()
+        self.cancel.clicked.connect(self.close)
 
 
 

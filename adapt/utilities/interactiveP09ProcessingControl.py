@@ -144,11 +144,6 @@ class InteractiveP09ProcessingControl():
         self._processParameters["trapint"]["observable"] = self._signalName
         self._processParameters["trapint"]["output"] = self._trapintName
 
-    def useNoDespiking(self):
-        self._processParameters["bkgselect"]["input"] =  self._observableName
-        self._processParameters["bkgselect"]["input"] =  [self._observableName, self._motorName] 
-        self._processParameters["bkgsubtract"]["input"] =  self._observableName
-
     def getRawDataName(self):
         return self._rawName
 
@@ -168,6 +163,11 @@ class InteractiveP09ProcessingControl():
         self._processParameters["bkgselect"]["input"] = [ self._despObservableName, self._motorName]
         self._processParameters["bkgsubtract"]["input"] =  self._despObservableName
 
+    def noBackground(self):
+        self._signalName = self._despObservableName
+        self._processParameters["signalcurvefit"]["ydata"] = self._signalName
+        self._processParameters["trapint"]["observable"] = self._signalName
+
     def getObservableName(self):
         return self._observableName
 
@@ -176,11 +176,6 @@ class InteractiveP09ProcessingControl():
 
     def getBackgroundName(self):
         return self._backgroundPointsName
-
-    def noBackground(self):
-        self._signalName = self._despObservableName
-        self._processParameters["signalcurvefit"]["ydata"] = self._signalName
-        self._processParameters["trapint"]["observable"] = self._signalName
 
     def getSignalName(self):
         return self._signalName
