@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>78</width>
-    <height>60</height>
+    <width>236</width>
+    <height>94</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -33,7 +33,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>78</width>
+     <width>236</width>
      <height>19</height>
     </rect>
    </property>
@@ -47,7 +47,23 @@
     <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
+   <widget class="QMenu" name="menu_Information">
+    <property name="title">
+     <string>&amp;Information</string>
+    </property>
+    <addaction name="action_Config_File"/>
+    <addaction name="action_Spec_File"/>
+    <addaction name="action_Fit_Results"/>
+    <addaction name="action_Output_File"/>
+   </widget>
+   <widget class="QMenu" name="menu_Help">
+    <property name="title">
+     <string>&amp;Help</string>
+    </property>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menu_Information"/>
+   <addaction name="menu_Help"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionOpen_file">
@@ -80,6 +96,26 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="action_Config_File">
+   <property name="text">
+    <string>&amp;Config File</string>
+   </property>
+  </action>
+  <action name="action_Spec_File">
+   <property name="text">
+    <string>&amp;Spec File</string>
+   </property>
+  </action>
+  <action name="action_Fit_Results">
+   <property name="text">
+    <string>&amp;Fit Results</string>
+   </property>
+  </action>
+  <action name="action_Output_File">
+   <property name="text">
+    <string>&amp;Output File</string>
    </property>
   </action>
  </widget>
