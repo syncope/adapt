@@ -309,8 +309,11 @@ class simpleDataPlot(QtGui.QDialog):
         except KeyError:
             self.showRAW.setDisabled(True)
         try:
-            datum.getData(self._despObservableName)
-            self.showDES.setDisabled(False)
+            if(self._despObservableName == self._observableName):
+                self.showDES.setDisabled(True)
+            else:
+                datum.getData(self._despObservableName)
+                self.showDES.setDisabled(False)
         except KeyError:
             self.showDES.setDisabled(True)
         try:
@@ -660,12 +663,6 @@ class signalHandling(QtGui.QWidget):
         self.thirdModelCB.addItems(self._modelnames)
         self.fourthModelCB.addItems(self._modelnames)
 
-    #~ def emittit(self):
-        #~ pass
-        #~ self._selectParDict["startpointnumber"] = self.bkgStartPointsSB.value()
-        #~ self._selectParDict["endpointnumber"] = self.bkgEndPointsSB.value()
-        #~ self.bkgDicts.emit(  self._selectParDict, self._fitParDict, self._calcParDict, self._subtractParDict )
-
     def emitfirstmodelconfig(self):
         index = self.firstModelCB.currentIndex()
         self.modelcfg.emit(self._modelnames[index], 0)
@@ -698,11 +695,22 @@ class chooseTrackedData(QtGui.QWidget):
         super(chooseTrackedData, self).__init__(parent)
         uic.loadUi("chooseTrackedData.ui", self)
         self._data = dataelement
-        self.listAll.addItems(self._data.getLabels())
-        self.listAll.addItems(list(self._data.getCustomKeys()))
+        self._untrackedData = self._data.getLabels()
+        for elem in list(self._data.getCustomKeys()):
+            self._untrackedData.append(elem)
+        self.listAll.addItems(self._untrackedData)
         self.show()
         self.cancel.clicked.connect(self.close)
+        self.addToList.setDisabled(True)
+        self.removeFromList.setDisabled(True)
+        self.listAll.itemClicked.connect(self._pickedItem)
+        self.listAll.itemDoubleClicked.connect(self._moveToSelected)
 
+    def _pickedItem(self, item):
+        print("picked: " + str(item.text()))
+
+    def _moveToSelected(self, item):
+        print("moving : " + str(item.text()))
 
 
 class loggerBox(QtGui.QWidget):
