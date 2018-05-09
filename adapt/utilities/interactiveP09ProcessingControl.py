@@ -218,8 +218,6 @@ class InteractiveP09ProcessingControl():
             if proc in self._processNames:
                 self._procRunList.append(proc)
                 for k, v in pDefs[proc].items():
-                    #~ if k != "type":
-                        #~ self._processParameters[proc][k] =v
                     self._processParameters[proc][k] =v
             else:
                 print("Wrong configuration file, unrecognized process name/type: " + str(proc))        

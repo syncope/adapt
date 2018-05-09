@@ -696,22 +696,48 @@ class chooseTrackedData(QtGui.QWidget):
         uic.loadUi("chooseTrackedData.ui", self)
         self._data = dataelement
         self._untrackedData = self._data.getLabels()
+        self._trackedData = []
         for elem in list(self._data.getCustomKeys()):
             self._untrackedData.append(elem)
         self.listAll.addItems(self._untrackedData)
         self.show()
         self.cancel.clicked.connect(self.close)
         self.addToList.setDisabled(True)
+        self.addToList.clicked.connect(self._addToList)
+        self.removeFromList.clicked.connect(self._removeFromList)
         self.removeFromList.setDisabled(True)
-        self.listAll.itemClicked.connect(self._pickedItem)
+        self.listAll.itemClicked.connect(self._pickedUnselectedItem)
         self.listAll.itemDoubleClicked.connect(self._moveToSelected)
+        self.listSelected.itemClicked.connect(self._pickedSelectedItem)
+        self.listSelected.itemDoubleClicked.connect(self._moveToUnselected)
 
-    def _pickedItem(self, item):
-        print("picked: " + str(item.text()))
+    def _pickedUnselectedItem(self, item):
+        self.addToList.setDisabled(False)
+
+    def _pickedSelectedItem(self, item):
+        self.removeFromList.setDisabled(False)
 
     def _moveToSelected(self, item):
-        print("moving : " + str(item.text()))
+        index = self._untrackedData.index(item.text())
+        self._trackedData.append(self._untrackedData.pop(index))
+        self.listSelected.addItem(self.listAll.takeItem(self.listAll.row(item)))
+        if self.listAll.__len__() == 0:
+            self.addToList.setDisabled(True)
+            
+    def _moveToUnselected(self, item):
+        index = self._trackedData.index(item.text())
+        self._untrackedData.append(self._trackedData.pop(index))
+        self.listAll.addItem(self.listSelected.takeItem(self.listSelected.row(item)))
+        if self.listSelected.__len__() == 0:
+            self.removeFromList.setDisabled(True)
 
+    def _addToList(self):
+        self._moveToSelected(self.listAll.selectedItems())
+
+    def _removeFromList(self):
+        self.listSelected.addItems(self.listSelected.selectedItems())
+        for elem in self.listSelected.selectedItems():
+            self.listSelected.takeItem(self.listSelected.row(elem))
 
 class loggerBox(QtGui.QWidget):
 
