@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>263</width>
-    <height>287</height>
+    <width>380</width>
+    <height>308</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -479,6 +479,20 @@
          <widget class="Line" name="line">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label">
+          <property name="font">
+           <font>
+            <pointsize>10</pointsize>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>obs = detector * mean(monitor)/monitor/time</string>
           </property>
          </widget>
         </item>
