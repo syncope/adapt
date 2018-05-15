@@ -57,6 +57,8 @@ class iintGUI(QtGui.QMainWindow):
         self._fileDisplay = fileDisplay()
         self._sfrGUI = specfilereader.specfilereaderGUI()
         self._obsDef = observableDefinition()
+        self._obsDef.doDespike.connect(self._control.useDespike)
+        self._obsDef.doTrapint.connect(self._control.useTrapInt)
         self._bkgHandling = backgroundHandling(self._control.getBKGDicts())
         self._signalHandling = signalHandling(self._control.getSIGDict())
         self._signalHandling.passModels(self._control.getFitModels())
@@ -75,7 +77,6 @@ class iintGUI(QtGui.QMainWindow):
         self.verticalLayout.addWidget(self._signalHandling)
         self.verticalLayout.addWidget(self._inspectAnalyze)
         self.verticalLayout.addWidget(self._loggingBox)
-        
 
         self._fileDisplay.newspecfile.connect(self.showSFRGUI)
         self._sfrGUI.valuesSet.connect(self.runFileReader)
@@ -89,6 +90,7 @@ class iintGUI(QtGui.QMainWindow):
         self._loggingBox.addText(text)
 
     def _resetAll(self):
+        # missing dialog if OK!?
         self._simpleImageView.reset()
         self._fileDisplay.reset()
         self._obsDef.reset()
@@ -150,13 +152,13 @@ class iintGUI(QtGui.QMainWindow):
         # pass info to the observable definition part
         self._obsDef.passInfo(self._rawdataobject)
         self.message("... done.\n")
-        
 
     def runObservable(self, obsDict, despDict):
         self.message("Computing the observable...")
         self._control.createAndBulkExecute(obsDict)
         # check whether despiking is activated, otherwise unset names
         if despDict != {}:
+            self._control.useDespike(True)
             self._control.createAndBulkExecute(despDict)
         else:
             self._control.noDespiking()
@@ -167,8 +169,10 @@ class iintGUI(QtGui.QMainWindow):
     def runBkgProcessing(self, selDict, fitDict, calcDict, subtractDict):
         self.message("Fitting background ...")
         if selDict == {}:
+            self._control.useBKG(False)
             self.message("... nothing to be done.\n")
             return
+        self._control.useBKG(True)
         self._control.createAndBulkExecute(selDict)
         self._control.createAndBulkExecute(fitDict)
         self._control.createAndBulkExecute(calcDict)
@@ -438,6 +442,8 @@ class fileDisplay(QtGui.QWidget):
 
 class observableDefinition(QtGui.QWidget):
     observableDicts = QtCore.pyqtSignal(dict, dict)
+    doDespike = QtCore.pyqtSignal(int)
+    doTrapint = QtCore.pyqtSignal(int)
 
     def __init__(self, parent=None):
         super(observableDefinition, self).__init__(parent)
@@ -455,20 +461,25 @@ class observableDefinition(QtGui.QWidget):
         self.despikeCheckBox.stateChanged.connect(self.toggleDespiking)
         self.trapintCheckBox.stateChanged.connect(self.toggleTrapint)
         self._despike = False
-        self._dotrapint = True
+        self._dotrapint = False
         self._notEnabled(True)
         self.obsNextBtn.clicked.connect(self.emittit)
         self._observableName = 'observable'
 
-    def reset(self):
-        self._observableName = 'observable'
+    def _defaultSettings(self):
         self._obsDict = {}
         self._despikeDict = {}
         self._useAttenuationFactor = False
         self.observableAttFacCB.setDisabled(True)
+        self.despikeCheckBox.setChecked(False)
+        self.trapintCheckBox.setChecked(False)
         self._despike = False
-        self._dotrapint = True
+        self._dotrapint = False
         self._notEnabled(True)
+        self._observableName = 'observable'
+
+    def reset(self):
+        self._defaultSettings()
 
     def passInfo(self, dataobject):
         if dataobject == None:
@@ -521,9 +532,11 @@ class observableDefinition(QtGui.QWidget):
 
     def toggleDespiking(self):
         self._despike = not self._despike
+        self.doDespike.emit(self._despike)
 
     def toggleTrapint(self):
         self._dotrapint = not self._dotrapint
+        self.doTrapint.emit(self._dotrapint)
 
     def emittit(self):
         self._obsDict["type"] = "iintdefinition"

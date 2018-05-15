@@ -47,6 +47,7 @@ class InteractiveP09ProcessingControl():
         self._processList = []
         self._nodespike = True
         self._nobkg = True
+        self._notrapint = True
         self._motorName = ""
         self._rawName = "rawdata"
         self._observableName = "observable"
@@ -159,11 +160,13 @@ class InteractiveP09ProcessingControl():
         self._processParameters["trapint"]["motor"] = self._motorName
 
     def noDespiking(self):
+        self._nodespike = True
         self._despObservableName = self._observableName
         self._processParameters["bkgselect"]["input"] = [ self._despObservableName, self._motorName]
         self._processParameters["bkgsubtract"]["input"] =  self._despObservableName
 
     def noBackground(self):
+        self._nobkg = True
         self._signalName = self._despObservableName
         self._processParameters["signalcurvefit"]["ydata"] = self._signalName
         self._processParameters["trapint"]["observable"] = self._signalName
@@ -220,7 +223,13 @@ class InteractiveP09ProcessingControl():
                 for k, v in pDefs[proc].items():
                     self._processParameters[proc][k] =v
             else:
-                print("Wrong configuration file, unrecognized process name/type: " + str(proc))        
+                print("Wrong configuration file, unrecognized process name/type: " + str(proc))
+        if "trapint" in execOrder:
+            self._notrapint = False
+        if "despike" in execOrder:
+            self._nodespike = False
+        if "bkgsubtract" in execOrder:
+            self._nobkg = False
 
     def saveConfig(self, filename):
         execlist =  [ "read", "observabledef"]
@@ -240,8 +249,9 @@ class InteractiveP09ProcessingControl():
             processDict["bkgfit"] = ds[1]
             processDict["calcbkgpoints"] = ds[2]
             processDict["bkgsubtract"] = ds[3]
-        execlist.append("trapint")
-        processDict["trapint"] = self.getTrapIntDict()
+        if not self._notrapint:
+            execlist.append("trapint")
+            processDict["trapint"] = self.getTrapIntDict()
         execlist.append("signalcurvefit")
         processDict["signalcurvefit"] = self.getSIGDict()
         
@@ -338,5 +348,12 @@ class InteractiveP09ProcessingControl():
     def getTrapIntDict(self):
         return self._processParameters["trapint"]
 
-    
-    
+    def useBKG(self, value):
+        self._nobkg = not value
+
+    def useTrapInt(self, value):
+        self._notrapint = not value
+
+    def useDespike(self, value):
+        self._nodespike = not value
+
