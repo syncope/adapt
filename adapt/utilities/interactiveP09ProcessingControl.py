@@ -361,10 +361,11 @@ class InteractiveP09ProcessingControl():
 
     def useBKG(self, value):
         self._nobkg = not value
+        self.noBackground()
 
     def useTrapInt(self, value):
         self._notrapint = not value
 
     def useDespike(self, value):
         self._nodespike = not value
-
+        self.noDespiking()

@@ -132,7 +132,6 @@ class iintGUI(QtGui.QMainWindow):
         self._control.loadConfig(self._procconf)
         self._sfrGUI.setParameterDict(self._control.getSFRDict())
         self.runFileReader()
-        #~ self.nextWidget()
         self._obsDef.setParameterDicts(self._control.getOBSDict(), self._control.getDESDict(), self._control.getTrapIntDict())
         self._obsDef.emittit()
         self._bkgHandling.setParameterDicts( self._control.getBKGDicts())
@@ -441,7 +440,7 @@ class fileDisplay(QtGui.QWidget):
 
 
 class observableDefinition(QtGui.QWidget):
-    observableDicts = QtCore.pyqtSignal(dict, dict)
+    observableDicts = QtCore.pyqtSignal(dict, dict, dict)
     doDespike = QtCore.pyqtSignal(int)
     doTrapint = QtCore.pyqtSignal(int)
 
@@ -451,6 +450,7 @@ class observableDefinition(QtGui.QWidget):
         uic.loadUi("iintobservable.ui", self)
         self._obsDict = {}
         self._despikeDict = {}
+        self._trapintDict = {}
         self.observableDetectorCB.currentIndexChanged.connect(self.setObservable)
         self.observableMonitorCB.currentIndexChanged.connect(self.setMonitor)
         self.observableTimeCB.currentIndexChanged.connect(self.setTime)
@@ -469,6 +469,7 @@ class observableDefinition(QtGui.QWidget):
     def _defaultSettings(self):
         self._obsDict = {}
         self._despikeDict = {}
+        self._trapintDict = {}
         self._useAttenuationFactor = False
         self.observableAttFacCB.setDisabled(True)
         self.despikeCheckBox.setChecked(False)
@@ -555,8 +556,13 @@ class observableDefinition(QtGui.QWidget):
             self._despikeDict["method"] = "p09despiking"
             self._despikeDict["input"] = "observable"
             self._despikeDict["output"] = "despikedObservable"
-
-        self.observableDicts.emit(self._obsDict, self._despikeDict)
+        if(self._dotrapint):
+            self._trapintDict["type"] = "trapezoidintegration"
+            self._trapintDict["motor"] = self._motorname
+            self._trapintDict["observable"] = "signalObservable"
+            self._trapintDict["output"] = "trapint"
+        
+        self.observableDicts.emit(self._obsDict, self._despikeDict, self._trapintDict)
 
     def setParameterDicts(self, obsDict, despDict, trapintDict):
         self.observableMotorLabel.setStyleSheet("color: blue;")
