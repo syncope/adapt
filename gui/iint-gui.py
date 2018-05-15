@@ -133,7 +133,7 @@ class iintGUI(QtGui.QMainWindow):
         self._sfrGUI.setParameterDict(self._control.getSFRDict())
         self.runFileReader()
         #~ self.nextWidget()
-        self._obsDef.setParameterDict(self._control.getOBSDict(), self._control.getDESDict())
+        self._obsDef.setParameterDicts(self._control.getOBSDict(), self._control.getDESDict(), self._control.getTrapIntDict())
         self._obsDef.emittit()
         self._bkgHandling.setParameterDicts( self._control.getBKGDicts())
         self._bkgHandling.emittem()
@@ -558,7 +558,7 @@ class observableDefinition(QtGui.QWidget):
 
         self.observableDicts.emit(self._obsDict, self._despikeDict)
 
-    def setParameterDict(self, obsDict, despDict):
+    def setParameterDicts(self, obsDict, despDict, trapintDict):
         self.observableMotorLabel.setStyleSheet("color: blue;")
         self.observableMotorLabel.setText(obsDict["motor_column"])
         # first get index of element
@@ -576,6 +576,9 @@ class observableDefinition(QtGui.QWidget):
 
         if ( despDict != {} ):
             self.despikeCheckBox.setChecked(True)
+
+        if ( trapintDict != {} ):
+            self.trapintCheckBox.setChecked(True)
 
 
 

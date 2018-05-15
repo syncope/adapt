@@ -319,6 +319,14 @@ class InteractiveP09ProcessingControl():
         except KeyError:
             return {}
 
+    def getTrapIntDict(self):
+        if self._notrapint:
+            return {}
+        try:
+            return self._processParameters["trapint"]
+        except KeyError:
+            return {}
+
     def getBKGDicts(self):
         try:
             return (self._processParameters["bkgselect"],
@@ -346,7 +354,10 @@ class InteractiveP09ProcessingControl():
         return self._processParameters["calcfitpoints"]
 
     def getTrapIntDict(self):
-        return self._processParameters["trapint"]
+        if(self._notrapint):
+            return {}
+        else:
+            return self._processParameters["trapint"]
 
     def useBKG(self, value):
         self._nobkg = not value
