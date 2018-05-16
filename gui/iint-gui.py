@@ -33,7 +33,7 @@ class iintGUI(QtGui.QMainWindow):
         super(iintGUI, self).__init__(parent)
         uic.loadUi("iint_main3.ui", self)
 
-        self.actionNew.triggered.connect(self._resetAll)
+        self.actionNew.triggered.connect(self._askReset)
         self.actionOpen_file.triggered.connect(self.choosefile)
         self.actionSave_file.triggered.connect(self._saveConfig)
         self.actionExit.triggered.connect(self._closeApp)
@@ -54,6 +54,8 @@ class iintGUI(QtGui.QMainWindow):
         #~ self.horizontalLayout.addWidget(self._simpleImageView)
         self.imageWidget = self._simpleImageView
 
+        self._resetQuestion = resetDialog()
+        self._resetQuestion.resetOK.connect(self._resetAll)
         self._fileDisplay = fileDisplay()
         self._sfrGUI = specfilereader.specfilereaderGUI()
         self._obsDef = observableDefinition()
@@ -90,7 +92,6 @@ class iintGUI(QtGui.QMainWindow):
         self._loggingBox.addText(text)
 
     def _resetAll(self):
-        # missing dialog if OK!?
         self._simpleImageView.reset()
         self._fileDisplay.reset()
         self._obsDef.reset()
@@ -108,6 +109,13 @@ class iintGUI(QtGui.QMainWindow):
             self._control.saveConfig(savename)
             self.message("Saving config file " + str(savename) + ".")
         return
+
+    def _askReset(self):
+        if self._control.getSFRDict()["filename"] == None:
+            self._resetAll()
+        else:
+            self._resetQuestion.show()
+            self.message("Cleared all data and processing configuration.")
 
     def showSFRGUI(self):
         self._sfrGUI.show()
@@ -778,6 +786,19 @@ class quitDialog(QtGui.QDialog):
         self.cancel.clicked.connect(self.close)
 
 
+
+class resetDialog(QtGui.QDialog):
+    resetOK = QtCore.pyqtSignal(int)
+
+    def __init__(self, parent=None):
+        super(resetDialog, self).__init__(parent)
+        uic.loadUi("resetDialog.ui", self)
+        self.cancelButton.clicked.connect(self.close)
+        self.okButton.clicked.connect(self._returnOK)
+
+    def _returnOK(self):
+        self.resetOK.emit(0)
+        self.close()
 
 if __name__ == "__main__":
     import sys
