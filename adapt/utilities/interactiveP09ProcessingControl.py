@@ -236,6 +236,8 @@ class InteractiveP09ProcessingControl():
         processDict = {}
         processDict["read"] = self.getSFRDict()
         processDict["observabledef"] = self.getOBSDict()
+        if processDict["observabledef"]["attenuationFactor_column"] == None:
+            del processDict["observabledef"]["attenuationFactor_column"]
         if not self._nodespike:
             execlist.append("despike")
             processDict["despike"] = self.getDESDict()

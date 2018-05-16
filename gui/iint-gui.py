@@ -767,6 +767,8 @@ class chooseTrackedData(QtGui.QWidget):
         for elem in self.listSelected.selectedItems():
             self.listSelected.takeItem(self.listSelected.row(elem))
 
+
+
 class loggerBox(QtGui.QWidget):
 
     def __init__(self, parent=None):
