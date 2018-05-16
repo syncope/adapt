@@ -106,10 +106,8 @@ class iintGUI(QtGui.QMainWindow):
         savename = QtGui.QFileDialog.getSaveFileName(self, 'Choose iint config file to save', tempfilename, "iint cfg files (*.iint)")
         if savename != '':
             self._control.saveConfig(savename)
-        else:
-            return
-        if num != None:
-            exit()
+            self.message("Saving config file " + str(savename) + ".")
+        return
 
     def showSFRGUI(self):
         self._sfrGUI.show()
@@ -121,7 +119,7 @@ class iintGUI(QtGui.QMainWindow):
             prev = None
         self._file = QtGui.QFileDialog.getOpenFileName(self, 'Choose iint config file', '.', "iint cfg files (*.iint)")
         if self._file != "":
-            if prev:
+            if prev != None:
                 self._resetAll()
             from adapt import configurationHandler
             handler = configurationHandler.ConfigurationHandler()
