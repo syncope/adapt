@@ -6,8 +6,8 @@ execlist: [ read, observabledef, despike, bkgselect, bkgfit , calcbkgpoints, bkg
 read:
     type: specfilereader
     scanlist: 699-740
-    filename: "/home/rosem/iintplus/MnCo15.spc"
-    outputdata: "data"
+    filename: /home/rosem/iintplus/MnCo15.spc
+    output: data
 
 observabledef:
     type: iintdefinition

@@ -143,14 +143,3 @@ class iintdefinitionGUI(QtGui.QWidget):
         self._iintDefDict["observableoutput"] = "default"
         self._iintDefDict["id"] = "id"
         self.pDict.emit(self._iintDefDict)
-
-
-
-
-
-
-
-
-
-
-

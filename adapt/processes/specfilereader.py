@@ -36,16 +36,13 @@ class specfilereader(IProcess):
         self._inPar = ProcessParameter("filename", str)
         self._outPar = ProcessParameter("output", str)
         self._scanlistPar = ProcessParameter("scanlist", str, None, optional=True)
-        #~ self._stridePar = ProcessParameter("stride", int, 1, optional=True)
         self._parameters.add(self._inPar)
         self._parameters.add(self._outPar)
         self._parameters.add(self._scanlistPar)
-        #~ self._parameters.add(self._stridePar)
 
     def initialize(self):
         self._scanlist = self._scanlistPar.get()
         self.data = dataHandler.DataHandler(self._inPar.get(), typehint="spec").getFileHandler().getAll(self._scanlist)
-        #~ self._stride = self._stridePar.get()
         self.dataIterator = iter(self.data)
 
     def execute(self, data):
@@ -109,6 +106,3 @@ class specfilereaderGUI(QtGui.QWidget):
         self.inputFileLE.setText(self._file)
         self.scanSelectionInput.setText(self._specReaderDict["scanlist"])
         self.okBtn.setDisabled(False)
-
-    #~ def emittit(self):
-        #~ self.pDict.emit(self._specReaderDict)
