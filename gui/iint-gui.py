@@ -239,9 +239,16 @@ class iintGUI(QtGui.QMainWindow):
     def _dataToTrack(self):
         rawScanData = self._control.getDataList()[0].getData(self._control.getRawDataName())
         self._trackedDataChoice = chooseTrackedData(rawScanData)
-
+        self._trackedDataChoice.trackedData.connect(self._showTracked)
+        
     def _polarizationAnalysis(self):
         pass
+
+    def _showTracked(self, namelist):
+        self._trackedDataWidgets = []
+        for name in namelist:
+            trackinfo = self._control.getTrackInformation(name)
+            self._trackedDataWidgets.append(trackedDataView(trackinfo))
 
 
 
@@ -718,6 +725,7 @@ class inspectAnalyze(QtGui.QWidget):
 
 
 class chooseTrackedData(QtGui.QWidget):
+    trackedData = QtCore.pyqtSignal(list)
 
     def __init__(self, dataelement=None, parent=None):
         super(chooseTrackedData, self).__init__(parent)
@@ -728,32 +736,55 @@ class chooseTrackedData(QtGui.QWidget):
         for elem in list(self._data.getCustomKeys()):
             self._untrackedData.append(elem)
         self.listAll.addItems(self._untrackedData)
-        self.show()
-        self.cancel.clicked.connect(self.close)
+        self.okBtn.clicked.connect(self._emitTrackedData)
+        self.okBtn.clicked.connect(self._reset)
+        self.cancel.clicked.connect(self._reset)
         self.addToList.setDisabled(True)
-        self.addToList.clicked.connect(self._addToList)
-        self.removeFromList.clicked.connect(self._removeFromList)
+        self.addToList.clicked.connect(self._moveToSelected)
+        self.removeFromList.clicked.connect(self._moveToUnselected)
         self.removeFromList.setDisabled(True)
         self.listAll.itemClicked.connect(self._pickedUnselectedItem)
         self.listAll.itemDoubleClicked.connect(self._moveToSelected)
         self.listSelected.itemClicked.connect(self._pickedSelectedItem)
         self.listSelected.itemDoubleClicked.connect(self._moveToUnselected)
+        self._currentUnSelectedItem  = 0
+        self._currentSelectedItem  = 0
+        self.show()
+
+    def _reset(self):
+        self.close()
+        self._untrackedData = self._data.getLabels()
+        self._trackedData = []
+        for elem in list(self._data.getCustomKeys()):
+            self._untrackedData.append(elem)
+        self.listAll.addItems(self._untrackedData)
 
     def _pickedUnselectedItem(self, item):
+        self._currentUnSelectedItem = item
         self.addToList.setDisabled(False)
 
     def _pickedSelectedItem(self, item):
+        self._currentSelectedItem = item
         self.removeFromList.setDisabled(False)
 
     def _moveToSelected(self, item):
-        index = self._untrackedData.index(item.text())
+        try:
+            index = self._untrackedData.index(item.text())
+        except AttributeError:
+            index = self._currentUnSelectedItem
+
+        print(" the index is: " + str(index))
         self._trackedData.append(self._untrackedData.pop(index))
         self.listSelected.addItem(self.listAll.takeItem(self.listAll.row(item)))
         if self.listAll.__len__() == 0:
             self.addToList.setDisabled(True)
-            
+
     def _moveToUnselected(self, item):
-        index = self._trackedData.index(item.text())
+        try:
+            index = self._trackedData.index(item.text())
+        except AttributeError:
+            index = self._trackedData.index(self._currentSelectedItem.text())
+        
         self._untrackedData.append(self._trackedData.pop(index))
         self.listAll.addItem(self.listSelected.takeItem(self.listSelected.row(item)))
         if self.listSelected.__len__() == 0:
@@ -767,6 +798,8 @@ class chooseTrackedData(QtGui.QWidget):
         for elem in self.listSelected.selectedItems():
             self.listSelected.takeItem(self.listSelected.row(elem))
 
+    def _emitTrackedData(self):
+        self.trackedData.emit(self._trackedData)
 
 
 class loggerBox(QtGui.QWidget):
@@ -801,6 +834,26 @@ class resetDialog(QtGui.QDialog):
     def _returnOK(self):
         self.resetOK.emit(0)
         self.close()
+
+
+
+class trackedDataView(QtGui.QWidget):
+
+    def __init__(self, trackinfo, parent=None):
+        super(trackedDataView, self).__init__(parent)
+        uic.loadUi("trackedDataView.ui", self)
+        self.dataLabel.setText(trackinfo.name)
+        self.meanView.plot(y=trackinfo.mean, x=trackinfo.value, pen=None, symbolPen=None, symbolSize=10, symbolBrush=(0, 0, 255, 90))
+        
+        self.stddevView.plot(y=trackinfo.sigma, x=trackinfo.value, pen=None, symbolPen=None, symbolSize=10, symbolBrush=(255, 0, 0, 80))
+        
+        self.ampView.plot(y=trackinfo.amplitude, x=trackinfo.value, pen=None, symbolPen=None, symbolSize=10, symbolBrush=(0, 255, 0, 90))
+        self.show()
+        
+        #~ err = pg.ErrorBarItem(x=x, y=y, top=top, bottom=bottom, beam=0.5)
+        #~ plt.addItem(err)
+        #~ plt.plot(x, y, symbol='o', pen={'color': 0.8, 'width': 2})
+    
 
 if __name__ == "__main__":
     import sys

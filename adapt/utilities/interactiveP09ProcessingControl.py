@@ -35,6 +35,8 @@ from adapt.processes import trapezoidintegration
 from adapt.processes import iintfinalization
 
 
+import numpy as np
+
 class InteractiveP09ProcessingControl():
     '''The central control object for interactive processing.
        It holds the elements to build processes from their description,
@@ -256,7 +258,7 @@ class InteractiveP09ProcessingControl():
             processDict["trapint"] = self.getTrapIntDict()
         execlist.append("signalcurvefit")
         processDict["signalcurvefit"] = self.getSIGDict()
-        
+
         procconfig = processingConfiguration.ProcessingConfiguration()
         procconfig.addProcessDefinition(processDict)
         procconfig.setOrderOfExecution(execlist)
@@ -305,7 +307,6 @@ class InteractiveP09ProcessingControl():
         else:
             stridesuffix = ''
         return basename + "_S" + str(startnumber) + "E" + str(endnumber) + stridesuffix + suffix
-
 
     def getSFRDict(self):
         return self._processParameters["read"]
@@ -371,3 +372,45 @@ class InteractiveP09ProcessingControl():
     def useDespike(self, value):
         self._nodespike = not value
         self.noDespiking()
+
+    def getTrackInformation(self, name):
+        m, a, s = [], [], []
+        me, ae, se = [], [], []
+        value, error = [], []
+        for datum in self._dataList:
+            fitresult = datum.getData(self._fittedSignalName)
+            params = fitresult.params
+            prefix = fitresult.model.prefix
+            m.append(params[(prefix+"center")].value)
+            me.append(params[(prefix+"center")].stderr)
+            a.append(params[(prefix+"amplitude")].value)
+            ae.append(params[(prefix+"amplitude")].stderr)
+            s.append(params[(prefix+"sigma")].value)
+            se.append(params[(prefix+"sigma")].stderr)
+            try:
+                array = datum.getData(self._rawName).getArray(name)
+                value.append(np.mean(array))
+                error.append(np.std(array))
+            except KeyError:
+                try:
+                    value.append(datum.getData(self._rawName).getCustomVar(name))
+                    error.append(0.)
+                except:
+                    print("Can't retrieve the information of " + str(name))
+                    return
+        return trackedInformation(name, value, error, m, me, a, ae, s, se)
+
+
+
+class trackedInformation():
+    
+    def __init__(self, name, value, error, m, me, a, ae, s, se):
+        self.name = name
+        self.value = value
+        self.error = error
+        self.mean = np.array(m)
+        self.meanerr = np.array(me)
+        self.amplitude = np.array(a)
+        self.amplitudeerr = np.array(ae)
+        self.sigma = np.array(s)
+        self.sigmaerr = np.array(se)
