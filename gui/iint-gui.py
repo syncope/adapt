@@ -752,12 +752,12 @@ class chooseTrackedData(QtGui.QWidget):
         self.show()
 
     def _reset(self):
-        self.close()
         self._untrackedData = self._data.getLabels()
         self._trackedData = []
         for elem in list(self._data.getCustomKeys()):
             self._untrackedData.append(elem)
         self.listAll.addItems(self._untrackedData)
+        self.close()
 
     def _pickedUnselectedItem(self, item):
         self._currentUnSelectedItem = item
@@ -768,23 +768,14 @@ class chooseTrackedData(QtGui.QWidget):
         self.removeFromList.setDisabled(False)
 
     def _moveToSelected(self, item):
-        try:
-            index = self._untrackedData.index(item.text())
-        except AttributeError:
-            index = self._currentUnSelectedItem
-
-        print(" the index is: " + str(index))
+        index = self._untrackedData.index(item.text())
         self._trackedData.append(self._untrackedData.pop(index))
         self.listSelected.addItem(self.listAll.takeItem(self.listAll.row(item)))
         if self.listAll.__len__() == 0:
             self.addToList.setDisabled(True)
 
     def _moveToUnselected(self, item):
-        try:
-            index = self._trackedData.index(item.text())
-        except AttributeError:
-            index = self._trackedData.index(self._currentSelectedItem.text())
-        
+        index = self._trackedData.index(item.text())
         self._untrackedData.append(self._trackedData.pop(index))
         self.listAll.addItem(self.listSelected.takeItem(self.listSelected.row(item)))
         if self.listSelected.__len__() == 0:
