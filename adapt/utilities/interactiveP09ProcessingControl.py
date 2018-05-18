@@ -374,19 +374,17 @@ class InteractiveP09ProcessingControl():
         self.noDespiking()
 
     def getTrackInformation(self, name):
-        m, a, s = [], [], []
-        me, ae, se = [], [], []
         value, error = [], []
+        infoholder = {}
         for datum in self._dataList:
             fitresult = datum.getData(self._fittedSignalName)
             params = fitresult.params
-            prefix = fitresult.model.prefix
-            m.append(params[(prefix+"center")].value)
-            me.append(params[(prefix+"center")].stderr)
-            a.append(params[(prefix+"amplitude")].value)
-            ae.append(params[(prefix+"amplitude")].stderr)
-            s.append(params[(prefix+"sigma")].value)
-            se.append(params[(prefix+"sigma")].stderr)
+            for param in params:
+                try:
+                    infoholder[params[param].name].append((params[param].value, params[param].stderr))
+                except KeyError:
+                    infoholder[params[param].name] =[]
+                    infoholder[params[param].name].append((params[param].value, params[param].stderr))
             try:
                 array = datum.getData(self._rawName).getArray(name)
                 value.append(np.mean(array))
@@ -398,19 +396,16 @@ class InteractiveP09ProcessingControl():
                 except:
                     print("Can't retrieve the information of " + str(name))
                     return
-        return trackedInformation(name, value, error, m, me, a, ae, s, se)
+        return trackedInformation(name, value, error, infoholder)
 
 
 
 class trackedInformation():
     
-    def __init__(self, name, value, error, m, me, a, ae, s, se):
+    def __init__(self, name, value, error, info):
         self.name = name
         self.value = value
         self.error = error
-        self.mean = np.array(m)
-        self.meanerr = np.array(me)
-        self.amplitude = np.array(a)
-        self.amplitudeerr = np.array(ae)
-        self.sigma = np.array(s)
-        self.sigmaerr = np.array(se)
+        self.names = info.keys()
+        self.values = info
+        
