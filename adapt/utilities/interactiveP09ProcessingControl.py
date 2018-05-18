@@ -408,4 +408,16 @@ class trackedInformation():
         self.error = error
         self.names = info.keys()
         self.values = info
-        
+
+    def getValues(self, name):
+        tmpval = []
+        for val in self.values[name]:
+            tmpval.append(val[0])
+        return np.array(tmpval)
+
+    def getErrors(self, name):
+        tmpval = []
+        for val in self.values[name]:
+            tmpval.append(val[1])
+        return np.array(tmpval)
+
