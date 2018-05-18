@@ -100,6 +100,8 @@ class iintGUI(QtGui.QMainWindow):
         self._control.resetAll()
 
     def _closeApp(self):
+        for i in self._trackedDataWidgets:
+            i.close()
         self._quit.show()
 
     def _saveConfig(self, num=None):
@@ -838,12 +840,38 @@ class trackedDataView(QtGui.QWidget):
         super(trackedDataView, self).__init__(parent)
         uic.loadUi("trackedDataView.ui", self)
         self.dataLabel.setText(trackinfo.name)
-        self.meanView.plot(y=trackinfo.mean, x=trackinfo.value, pen=None, symbolPen=None, symbolSize=10, symbolBrush=(0, 0, 255, 90))
-        
-        self.stddevView.plot(y=trackinfo.sigma, x=trackinfo.value, pen=None, symbolPen=None, symbolSize=10, symbolBrush=(255, 0, 0, 80))
-        
-        self.ampView.plot(y=trackinfo.amplitude, x=trackinfo.value, pen=None, symbolPen=None, symbolSize=10, symbolBrush=(0, 255, 0, 90))
-        self.show()
+        # check the number of plots
+        trackedDataValues = trackinfo.value
+        trackedDataErrors = trackinfo.error
+        resultNames = trackinfo.names
+        plotnumber = len(resultNames)
+        # divide the plotWidget - decision table how many plots per row
+        plotsPerRow = 0
+        if plotnumber < 4:
+            plotsPerRow = 1
+        elif plotnumber <= 6:
+            plotsPerRow = 2
+        elif plotnumber <= 12:
+            plotsPerRow = 3
+        elif plotnumber <= 20:
+            plotsPerRow = 4
+        else:
+            plotsPerRow = 5
+        # add the different parts accordingly
+        countindex = 0
+        #~ gi = self.viewPart.getPlotItem()
+        #~ for paramname in resultNames:
+            #~ p = gi.addPlot(title=paramname, x=trackedDataValues, y=trackinfo.getValues(paramname), pen=None, symbolPen=None, symbolSize=10, symbolBrush=(0, 0, 255, 90))
+            #~ if not countindex % plotsPerRow:
+                #~ gi.nextRow()
+            #~ countindex += 1
+
+        #~ self.meanView.plot(y=trackinfo.mean, x=trackinfo.value, pen=None, symbolPen=None, symbolSize=10, symbolBrush=(0, 0, 255, 90))
+        #~ 
+        #~ self.stddevView.plot(y=trackinfo.sigma, x=trackinfo.value, pen=None, symbolPen=None, symbolSize=10, symbolBrush=(255, 0, 0, 80))
+        #~ 
+        #~ self.ampView.plot(y=trackinfo.amplitude, x=trackinfo.value, pen=None, symbolPen=None, symbolSize=10, symbolBrush=(0, 255, 0, 90))
+        #~ self.show()
         
         #~ err = pg.ErrorBarItem(x=x, y=y, top=top, bottom=bottom, beam=0.5)
         #~ plt.addItem(err)
