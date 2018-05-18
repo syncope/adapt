@@ -731,11 +731,10 @@ class chooseTrackedData(QtGui.QWidget):
         super(chooseTrackedData, self).__init__(parent)
         uic.loadUi("chooseTrackedData.ui", self)
         self._data = dataelement
-        self._untrackedData = self._data.getLabels()
-        self._trackedData = []
+        self._initialNames = self._data.getLabels()
         for elem in list(self._data.getCustomKeys()):
-            self._untrackedData.append(elem)
-        self.listAll.addItems(self._untrackedData)
+            self._initialNames.append(elem)
+        self._fillLists()
         self.okBtn.clicked.connect(self._emitTrackedData)
         self.okBtn.clicked.connect(self._reset)
         self.cancel.clicked.connect(self._reset)
@@ -751,12 +750,17 @@ class chooseTrackedData(QtGui.QWidget):
         self._currentSelectedItem  = 0
         self.show()
 
-    def _reset(self):
-        self._untrackedData = self._data.getLabels()
+    def _fillLists(self):
+        self._untrackedData = self._initialNames[:]
         self._trackedData = []
-        for elem in list(self._data.getCustomKeys()):
-            self._untrackedData.append(elem)
         self.listAll.addItems(self._untrackedData)
+
+    def _reset(self):
+        self.listAll.clear()
+        self.listSelected.clear()
+        self._untrackedData.clear()
+        self._trackedData.clear()
+        #~ self._fillLists()
         self.close()
 
     def _pickedUnselectedItem(self, item):
