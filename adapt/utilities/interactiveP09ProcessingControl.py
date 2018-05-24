@@ -406,7 +406,7 @@ class trackedInformation():
         self.name = name
         self.value = value
         self.error = error
-        self.names = info.keys()
+        self.names = sorted(info.keys())
         self.values = info
 
     def getValues(self, name):

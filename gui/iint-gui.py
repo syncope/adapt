@@ -862,7 +862,7 @@ class multiTrackedDataView(pg.GraphicsLayoutWidget):
 
         plotcounter = 0
         for paramname in resultNames:
-            p = self.addPlot(title=paramname, x=trackedDataValues, y=trackinfo.getValues(paramname), pen=None, symbolPen=None, symbolSize=10, symbolBrush=(0, 0, 255, 90))
+            p = self.addPlot(title=paramname, x=trackedDataValues, y=trackinfo.getValues(paramname), pen=None, symbolPen=None, symbolSize=10, symbolBrush=(255, 255, 255, 100))
             plotcounter += 1
             if ( plotcounter % plotsPerRow ) == 0:
                 self.nextRow()
