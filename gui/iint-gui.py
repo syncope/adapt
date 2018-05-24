@@ -57,7 +57,7 @@ class iintGUI(QtGui.QMainWindow):
 
         self._resetQuestion = resetDialog()
         self._resetQuestion.resetOK.connect(self._resetAll)
-        self._fileDisplay = fileDisplay()
+        self._fileInfo = fileInfo()
         self._sfrGUI = specfilereader.specfilereaderGUI()
         self._obsDef = observableDefinition()
         self._obsDef.doDespike.connect(self._control.useDespike)
@@ -74,14 +74,14 @@ class iintGUI(QtGui.QMainWindow):
 
         self._loggingBox = loggerBox()
 
-        self.verticalLayout.addWidget(self._fileDisplay)
+        self.verticalLayout.addWidget(self._fileInfo)
         self.verticalLayout.addWidget(self._obsDef)
         self.verticalLayout.addWidget(self._bkgHandling)
         self.verticalLayout.addWidget(self._signalHandling)
         self.verticalLayout.addWidget(self._inspectAnalyze)
         self.verticalLayout.addWidget(self._loggingBox)
 
-        self._fileDisplay.newspecfile.connect(self.showSFRGUI)
+        self._fileInfo.newspecfile.connect(self.showSFRGUI)
         self._sfrGUI.valuesSet.connect(self.runFileReader)
         self._obsDef.observableDicts.connect(self.runObservable)
         self._bkgHandling.bkgDicts.connect(self.runBkgProcessing)
@@ -94,7 +94,7 @@ class iintGUI(QtGui.QMainWindow):
 
     def _resetAll(self):
         self._simpleImageView.reset()
-        self._fileDisplay.reset()
+        self._fileInfo.reset()
         self._obsDef.reset()
         self._bkgHandling.reset()
         self._signalHandling.reset()
@@ -148,7 +148,7 @@ class iintGUI(QtGui.QMainWindow):
 
     def runFileReader(self):
         filereaderdict = self._sfrGUI.getParameterDict()
-        self._fileDisplay.setNames(filereaderdict["filename"], filereaderdict["scanlist"])
+        self._fileInfo.setNames(filereaderdict["filename"], filereaderdict["scanlist"])
         self.message("Reading spec file: " + str(filereaderdict["filename"]))
 
         sfr = self._control.createAndInitialize(filereaderdict)
@@ -429,13 +429,13 @@ class simpleDataPlot(QtGui.QDialog):
 
 
 
-class fileDisplay(QtGui.QWidget):
+class fileInfo(QtGui.QWidget):
     newspecfile = QtCore.pyqtSignal()
 
     def __init__(self, parent=None):
-        super(fileDisplay, self).__init__(parent)
+        super(fileInfo, self).__init__(parent)
         self.setWindowTitle("File Display")
-        uic.loadUi("fileDisplay.ui", self)
+        uic.loadUi("fileInfo.ui", self)
         self.changeFile.clicked.connect(self.emitNew)
 
     def reset(self):
