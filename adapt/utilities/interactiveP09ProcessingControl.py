@@ -398,6 +398,17 @@ class InteractiveP09ProcessingControl():
                     return
         return trackedInformation(name, value, error, infoholder)
 
+    def getSignalFitResults(self):
+        resultlist = []
+        try:
+            for datum in self._dataList:
+                scannumber = datum.getData(self.getRawDataName()).getScanNumber()
+                resultlist.append(80 *"*" + '\n' + "Scan number : " + str(scannumber) + '\n') 
+                resultlist.append(datum.getData(self._fittedSignalName).fit_report())
+        except:
+            pass
+        return resultlist
+
 
 
 class trackedInformation():

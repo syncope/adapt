@@ -54,7 +54,6 @@
     <addaction name="action_Config_File"/>
     <addaction name="action_Spec_File"/>
     <addaction name="action_Fit_Results"/>
-    <addaction name="action_Output_File"/>
    </widget>
    <widget class="QMenu" name="menu_Help">
     <property name="title">

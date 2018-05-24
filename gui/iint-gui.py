@@ -38,6 +38,9 @@ class iintGUI(QtGui.QMainWindow):
         self.actionOpen_file.triggered.connect(self.choosefile)
         self.actionSave_file.triggered.connect(self._saveConfig)
         self.actionExit.triggered.connect(self._closeApp)
+        self.action_Config_File.triggered.connect(self._showConfig)
+        self.action_Spec_File.triggered.connect(self._showSpecFile)
+        self.action_Fit_Results.triggered.connect(self._showFitResults)
 
         # the steering helper object
         self._control = interactiveP09ProcessingControl.InteractiveP09ProcessingControl()
@@ -87,8 +90,24 @@ class iintGUI(QtGui.QMainWindow):
         self._bkgHandling.bkgDicts.connect(self.runBkgProcessing)
         
         self.setGeometry(0,0,600,840)
+        self._widgetList = []
 
+    def _showConfig(self):
+        if self._file != "":
+            self._widgetList.append(showFileContents(open(self._file).read()))
+        else:
+            return
 
+    def _showSpecFile(self):
+        try:
+            self._widgetList.append(showFileContents(open(self._sfrGUI.getParameterDict()["filename"]).read()))
+        except:
+            pass
+        return
+
+    def _showFitResults(self):
+        self._widgetList.append(showFileContents(''.join(self._control.getSignalFitResults())))
+        
     def message(self, text):
         self._loggingBox.addText(text)
 
@@ -248,10 +267,9 @@ class iintGUI(QtGui.QMainWindow):
         pass
 
     def _showTracked(self, namelist):
-        self._trackedDataWidgets = []
         for name in namelist:
             trackinfo = self._control.getTrackInformation(name)
-            self._trackedDataWidgets.append(multiTrackedDataView(trackinfo))
+            self._widgetList.append(multiTrackedDataView(trackinfo))
 
 
 
@@ -831,6 +849,16 @@ class resetDialog(QtGui.QDialog):
     def _returnOK(self):
         self.resetOK.emit(0)
         self.close()
+
+
+
+class showFileContents(QtGui.QDialog):
+    
+    def __init__(self, text, parent=None):
+        super(showFileContents, self).__init__(parent)
+        uic.loadUi("fileDisplay.ui", self)
+        self.textEdit.setText(text)
+        self.show()
 
 
 
