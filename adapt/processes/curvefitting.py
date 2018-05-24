@@ -40,18 +40,18 @@ class curvefitting(IProcess):
         self._parameters.add(self._resultPar)
 
     def initialize(self):
-        # first set up the fit model with the given information
-        # the model is a map/dictionary:
-        # first level of keys are the models
-        # their respective values are the parameter names which are keys themselves
-        # the values of of the parameter names are the key/value pairs for the parameter hints
-        self._updateModel(self._modelPar.get())
         self._usePreviousResult = self._usePreviousResultPar.get()
         if ( self._usePreviousResult != 0 ):
             self._usePreviousResult = True
         else: 
             self._usePreviousResult = False
         self._firstguess = True
+        # first set up the fit model with the given information
+        # the model is a map/dictionary:
+        # first level of keys are the models
+        # their respective values are the parameter names which are keys themselves
+        # the values of of the parameter names are the key/value pairs for the parameter hints
+        self._updateModel(self._modelPar.get())
 
     def execute(self, data):
         # x and y data
@@ -63,7 +63,7 @@ class curvefitting(IProcess):
         else:
             variableWeight = 1./data.getData(errorname)
 
-        if not self._usePreviousResult or self._firstguess:
+        if (not self._usePreviousResult) or self._firstguess:
             try:
                 self.model.params = self.model.guess(dependentVariable, x=independentVariable)
                 self._firstguess = False
@@ -114,6 +114,7 @@ class curvefitting(IProcess):
                     for k, v in par.items():
                         hintdict[k] = v
                     tmpmodel.set_param_hint(parname, **hintdict)
+                    self._firstguess = False
                 except KeyError:
                     pass
             tmppars = tmpmodel.make_params()
