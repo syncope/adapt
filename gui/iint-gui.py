@@ -21,6 +21,7 @@
 
 import sys
 from PyQt4 import QtCore, QtGui, uic
+import pyqtgraph as pg
 
 from adapt.utilities import interactiveP09ProcessingControl
 from adapt.processes import specfilereader
@@ -250,12 +251,11 @@ class iintGUI(QtGui.QMainWindow):
         self._trackedDataWidgets = []
         for name in namelist:
             trackinfo = self._control.getTrackInformation(name)
-            self._trackedDataWidgets.append(trackedDataView(trackinfo))
+            self._trackedDataWidgets.append(multiTrackedDataView(trackinfo))
 
 
 
 class simpleDataPlot(QtGui.QDialog):
-    import pyqtgraph as pg
     mouseposition = QtCore.pyqtSignal(float,float)
     currentIndex = QtCore.pyqtSignal(int)
 
@@ -834,17 +834,17 @@ class resetDialog(QtGui.QDialog):
 
 
 
-class trackedDataView(QtGui.QWidget):
+class multiTrackedDataView(pg.GraphicsLayoutWidget):
 
-    def __init__(self, trackinfo, parent=None):
-        super(trackedDataView, self).__init__(parent)
-        uic.loadUi("trackedDataView.ui", self)
-        self.dataLabel.setText(trackinfo.name)
+    def __init__(self, trackinfo, parent = None):
+        super(multiTrackedDataView, self).__init__(parent)
+
         # check the number of plots
         trackedDataValues = trackinfo.value
         trackedDataErrors = trackinfo.error
         resultNames = trackinfo.names
         plotnumber = len(resultNames)
+
         # divide the plotWidget - decision table how many plots per row
         plotsPerRow = 0
         if plotnumber < 4:
@@ -857,26 +857,18 @@ class trackedDataView(QtGui.QWidget):
             plotsPerRow = 4
         else:
             plotsPerRow = 5
-        # add the different parts accordingly
-        countindex = 0
-        #~ gi = self.viewPart.getPlotItem()
-        #~ for paramname in resultNames:
-            #~ p = gi.addPlot(title=paramname, x=trackedDataValues, y=trackinfo.getValues(paramname), pen=None, symbolPen=None, symbolSize=10, symbolBrush=(0, 0, 255, 90))
-            #~ if not countindex % plotsPerRow:
-                #~ gi.nextRow()
-            #~ countindex += 1
 
-        #~ self.meanView.plot(y=trackinfo.mean, x=trackinfo.value, pen=None, symbolPen=None, symbolSize=10, symbolBrush=(0, 0, 255, 90))
-        #~ 
-        #~ self.stddevView.plot(y=trackinfo.sigma, x=trackinfo.value, pen=None, symbolPen=None, symbolSize=10, symbolBrush=(255, 0, 0, 80))
-        #~ 
-        #~ self.ampView.plot(y=trackinfo.amplitude, x=trackinfo.value, pen=None, symbolPen=None, symbolSize=10, symbolBrush=(0, 255, 0, 90))
-        #~ self.show()
-        
-        #~ err = pg.ErrorBarItem(x=x, y=y, top=top, bottom=bottom, beam=0.5)
-        #~ plt.addItem(err)
-        #~ plt.plot(x, y, symbol='o', pen={'color': 0.8, 'width': 2})
-    
+        self.setWindowTitle(trackinfo.name)
+
+        plotcounter = 0
+        for paramname in resultNames:
+            p = self.addPlot(title=paramname, x=trackedDataValues, y=trackinfo.getValues(paramname), pen=None, symbolPen=None, symbolSize=10, symbolBrush=(0, 0, 255, 90))
+            plotcounter += 1
+            if ( plotcounter % plotsPerRow ) == 0:
+                self.nextRow()
+                plotcounter = 0
+        self.show()
+
 
 if __name__ == "__main__":
     import sys
