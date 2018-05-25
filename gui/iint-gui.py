@@ -245,6 +245,8 @@ class iintGUI(QtGui.QMainWindow):
         self._control.createAndBulkExecute(self._control.getSignalFitDict())
         if( self._simpleImageView != None):
             self._simpleImageView.update("plotfit")
+        trackinfo = self._control.getDefaultSignalFitResults()
+        self._widgetList.append(multiTrackedDataView(trackinfo))
         self.message(" ... done.\n")
 
     def _updateCurrentImage(self):
@@ -898,6 +900,7 @@ class multiTrackedDataView(pg.GraphicsLayoutWidget):
                 self.nextRow()
                 plotcounter = 0
         self.show()
+
 
 
 if __name__ == "__main__":

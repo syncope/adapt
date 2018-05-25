@@ -422,7 +422,24 @@ class InteractiveP09ProcessingControl():
             pass
         return resultlist
 
+    def getDefaultSignalFitResults(self):
+        value, error = [], []
+        infoholder = {}
+        name = 'ScanNumber'
+        for datum in self._dataList:
+            fitresult = datum.getData(self._fittedSignalName)
+            params = fitresult.params
+            for param in params:
+                try:
+                    infoholder[params[param].name].append((params[param].value, params[param].stderr))
+                except KeyError:
+                    infoholder[params[param].name] =[]
+                    infoholder[params[param].name].append((params[param].value, params[param].stderr))
 
+            value.append(datum.getData(self._rawName).getScanNumber())
+            error.append(0.)
+
+        return trackedInformation(name, value, error, infoholder)
 
 class trackedInformation():
     
