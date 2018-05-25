@@ -70,14 +70,32 @@ class IProcess():
     def execute(self, data):
         pass
 
-    def loopExecute(self, datalist):
+    def loopExecute(self, datalist, emitProgress=False):
+        if emitProgress:
+            d = QtGui.QProgressDialog(labelText=self._ptype)
+            d.setLabelText("Processing, please wait.")
+            d.setCancelButton(None)
+            d.show()
         for elem in datalist:
             self.execute(elem)
+            if emitProgress:
+                d.setValue(int( 100*(  datalist.index(elem) / len(datalist) ) ))
+        if emitProgress:
+            d.close()
 
-    def loopExecuteWithOverwrite(self, datalist):
+    def loopExecuteWithOverwrite(self, datalist, emitProgress=False):
+        if emitProgress:
+            d = QtGui.QProgressDialog(labelText=self._ptype)
+            d.setLabelText("Processing, please wait.")
+            d.setCancelButton(None)
+            d.show()
         for elem in datalist:
             self.clearPreviousData(elem)
             self.execute(elem)
+            if emitProgress:
+                d.setValue(int( 100*(  datalist.index(elem) / len(datalist) ) ))
+        if emitProgress:
+            d.close()
 
     def clearPreviousData(self, data):
         pass

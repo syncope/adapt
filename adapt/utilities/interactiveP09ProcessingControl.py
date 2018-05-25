@@ -34,7 +34,6 @@ from adapt.processes import backgroundsubtraction
 from adapt.processes import trapezoidintegration
 from adapt.processes import iintfinalization
 
-
 import numpy as np
 
 class InteractiveP09ProcessingControl():
@@ -227,7 +226,7 @@ class InteractiveP09ProcessingControl():
             return
         proc = self._procBuilder.createProcessFromDictionary(pDict)
         proc.initialize()
-        proc.loopExecuteWithOverwrite(self._dataList)
+        proc.loopExecuteWithOverwrite(self._dataList, emitProgress=True)
 
     def loadConfig(self, processConfig):
         self._procRunList.clear()
