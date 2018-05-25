@@ -395,10 +395,12 @@ class simpleDataPlot(QtGui.QDialog):
         xdata = datum.getData(self._motorName)
         if self._tmpFit != None:
             self._tmpFit.clear()
+        self.viewPart.disableAutoRange()
         self._tmpFit = self.viewPart.plot(xdata, ydata, pen='g') #, symbol='+')
 
     def removeGuess(self):
         self._tmpFit.clear()
+        self.viewPart.enableAutoRange()
 
     def _toggleRAW(self):
         self._showraw = not self._showraw 
