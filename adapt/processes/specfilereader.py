@@ -81,17 +81,18 @@ class specfilereaderGUI(QtGui.QWidget):
         formfile = os.path.join(dir_path, "ui/specfilereader.ui")
         uic.loadUi(formfile, self)
         self.chooseInputFileBtn.clicked.connect(self.getAndOpenFile)
+        self.scanSelectionInput.textEdited.connect(self._checkValues)
         self.okBtn.clicked.connect(self.valuesSet.emit)
         self.okBtn.clicked.connect(self.close)
         self.cancel.clicked.connect(self.close)
         self.okBtn.setDisabled(True)
         self._specReaderDict = {}
+        self._file = None
 
     def getAndOpenFile(self):
         self._file = QtGui.QFileDialog.getOpenFileName(self, 'Choose spec file', '.', "SPEC files (*.spc *.spe *.spec)")
         self.inputFileLE.setText(self._file)
-        if self._file is not None:
-            self.okBtn.setDisabled(False)
+
 
     def getParameterDict(self):
         self._specReaderDict["type"] = "specfilereader"
@@ -106,3 +107,7 @@ class specfilereaderGUI(QtGui.QWidget):
         self.inputFileLE.setText(self._file)
         self.scanSelectionInput.setText(self._specReaderDict["scanlist"])
         self.okBtn.setDisabled(False)
+
+    def _checkValues(self):
+        if self._file is not None and self.scanSelectionInput.text() != '':
+            self.okBtn.setDisabled(False)
