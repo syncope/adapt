@@ -20,7 +20,12 @@
 from adapt.iProcess import *
 
 import numpy as np
-from pensant.models import FitModels
+
+try:
+    from pensant.models import FitModels
+except ImportError:
+    print("[proc::curvefitting] library pensant not found; no curvefitting will be available!")
+    pass
 
 class curvefitting(IProcess):
 
