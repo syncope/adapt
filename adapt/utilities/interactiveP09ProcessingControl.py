@@ -82,6 +82,20 @@ class InteractiveP09ProcessingControl():
             elem.clearAll()
         del self._dataList[:]
         self._dataList = []
+        del self._processList[:]
+        self._processList = []
+        self._nodespike = True
+        self._nobkg = True
+        self._notrapint = True
+        self._motorName = ""
+        self._rawName = "rawdata"
+        self._observableName = "observable"
+        self._despObservableName = "despikedObservable"
+        self._backgroundPointsName = "bkgPoints"
+        self._signalName = "signalObservable"
+        self._fittedSignalName = "signalcurvefitresult"
+        self._fitSignalPointsName = "signalFitPoints"
+        self._trapintName = "trapezoidIntegral"
 
     def _setupProcessParameters(self):
         self._processParameters["read"] = specfilereader.specfilereader().getProcessDictionary()
