@@ -340,7 +340,6 @@ class simpleDataPlot(QtGui.QDialog):
 
     def _checkDataAvailability(self):
         datum = self._dataList[0]
-        
         try:
             datum.getData(self._observableName)
             self.showRAW.setDisabled(False)
@@ -632,14 +631,17 @@ class backgroundHandling(QtGui.QWidget):
         super(backgroundHandling, self).__init__(parent)
         uic.loadUi("linearbackground.ui", self)
         self.bkgStartPointsSB.setMinimum(0)
-        self.bkgStartPointsSB.setMaximum(5)
+        self.bkgStartPointsSB.setMaximum(10)
         self.bkgEndPointsSB.setMinimum(0)
-        self.bkgEndPointsSB.setMaximum(5)
+        self.bkgEndPointsSB.setMaximum(10)
         self._selectParDict = {}
         self._fitParDict = {}
         self._calcParDict = {}
         self._subtractParDict = {}
-        self.nextBtn.clicked.connect(self.emittem)
+        self.fitBkg.clicked.connect(self.emittem)
+        self.fitBkg.setDisabled(True)
+        self._noBKG = True
+        self.useBkg.stateChanged.connect(self._toggle)
         self.setParameterDicts(pDicts)
 
     def reset(self):
@@ -649,6 +651,11 @@ class backgroundHandling(QtGui.QWidget):
         self._subtractParDict = {}
         self.bkgStartPointsSB.setValue(3)
         self.bkgEndPointsSB.setValue(3)
+
+    def _toggle(self):
+        self._noBKG = not self._noBKG
+        self.fitBkg.setDisabled(self._noBKG)
+
 
     def setParameterDicts(self, dicts):
         self._selectParDict = dicts[0]

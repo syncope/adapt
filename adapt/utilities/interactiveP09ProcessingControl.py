@@ -236,7 +236,7 @@ class InteractiveP09ProcessingControl():
             if proc in self._processNames:
                 self._procRunList.append(proc)
                 for k, v in pDefs[proc].items():
-                    self._processParameters[proc][k] =v
+                    self._processParameters[proc][k]=v
             else:
                 print("Wrong configuration file, unrecognized process name/type: " + str(proc))
         if "trapint" in execOrder:
@@ -377,14 +377,16 @@ class InteractiveP09ProcessingControl():
 
     def useBKG(self, value):
         self._nobkg = not value
-        self.noBackground()
+        if self._nobkg:
+            self.noBackground()
 
     def useTrapInt(self, value):
         self._notrapint = not value
 
     def useDespike(self, value):
         self._nodespike = not value
-        self.noDespiking()
+        if self._nodespike:
+            self.noDespiking()
 
     def getTrackInformation(self, name):
         value, error = [], []
