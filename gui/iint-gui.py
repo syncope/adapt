@@ -187,8 +187,6 @@ class iintGUI(QtGui.QMainWindow):
         if despDict != {}:
             self._control.useDespike(True)
             self._control.createAndBulkExecute(despDict)
-        else:
-            self._control.noDespiking()
         self.message(" and plotting ...")
         self.plotit()
         self.message(" done.\n")
@@ -656,7 +654,6 @@ class backgroundHandling(QtGui.QWidget):
         self._noBKG = not self._noBKG
         self.fitBkg.setDisabled(self._noBKG)
 
-
     def setParameterDicts(self, dicts):
         self._selectParDict = dicts[0]
         self.bkgStartPointsSB.setValue(self._selectParDict["startpointnumber"])
@@ -664,6 +661,10 @@ class backgroundHandling(QtGui.QWidget):
         self._fitParDict = dicts[1]
         self._calcParDict = dicts[2]
         self._subtractParDict = dicts[3]
+        if dicts[0] != {} and dicts[1] != {} and dicts[2] != {} and dicts[3] != {}:
+            self.useBkg.setChecked(True)
+            
+        
 
     def emittem(self):
         self._selectParDict["startpointnumber"] = self.bkgStartPointsSB.value()
