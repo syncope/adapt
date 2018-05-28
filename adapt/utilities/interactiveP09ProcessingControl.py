@@ -174,17 +174,24 @@ class InteractiveP09ProcessingControl():
         self._processParameters["calcfitpoints"]["xdata"] = self._motorName
         self._processParameters["trapint"]["motor"] = self._motorName
 
-    def noDespiking(self):
-        self._nodespike = True
-        self._despObservableName = self._observableName
-        self._processParameters["bkgselect"]["input"] = [ self._despObservableName, self._motorName]
-        self._processParameters["bkgsubtract"]["input"] =  self._despObservableName
-
-    def noBackground(self):
-        self._nobkg = True
-        self._signalName = self._despObservableName
-        self._processParameters["signalcurvefit"]["ydata"] = self._signalName
-        self._processParameters["trapint"]["observable"] = self._signalName
+    def settingChoiceDesBkg(self):
+        # four cases des-bkg: no-no yes-no no-yes and yes-yes
+        if self._nodespike and self._nobkg:
+            self._processParameters["trapint"]["observable"] = self._observableName
+            self._processParameters["signalcurvefit"]["ydata"] = self._observableName
+        if not self._nodespike and self._nobkg:
+            self._processParameters["trapint"]["observable"] = self._despObservableName
+            self._processParameters["signalcurvefit"]["ydata"] = self._despObservableName
+        if self._nodespike and not self._nobkg:
+            self._processParameters["bkgselect"]["input"] = [ self._observableName, self._motorName]
+            self._processParameters["bkgsubtract"]["input"] =  self._observableName
+            self._processParameters["trapint"]["observable"] = self._signalName
+            self._processParameters["signalcurvefit"]["ydata"] = self._signalName
+        if not self._nodespike and not self._nobkg:
+            self._processParameters["bkgselect"]["input"] = [ self._despObservableName, self._motorName]
+            self._processParameters["bkgsubtract"]["input"] =  self._despObservableName
+            self._processParameters["trapint"]["observable"] = self._signalName
+            self._processParameters["signalcurvefit"]["ydata"] = self._signalName
 
     def getObservableName(self):
         return self._observableName
@@ -377,16 +384,14 @@ class InteractiveP09ProcessingControl():
 
     def useBKG(self, value):
         self._nobkg = not value
-        if self._nobkg:
-            self.noBackground()
+        self.settingChoiceDesBkg()
 
     def useTrapInt(self, value):
-        self._notrapint = not value
+        self.settingChoiceDesBkg()
 
     def useDespike(self, value):
         self._nodespike = not value
-        if self._nodespike:
-            self.noDespiking()
+        self.settingChoiceDesBkg()
 
     def getTrackInformation(self, name):
         value, error = [], []
