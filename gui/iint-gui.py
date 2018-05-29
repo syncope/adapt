@@ -93,16 +93,20 @@ class iintGUI(QtGui.QMainWindow):
         self._widgetList = []
 
     def _showConfig(self):
-        if self._file != "":
-            self._widgetList.append(showFileContents(open(self._file).read()))
-        else:
-            return
+        try:
+            if self._file != "":
+                self._widgetList.append(showFileContents(open(self._file).read()))
+            else:
+                return
+        except AttributeError:
+            self.message("Can't show config file, since none is present.\n")
+
 
     def _showSpecFile(self):
         try:
             self._widgetList.append(showFileContents(open(self._sfrGUI.getParameterDict()["filename"]).read()))
-        except:
-            pass
+        except TypeError:
+            self.message("Can't show spec file, since none has been selected yet.\n")
         return
 
     def _showFitResults(self):
