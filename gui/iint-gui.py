@@ -775,8 +775,8 @@ class chooseTrackedData(QtGui.QWidget):
         self.okBtn.clicked.connect(self._reset)
         self.cancel.clicked.connect(self._reset)
         self.addToList.setDisabled(True)
-        self.addToList.clicked.connect(self._moveToSelected)
-        self.removeFromList.clicked.connect(self._moveToUnselected)
+        self.addToList.clicked.connect(self._moveButtonToSelected)
+        self.removeFromList.clicked.connect(self._moveButtonToUnselected)
         self.removeFromList.setDisabled(True)
         self.listAll.itemClicked.connect(self._pickedUnselectedItem)
         self.listAll.itemDoubleClicked.connect(self._moveToSelected)
@@ -806,6 +806,18 @@ class chooseTrackedData(QtGui.QWidget):
     def _pickedSelectedItem(self, item):
         self._currentSelectedItem = item
         self.removeFromList.setDisabled(False)
+
+    def _moveButtonToSelected(self):
+        index = self._untrackedData.index(self._currentUnSelectedItem.text())
+        self._trackedData.append(self._untrackedData.pop(index))
+        self.listSelected.addItem(self.listAll.takeItem(self.listAll.row(self._currentUnSelectedItem)))
+        self.listAll.setCurrentRow(-1)
+
+    def _moveButtonToUnselected(self):
+        index = self._trackedData.index(self._currentSelectedItem.text())
+        self._untrackedData.append(self._trackedData.pop(index))
+        self.listAll.addItem(self.listSelected.takeItem(self.listSelected.row(self._currentSelectedItem)))
+        self.listSelected.setCurrentRow(-1)
 
     def _moveToSelected(self, item):
         index = self._untrackedData.index(item.text())
