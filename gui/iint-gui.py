@@ -55,8 +55,6 @@ class iintGUI(QtGui.QMainWindow):
         self._rawdataobject = None
 
         self._simpleImageView = simpleDataPlot(parent=self)
-        #~ self.horizontalLayout.addWidget(self._simpleImageView)
-        self.imageWidget = self._simpleImageView
 
         self._resetQuestion = resetDialog()
         self._resetQuestion.resetOK.connect(self._resetAll)
@@ -130,6 +128,7 @@ class iintGUI(QtGui.QMainWindow):
     def _closeApp(self):
         for i in self._widgetList:
             i.close()
+        del self._widgetList[:]
         self._quit.show()
 
     def _saveConfig(self, num=None):
