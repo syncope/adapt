@@ -92,6 +92,10 @@ class iintGUI(QtGui.QMainWindow):
         self.setGeometry(0,0,600,840)
         self._widgetList = []
 
+    def closeEvent(self, event):
+        event.ignore()
+        self._closeApp()
+
     def _showConfig(self):
         try:
             if self._file != "":
@@ -124,7 +128,7 @@ class iintGUI(QtGui.QMainWindow):
         self._control.resetAll()
 
     def _closeApp(self):
-        for i in self._trackedDataWidgets:
+        for i in self._widgetList:
             i.close()
         self._quit.show()
 
