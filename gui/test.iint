@@ -1,0 +1,98 @@
+#$## !!!!!!! EVERYTHING IS A STRING -- DON"T USE ANY QUOTAS
+
+execlist: [ read , observabledef, despike, bkgselect ]
+#~ execlist: [ read, observabledef, trapint ]
+#~ execlist: [ read, observabledef, despike, bkgfit , calcbkgpoints, bkgsubtract, signalcurvefit, trapint, finalize ]
+
+read:
+    type: specfilereader
+    scanlist: 699-740
+    filename: /home/rosem/iintplus/MnCo15.spc
+    output: rawdata
+
+observabledef:
+    type: iintdefinition
+    motor_column: pth
+    detector_column: exp_c01
+    monitor_column: sumvfcs_counts
+    exposureTime_column: exp_t01
+    # attenuationFactor_column
+    input: rawdata
+    output: observable
+    id: scannumber
+    motoroutput: pth
+
+despike:
+    type: filter1d
+    method: p09despiking
+    input: observable
+    output: despikedObservable
+
+bkgselect:
+    type: subsequenceselection
+    input: [ despikedObservable, pth ]
+    output: [ bkgY, bkgX ] 
+    selectors: [ selectfromstart , selectfromend ]
+    startpointnumber: 3
+    endpointnumber: 3
+
+bkgfit:
+    type: curvefitting
+    model:
+        lin_:
+            modeltype: linearModel
+            slope:
+                vary : True
+    xdata: bkgX
+    ydata: bkgY
+    usepreviousresult: 1
+    result: bkgfitresult
+
+calcbkgpoints:
+    type: gendatafromfunction
+    fitresult: bkgfitresult
+    xdata: pth
+    output: bkg
+
+bkgsubtract:
+    type: backgroundsubtraction
+    input: despikedObservable
+    background: bkg
+    output: despikedSignal
+
+signalcurvefit:
+    type: curvefitting
+    model:
+        m0_:
+            modeltype : gaussianModel
+            center: 
+                value: 45.
+            amplitude:
+                value: 100.
+            sigma:
+                value: 0.1
+    xdata: pth
+    ydata: despikedSignal
+    result: fitresult
+
+trapint:
+    type: trapezoidintegration
+    motor: pth
+    observable: observable
+    output: trapint
+
+finalize:
+    type: iintfinalization
+    #~ outputs: [ scannumber, petra_beamcurrent, lks340_outputchannela, lks340_outputchannelb , pr1chi, pr2chi, ptth, peta, fitresult]
+    outputs: [ scannumber,  fitresult]
+    outfilename: testout
+    motor: pth
+    observable: despikedSignal
+    fitresult: fitresult
+    pdffilename: fits
+
+#~ [polarizationanalysis]
+#~ type: p09polarization
+#~ 
+info:
+    type: datainfo
