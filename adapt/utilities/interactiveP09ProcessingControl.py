@@ -288,7 +288,7 @@ class InteractiveP09ProcessingControl():
 
 
     def proposeConfigfileName(self):
-        suffix = ".iint"
+        suffix = ".icfg"
         # use the scanlist entries and the input spec file name
         try:
             import os.path

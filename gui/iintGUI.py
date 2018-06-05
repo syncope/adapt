@@ -169,7 +169,7 @@ class iintGUI(QtGui.QMainWindow):
             prev = self._file
         except:
             prev = None
-        self._file = QtGui.QFileDialog.getOpenFileName(self, 'Choose iint config file', '.', "iint cfg files (*.iint)")
+        self._file = QtGui.QFileDialog.getOpenFileName(self, 'Choose iint config file', '.', "iint cfg files (*.icfg)")
         if self._file != "":
             if prev != None:
                 self._resetAll()
@@ -292,11 +292,3 @@ class iintGUI(QtGui.QMainWindow):
         for name in namelist:
             trackinfo = self._control.getTrackInformation(name)
             self._widgetList.append(iintMultiTrackedDataView.iintMultiTrackedDataView(trackinfo))
-
-
-if __name__ == "__main__":
-    import sys
-    app = QtGui.QApplication(sys.argv)
-    ui = iintGUI()
-    ui.show()
-    sys.exit(app.exec_())
