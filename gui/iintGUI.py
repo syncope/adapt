@@ -87,6 +87,7 @@ class iintGUI(QtGui.QMainWindow):
         self._inspectAnalyze = iintInspectAnalyze.iintInspectAnalyze()
         self._inspectAnalyze.trackData.clicked.connect(self._dataToTrack)
         self._inspectAnalyze.polAnalysis.clicked.connect(self._polarizationAnalysis)
+        self._inspectAnalyze.saveResults.clicked.connect(self._saveResultsFile)
 
         self._loggingBox = loggerBox.LoggerBox()
 
@@ -147,8 +148,8 @@ class iintGUI(QtGui.QMainWindow):
         self._quit.show()
 
     def _saveConfig(self, num=None):
-        tempfilename = self._control.proposeConfigfileName()
-        savename = QtGui.QFileDialog.getSaveFileName(self, 'Choose iint config file to save', tempfilename, "iint cfg files (*.iint)")
+        tempfilename = self._control.proposeSaveFileName(",icfg")
+        savename = QtGui.QFileDialog.getSaveFileName(self, 'Choose iint config file to save', tempfilename, "iint cfg files (*.icfg)")
         if savename != '':
             self._control.saveConfig(savename)
             self.message("Saving config file " + str(savename) + ".")
@@ -292,3 +293,17 @@ class iintGUI(QtGui.QMainWindow):
         for name in namelist:
             trackinfo = self._control.getTrackInformation(name)
             self._widgetList.append(iintMultiTrackedDataView.iintMultiTrackedDataView(trackinfo))
+
+    def _saveResultsFile(self):
+        print("i was called to do my job")
+        return
+        #~ self.message("Saving results file ...")
+        #~ self._control.createAndBulkExecute(selDict)
+        #~ self._control.createAndBulkExecute(fitDict)
+        #~ self._control.createAndBulkExecute(calcDict)
+        #~ self._control.createAndBulkExecute(subtractDict)
+        #~ if( self._simpleImageView != None):
+            #~ self._simpleImageView.update()
+        #~ if self._obsDef._dotrapint:
+            #~ self._control.createAndBulkExecute(self._control.getTrapIntDict())
+        #~ self.message(" ... done.\n")

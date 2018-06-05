@@ -287,8 +287,7 @@ class InteractiveP09ProcessingControl():
         handler.writeConfig(filename, procconfig)
 
 
-    def proposeConfigfileName(self):
-        suffix = ".icfg"
+    def proposeSaveFileName(self, suffix):
         # use the scanlist entries and the input spec file name
         try:
             import os.path
