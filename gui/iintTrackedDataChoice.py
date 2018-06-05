@@ -19,6 +19,7 @@
 # Boston, MA  02110-1301, USA.
 
 from PyQt4 import QtCore, QtGui, uic
+from adapt.utilities import getUIFile
 
 
 class iintTrackedDataChoice(QtGui.QWidget):
@@ -26,7 +27,7 @@ class iintTrackedDataChoice(QtGui.QWidget):
 
     def __init__(self, dataelement=None, parent=None):
         super(iintTrackedDataChoice, self).__init__(parent)
-        uic.loadUi("ui/chooseTrackedData.ui", self)
+        uic.loadUi(getUIFile("chooseTrackedData.ui"), self)
         self._data = dataelement
         self._initialNames = self._data.getLabels()
         for elem in list(self._data.getCustomKeys()):

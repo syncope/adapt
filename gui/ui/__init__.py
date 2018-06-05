@@ -1,4 +1,4 @@
-# Copyright (C) 2017-8  Christoph Rosemann, DESY, Notkestr. 85, D-22607 Hamburg
+# Copyright (C) 2018  Christoph Rosemann, DESY, Notkestr. 85, D-22607 Hamburg
 # email contact: christoph.rosemann@desy.de
 #
 # adapt is a programmable data processing toolkit
@@ -18,13 +18,4 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor,
 # Boston, MA  02110-1301, USA.
 
-from PyQt4 import QtCore, QtGui, uic
-from adapt.utilities import getUIFile
-
-
-class QuitDialog(QtGui.QDialog):
-
-    def __init__(self, parent=None):
-        super(QuitDialog, self).__init__(parent)
-        uic.loadUi(getUIFile("quitDialog.ui"), self)
-        self.cancel.clicked.connect(self.close)
+uifilebase = __file__

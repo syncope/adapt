@@ -22,9 +22,26 @@ from PyQt4 import QtCore, QtGui, uic
 from adapt.utilities import getUIFile
 
 
-class QuitDialog(QtGui.QDialog):
+class FileInfo(QtGui.QWidget):
+    newspecfile = QtCore.pyqtSignal()
 
     def __init__(self, parent=None):
-        super(QuitDialog, self).__init__(parent)
-        uic.loadUi(getUIFile("quitDialog.ui"), self)
-        self.cancel.clicked.connect(self.close)
+        super(FileInfo, self).__init__(parent)
+        self.setWindowTitle("File Display")
+        uic.loadUi(getUIFile("fileInfo.ui"), self)
+        self.changeFile.clicked.connect(self.emitNew)
+
+    def reset(self):
+        self.fileLabel.setText("No File")
+        self.fileLabel.setToolTip("No File")
+        self.scanSelectionDisplay.setText("No selection")
+
+    def setNames(self, f, s):
+        import os.path
+        self.fileLabel.setText(os.path.basename(f))
+        self.fileLabel.setToolTip(f)
+        self.scanSelectionDisplay.setText(s)
+
+    def emitNew(self):
+        self.newspecfile.emit()
+

@@ -19,6 +19,7 @@
 # Boston, MA  02110-1301, USA.
 
 from PyQt4 import QtCore, QtGui, uic
+from adapt.utilities import getUIFile
 
 
 class iintObservableDefinition(QtGui.QWidget):
@@ -29,7 +30,7 @@ class iintObservableDefinition(QtGui.QWidget):
     def __init__(self, parent=None):
         super(iintObservableDefinition, self).__init__(parent)
         self.setWindowTitle("Observable definition")
-        uic.loadUi("ui/iintobservable.ui", self)
+        uic.loadUi(getUIFile("iintobservable.ui"), self)
         self._obsDict = {}
         self._despikeDict = {}
         self._trapintDict = {}

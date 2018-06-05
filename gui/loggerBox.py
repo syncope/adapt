@@ -19,13 +19,14 @@
 # Boston, MA  02110-1301, USA.
 
 from PyQt4 import QtCore, QtGui, uic
+from adapt.utilities import getUIFile
 
 
 class LoggerBox(QtGui.QWidget):
 
     def __init__(self, parent=None):
         super(LoggerBox, self).__init__(parent)
-        uic.loadUi("ui/logBOX.ui", self)
+        uic.loadUi(getUIFile("logBOX.ui"), self)
 
     def addText(self,text):
         self.messageWindow.insertPlainText(text)

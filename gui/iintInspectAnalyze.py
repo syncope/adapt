@@ -19,9 +19,12 @@
 # Boston, MA  02110-1301, USA.
 
 from PyQt4 import QtCore, QtGui, uic
+from adapt.utilities import getUIFile
+
+
 
 class iintInspectAnalyze(QtGui.QWidget):
 
     def __init__(self, parent=None):
         super(iintInspectAnalyze, self).__init__(parent)
-        uic.loadUi("ui/inspectAnalyze.ui", self)
+        uic.loadUi(getUIFile("inspectAnalyze.ui"), self)

@@ -19,12 +19,13 @@
 # Boston, MA  02110-1301, USA.
 
 from PyQt4 import QtCore, QtGui, uic
+from adapt.utilities import getUIFile
 
 
 class ShowFileContents(QtGui.QDialog):
     
     def __init__(self, text, parent=None):
         super(ShowFileContents, self).__init__(parent)
-        uic.loadUi("ui/fileDisplay.ui", self)
+        uic.loadUi(getUIFile("fileDisplay.ui"), self)
         self.textEdit.setText(text)
         self.show()

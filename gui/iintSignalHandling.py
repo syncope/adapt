@@ -19,6 +19,7 @@
 # Boston, MA  02110-1301, USA.
 
 from PyQt4 import QtCore, QtGui, uic
+from adapt.utilities import getUIFile
 
 
 class iintSignalHandling(QtGui.QWidget):
@@ -26,7 +27,7 @@ class iintSignalHandling(QtGui.QWidget):
 
     def __init__(self, pDict, parent=None):
         super(iintSignalHandling, self).__init__(parent)
-        uic.loadUi("ui/fitpanel.ui", self)
+        uic.loadUi(getUIFile("fitpanel.ui"), self)
         self.setParameterDict(pDict)
         self.configureFirst.clicked.connect(self.emitfirstmodelconfig)
         self.configureSecond.clicked.connect(self.emitsecondmodelconfig)

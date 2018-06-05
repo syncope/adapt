@@ -19,6 +19,7 @@
 # Boston, MA  02110-1301, USA.
 
 from PyQt4 import QtCore, QtGui, uic
+from adapt.utilities import getUIFile
 
 
 class ResetDialog(QtGui.QDialog):
@@ -26,7 +27,7 @@ class ResetDialog(QtGui.QDialog):
 
     def __init__(self, parent=None):
         super(ResetDialog, self).__init__(parent)
-        uic.loadUi("ui/resetDialog.ui", self)
+        uic.loadUi(getUIFile("resetDialog.ui"), self)
         self.cancelButton.clicked.connect(self.close)
         self.okButton.clicked.connect(self._returnOK)
 

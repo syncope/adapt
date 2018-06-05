@@ -24,6 +24,7 @@ from PyQt4 import QtCore, QtGui, uic
 import pyqtgraph as pg
 
 from adapt.utilities import interactiveP09ProcessingControl
+from adapt.utilities import getUIFile
 from adapt.processes import specfilereader
 
 from gui import iintDataPlot
@@ -46,7 +47,7 @@ class iintGUI(QtGui.QMainWindow):
     
     def __init__(self, parent=None):
         super(iintGUI, self).__init__(parent)
-        uic.loadUi("ui/iint_main3.ui", self)
+        uic.loadUi(getUIFile("iint_main3.ui"), self)
 
         self.actionNew.triggered.connect(self._askReset)
         self.actionOpen_file.triggered.connect(self.choosefile)

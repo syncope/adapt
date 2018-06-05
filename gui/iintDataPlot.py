@@ -19,6 +19,7 @@
 # Boston, MA  02110-1301, USA.
 
 from PyQt4 import QtCore, QtGui, uic
+from adapt.utilities import getUIFile
 
 
 
@@ -28,7 +29,7 @@ class iintDataPlot(QtGui.QDialog):
 
     def __init__(self, parent=None):
         super(iintDataPlot, self).__init__(parent)
-        uic.loadUi("ui/iint_simplePlot.ui", self)
+        uic.loadUi(getUIFile("iint_simplePlot.ui"), self)
         self.showPreviousBtn.clicked.connect(self.decrementCurrentScanID)
         self.showNextBtn.clicked.connect(self.incrementCurrentScanID)
         self.showRAW.stateChanged.connect(self._toggleRAW)

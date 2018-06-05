@@ -19,6 +19,7 @@
 # Boston, MA  02110-1301, USA.
 
 from PyQt4 import QtCore, QtGui, uic
+from adapt.utilities import getUIFile
 
 
 class iintBackgroundHandling(QtGui.QWidget):
@@ -26,7 +27,7 @@ class iintBackgroundHandling(QtGui.QWidget):
 
     def __init__(self, pDicts, parent=None):
         super(iintBackgroundHandling, self).__init__(parent)
-        uic.loadUi("ui/linearbackground.ui", self)
+        uic.loadUi(getUIFile("linearbackground.ui"), self)
         self.bkgStartPointsSB.setMinimum(0)
         self.bkgStartPointsSB.setMaximum(10)
         self.bkgEndPointsSB.setMinimum(0)
