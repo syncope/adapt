@@ -23,7 +23,8 @@
 import argparse
 try:
     import adapt.batchSteering as controller
-except ImportError("[adapt] library not found. Exiting!"):
+except ImportError:
+    print("[adapt] library not found. Exiting!")
     exit()
 
 def serialExecution(filename):
