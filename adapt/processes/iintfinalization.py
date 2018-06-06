@@ -31,7 +31,7 @@ class iintfinalization(IProcess):
 
     def __init__(self, ptype="iintfinalization"):
         super(iintfinalization, self).__init__(ptype)
-        self._namesPar = ProcessParameter("outputs", list)
+        self._namesPar = ProcessParameter("trackedData", list)
         self._outfilenamePar = ProcessParameter("outfilename", str)
         self._pdfoutfilenamePar = ProcessParameter("pdffilename", str)
         self._pdfmotorPar = ProcessParameter("motor", str)
@@ -93,7 +93,6 @@ class iintfinalization(IProcess):
         obs = data.getData(self._pdfobservable)
         mot = data.getData(self._pdfmotor)
         fr = data.getData(self._pdffitresult)
-        print(fr.fit_report())
         plt.plot(mot,obs,'bo')
         plt.plot(mot, fr.best_fit, 'r-')
         plt.title("Scan: " + str(scannumber))
