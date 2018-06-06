@@ -27,7 +27,7 @@ class iintBackgroundHandling(QtGui.QWidget):
 
     def __init__(self, pDicts, parent=None):
         super(iintBackgroundHandling, self).__init__(parent)
-        uic.loadUi(getUIFile("linearbackground.ui"), self)
+        uic.loadUi(getUIFile("iintbackground.ui"), self)
         self.bkgStartPointsSB.setMinimum(0)
         self.bkgStartPointsSB.setMaximum(10)
         self.bkgEndPointsSB.setMinimum(0)
