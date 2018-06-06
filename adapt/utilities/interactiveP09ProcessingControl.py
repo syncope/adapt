@@ -159,6 +159,12 @@ class InteractiveP09ProcessingControl():
         self._processParameters["trapint"]["motor"] = self._motorName
         self._processParameters["trapint"]["observable"] = self._signalName
         self._processParameters["trapint"]["output"] = self._trapintName
+        # finalization: saving files
+       # FUNCTION: self._processParameters["finalize"]["outputs"] =
+       # DIALOG:  self._processParameters["finalize"]["outfilename"] =
+        # DIALOG: self._processParameters["finalize"]["pdffilename"] =
+        # ?? self._processParameters["finalize"]["observable"] =
+        # self._processParameters["finalize"]["fitresult"] =
 
     def getRawDataName(self):
         return self._rawName
@@ -173,6 +179,7 @@ class InteractiveP09ProcessingControl():
         self._processParameters["signalcurvefit"]["xdata"] = self._motorName
         self._processParameters["calcfitpoints"]["xdata"] = self._motorName
         self._processParameters["trapint"]["motor"] = self._motorName
+        self._processParameters["finalize"]["motor"] = self._motorName
 
     def settingChoiceDesBkg(self):
         # four cases des-bkg: no-no yes-no no-yes and yes-yes
