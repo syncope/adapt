@@ -23,7 +23,7 @@ from adapt.utilities import getUIFile
 
 
 class SelectResultOutput(QtGui.QDialog):
-    accept = QtCore.pyqtSignal()
+    accept = QtCore.pyqtSignal(str)
 
     def __init__(self, parent=None):
         super(SelectResultOutput, self).__init__(parent)
@@ -32,12 +32,8 @@ class SelectResultOutput(QtGui.QDialog):
         self.ok.clicked.connect(self._returnOK)
 
     def _returnOK(self):
-        self.accept.emit()
+        self.accept.emit(self.filename.text())
         self.close()
 
-    def setNames(self, resultfilename=None, fitresultfilename=None):
-        self.resultFilename.setText(resultfilename)
-        self.pdfFilename.setText(fitresultfilename)
-
-    def getNames(self):
-        return self.resultFilename.text(), self.pdfFilename.text()
+    def setName(self, filename):
+        self.filename.setText(filename)

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>577</width>
-    <height>150</height>
+    <width>568</width>
+    <height>119</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -40,50 +40,21 @@
           </item>
          </layout>
         </item>
+        <item row="2" column="2">
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>Results file base name</string>
+          </property>
+         </widget>
+        </item>
         <item row="3" column="1">
          <layout class="QHBoxLayout" name="horizontalLayout_3"/>
         </item>
-        <item row="0" column="3">
-         <widget class="QLineEdit" name="resultFilename"/>
-        </item>
         <item row="2" column="1">
-         <layout class="QHBoxLayout" name="horizontalLayout_12">
-          <item>
-           <widget class="QPushButton" name="choosePDFFile">
-            <property name="text">
-             <string>Change</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
+         <layout class="QHBoxLayout" name="horizontalLayout_12"/>
         </item>
         <item row="2" column="3">
-         <layout class="QHBoxLayout" name="horizontalLayout_2">
-          <item>
-           <widget class="QLineEdit" name="pdfFilename"/>
-          </item>
-         </layout>
-        </item>
-        <item row="0" column="1">
-         <widget class="QPushButton" name="chooseResultFile">
-          <property name="text">
-           <string>Change</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="2">
-         <widget class="QLabel" name="label">
-          <property name="text">
-           <string>Results file</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="2">
-         <widget class="QLabel" name="label_2">
-          <property name="text">
-           <string>PDF file</string>
-          </property>
-         </widget>
+         <widget class="QLineEdit" name="filename"/>
         </item>
        </layout>
       </item>
