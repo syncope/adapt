@@ -39,7 +39,7 @@ from gui import resetDialog
 from gui import showFileContents
 from gui import iintMultiTrackedDataView
 from gui import iintInspectAnalyze
-
+from gui import selectResultOutput
 
 __version__ ="0.0.5alpha"
 
@@ -86,8 +86,11 @@ class iintGUI(QtGui.QMainWindow):
         self._fitList = []
         self._inspectAnalyze = iintInspectAnalyze.iintInspectAnalyze()
         self._inspectAnalyze.trackData.clicked.connect(self._dataToTrack)
-        self._inspectAnalyze.polAnalysis.clicked.connect(self._polarizationAnalysis)
+        self._inspectAnalyze.polAnalysis.clicked.connect(self._runPolarizationAnalysis)
         self._inspectAnalyze.saveResults.clicked.connect(self._saveResultsFile)
+        self._saveResultsDialog = selectResultOutput.SelectResultOutput()
+        self._saveResultsDialog.accept.connect(self._control.setResultFilename)
+        self._saveResultsDialog.accept.connect(self.runOutputSaving)
 
         self._loggingBox = loggerBox.LoggerBox()
 
@@ -128,7 +131,7 @@ class iintGUI(QtGui.QMainWindow):
         return
 
     def _showFitResults(self):
-        self._widgetList.append(showFileContents(''.join(self._control.getSignalFitResults())))
+        self._widgetList.append(showFileContents.ShowFileContents(''.join(self._control.getSignalFitResults())))
         
     def message(self, text):
         self._loggingBox.addText(text)
@@ -266,8 +269,8 @@ class iintGUI(QtGui.QMainWindow):
         self._control.createAndBulkExecute(self._control.getSignalFitDict())
         if( self._simpleImageView != None):
             self._simpleImageView.update("plotfit")
-        trackinfo = self._control.getDefaultSignalFitResults()
-        self._widgetList.append(iintMultiTrackedDataView.iintMultiTrackedDataView(trackinfo))
+        fitresults = self._control.getDefaultSignalFitResults()
+        self._widgetList.append(iintMultiTrackedDataView.iintMultiTrackedDataView(fitresults))
         self.message(" ... done.\n")
 
     def _updateCurrentImage(self):
@@ -285,8 +288,9 @@ class iintGUI(QtGui.QMainWindow):
         rawScanData = self._control.getDataList()[0].getData(self._control.getRawDataName())
         self._trackedDataChoice = iintTrackedDataChoice.iintTrackedDataChoice(rawScanData)
         self._trackedDataChoice.trackedData.connect(self._showTracked)
+        self._trackedDataChoice.trackedData.connect(self._control.setTrackedData)
         
-    def _polarizationAnalysis(self):
+    def _runPolarizationAnalysis(self):
         pass
 
     def _showTracked(self, namelist):
@@ -295,15 +299,13 @@ class iintGUI(QtGui.QMainWindow):
             self._widgetList.append(iintMultiTrackedDataView.iintMultiTrackedDataView(trackinfo))
 
     def _saveResultsFile(self):
-        print("i was called to do my job")
+        self._saveResultsDialog.setName(self._control.proposeSaveFileName(""))
+        self._saveResultsDialog.show()
         return
-        #~ self.message("Saving results file ...")
-        #~ self._control.createAndBulkExecute(selDict)
-        #~ self._control.createAndBulkExecute(fitDict)
-        #~ self._control.createAndBulkExecute(calcDict)
-        #~ self._control.createAndBulkExecute(subtractDict)
-        #~ if( self._simpleImageView != None):
-            #~ self._simpleImageView.update()
-        #~ if self._obsDef._dotrapint:
-            #~ self._control.createAndBulkExecute(self._control.getTrapIntDict())
-        #~ self.message(" ... done.\n")
+
+    def runOutputSaving(self):
+        finalDict = self._control.getFinalizingDict()
+
+        self.message("Saving results file ...")
+        self._control.createAndBulkExecute(finalDict)
+        self.message(" ... done.\n")

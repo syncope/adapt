@@ -160,11 +160,7 @@ class InteractiveP09ProcessingControl():
         self._processParameters["trapint"]["observable"] = self._signalName
         self._processParameters["trapint"]["output"] = self._trapintName
         # finalization: saving files
-       # FUNCTION: self._processParameters["finalize"]["outputs"] =
-       # DIALOG:  self._processParameters["finalize"]["outfilename"] =
-        # DIALOG: self._processParameters["finalize"]["pdffilename"] =
-        # ?? self._processParameters["finalize"]["observable"] =
-        # self._processParameters["finalize"]["fitresult"] =
+        self._processParameters["finalize"]["fitresult"] = self._fittedSignalName
 
     def getRawDataName(self):
         return self._rawName
@@ -186,19 +182,23 @@ class InteractiveP09ProcessingControl():
         if self._nodespike and self._nobkg:
             self._processParameters["trapint"]["observable"] = self._observableName
             self._processParameters["signalcurvefit"]["ydata"] = self._observableName
+            self._processParameters["finalize"]["observable"] = self._observableName
         if not self._nodespike and self._nobkg:
             self._processParameters["trapint"]["observable"] = self._despObservableName
             self._processParameters["signalcurvefit"]["ydata"] = self._despObservableName
+            self._processParameters["finalize"]["observable"] = self._despObservableName
         if self._nodespike and not self._nobkg:
             self._processParameters["bkgselect"]["input"] = [ self._observableName, self._motorName]
             self._processParameters["bkgsubtract"]["input"] =  self._observableName
             self._processParameters["trapint"]["observable"] = self._signalName
             self._processParameters["signalcurvefit"]["ydata"] = self._signalName
+            self._processParameters["finalize"]["observable"] = self._signalName
         if not self._nodespike and not self._nobkg:
             self._processParameters["bkgselect"]["input"] = [ self._despObservableName, self._motorName]
             self._processParameters["bkgsubtract"]["input"] =  self._despObservableName
             self._processParameters["trapint"]["observable"] = self._signalName
             self._processParameters["signalcurvefit"]["ydata"] = self._signalName
+            self._processParameters["finalize"]["observable"] = self._signalName
 
     def getObservableName(self):
         return self._observableName
@@ -388,11 +388,15 @@ class InteractiveP09ProcessingControl():
         else:
             return self._processParameters["trapint"]
 
+    def getFinalizingDict(self):
+        return self._processParameters["finalize"]
+
     def useBKG(self, value):
         self._nobkg = not value
         self.settingChoiceDesBkg()
 
     def useTrapInt(self, value):
+        self._notrapint = not value
         self.settingChoiceDesBkg()
 
     def useDespike(self, value):
@@ -453,6 +457,15 @@ class InteractiveP09ProcessingControl():
             error.append(0.)
 
         return trackedInformation(name, value, error, infoholder)
+
+    def setResultFilename(self, filename):
+        self._processParameters["finalize"]["outfilename"] = filename + ".iint"
+        self._processParameters["finalize"]["pdffilename"] = filename
+
+    def setTrackedData(self, namelist):
+        self._processParameters["finalize"]["trackedData"] = namelist
+
+
 
 class trackedInformation():
     
