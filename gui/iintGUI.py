@@ -116,7 +116,7 @@ class iintGUI(QtGui.QMainWindow):
     def _showConfig(self):
         try:
             if self._file != "":
-                self._widgetList.append(showFileContents(open(self._file).read()))
+                self._widgetList.append(showFileContents.ShowFileContents(open(self._file).read()))
             else:
                 return
         except AttributeError:
@@ -151,7 +151,7 @@ class iintGUI(QtGui.QMainWindow):
         self._quit.show()
 
     def _saveConfig(self, num=None):
-        tempfilename = self._control.proposeSaveFileName(",icfg")
+        tempfilename = self._control.proposeSaveFileName(".icfg")
         savename = QtGui.QFileDialog.getSaveFileName(self, 'Choose iint config file to save', tempfilename, "iint cfg files (*.icfg)")
         if savename != '':
             self._control.saveConfig(savename)
