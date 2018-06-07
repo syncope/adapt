@@ -51,7 +51,7 @@ class iintfinalization(IProcess):
         self._pdfmotor = self._pdfmotorPar.get()
         self._pdfobservable = self._pdfobservablePar.get()
         self._pdffitresult = self._pdffitresultPar.get()
-        self._headers = []
+        self._trackedData = []
         self._values = []
         self._plots = []
         self._pdfoutfile = PdfPages(self._pdfoutfilename + ".pdf")
@@ -60,7 +60,7 @@ class iintfinalization(IProcess):
         skip = False
         tmpValues = []
         scannumber = None
-        if len(self._headers) > 0:
+        if len(self._trackedData) > 0:
             skip = True
         for name in self._names:
             datum = data.getData(name)
@@ -70,8 +70,8 @@ class iintfinalization(IProcess):
                 tmpValues.append(np.mean(datum))
                 tmpValues.append(np.std(datum))
                 if not skip:
-                    self._headers.append("mean_"+name)
-                    self._headers.append("stderr_"+name)
+                    self._trackedData.append("mean_"+name)
+                    self._trackedData.append("stderr_"+name)
             elif isinstance(datum, lmfit.model.ModelFit):
                 pars = datum.params
                 for parameter in pars:
@@ -81,27 +81,27 @@ class iintfinalization(IProcess):
                     tmpValues.append(pval)
                     tmpValues.append(perr)
                     if not skip:
-                        self._headers.append(pname)
-                        self._headers.append(pname + "_stderr")
+                        self._trackedData.append(pname)
+                        self._trackedData.append(pname + "_stderr")
             else:
                 tmpValues.append(datum)
                 if not skip:
-                    self._headers.append(name)
+                    self._trackedData.append(name)
         self._values.append(tmpValues)
 
         # plotstuff
-        obs = data.getData(self._pdfobservable)
-        mot = data.getData(self._pdfmotor)
-        fr = data.getData(self._pdffitresult)
-        plt.plot(mot,obs,'bo')
-        plt.plot(mot, fr.best_fit, 'r-')
+        observable = data.getData(self._pdfobservable)
+        motor = data.getData(self._pdfmotor)
+        fitresult = data.getData(self._pdffitresult)
+        plt.plot(motor,observable,'bo')
+        plt.plot(motor, fitresult.best_fit, 'r-')
         plt.title("Scan: " + str(scannumber))
         self._pdfoutfile.savefig()
         plt.close()
 
     def finalize(self, data):
         header = ''
-        for elem in self._headers:
+        for elem in self._trackedData:
             header += str(elem)
             header += "\t"
         valuearray = np.asarray(self._values)
