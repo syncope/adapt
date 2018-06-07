@@ -53,7 +53,7 @@ class iintfinalization(IProcess):
         self._pdffitresult = self._pdffitresultPar.get()
         self._trackedData = []
         self._values = []
-        self._plots = []
+        self._plotstuff = []
         self._pdfoutfile = PdfPages(self._pdfoutfilename + ".pdf")
 
     def execute(self, data):
@@ -89,23 +89,48 @@ class iintfinalization(IProcess):
                     self._trackedData.append(name)
         self._values.append(tmpValues)
 
-        # plotstuff
         observable = data.getData(self._pdfobservable)
         motor = data.getData(self._pdfmotor)
         fitresult = data.getData(self._pdffitresult)
-        plt.plot(motor,observable,'bo')
-        plt.plot(motor, fitresult.best_fit, 'r-')
-        plt.title("Scan: " + str(scannumber))
-        self._pdfoutfile.savefig()
-        plt.close()
+        self._plotstuff.append((scannumber, motor, observable, fitresult.best_fit))
 
     def finalize(self, data):
+        import math as m
+        fig_size = plt.rcParams["figure.figsize"]
+        #print "Current size:", fig_size
+        fig_size[0] = 16
+        fig_size[1] = 12
+        plt.rcParams["figure.figsize"] = fig_size
+
+        # output file stuff
         header = ''
         for elem in self._trackedData:
             header += str(elem)
             header += "\t"
         valuearray = np.asarray(self._values)
         np.savetxt(self._outfilename, valuearray, header=header, fmt='%14.4f')
+
+        # plotstuff -- this must be the worst way to do it
+        # determine number of figures
+        nof = m.ceil(len(self._plotstuff)/9)
+        for n in range(len(self._plotstuff)):
+            scannumber, motor, observable, fitresult = self._plotstuff[n]
+            fn, index, check = m.floor(n/9), int(n%9)+1, n/9.
+            if check > fn*nof:
+                fn += 1
+            if index == 1:
+                if fn > 0:
+                    self._pdfoutfile.savefig()
+                figure = plt.figure(fn)
+                figure.suptitle('Fit data with peak function & Integrated intensities', fontsize=14, fontweight='bold')
+
+            figure.add_subplot(3,3,index)
+            plt.axis([motor[0], motor[-1], 0, 1.2*np.amax(observable)])
+            plt.plot(motor,observable,'b+')
+            plt.plot(motor, fitresult, 'r-')
+            plt.title("Scan: #" + str(scannumber))
+            
+        self._pdfoutfile.savefig()
         self._pdfoutfile.close()
 
     def check(self, data):
