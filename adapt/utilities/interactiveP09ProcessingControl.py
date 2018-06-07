@@ -285,6 +285,8 @@ class InteractiveP09ProcessingControl():
             processDict["trapint"] = self.getTrapIntDict()
         execlist.append("signalcurvefit")
         processDict["signalcurvefit"] = self.getSIGDict()
+        execlist.append("finalize")
+        processDict["finalize"] = self.getFinalizingDict()
 
         procconfig = processingConfiguration.ProcessingConfiguration()
         procconfig.addProcessDefinition(processDict)
