@@ -27,6 +27,9 @@
           <property name="text">
            <string>Data to track</string>
           </property>
+          <property name="default">
+           <bool>true</bool>
+          </property>
          </widget>
         </item>
         <item>
