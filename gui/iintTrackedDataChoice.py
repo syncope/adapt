@@ -61,8 +61,8 @@ class iintTrackedDataChoice(QtGui.QWidget):
 
 ##
     def _fillLists(self):
-        self._untrackedDataColumns = self._initialNamesColumns[:]
-        self._untrackedDataHeaders = self._initialNamesHeaders[:]
+        self._untrackedDataColumns = sorted(self._initialNamesColumns[:])
+        self._untrackedDataHeaders = sorted(self._initialNamesHeaders[:])
         self._trackedDataColumns = []
         self._trackedDataHeaders = []
         self.listAllColumns.addItems(self._untrackedDataColumns)
