@@ -47,7 +47,7 @@ class iintGUI(QtGui.QMainWindow):
     
     def __init__(self, parent=None):
         super(iintGUI, self).__init__(parent)
-        uic.loadUi(getUIFile("iint_main3.ui"), self)
+        uic.loadUi(getUIFile("iintMain.ui"), self)
 
         self.actionNew.triggered.connect(self._askReset)
         self.actionOpen_file.triggered.connect(self.choosefile)
@@ -79,6 +79,7 @@ class iintGUI(QtGui.QMainWindow):
         self._obsDef.doDespike.connect(self._control.useDespike)
         self._obsDef.doTrapint.connect(self._control.useTrapInt)
         self._bkgHandling = iintBackgroundHandling.iintBackgroundHandling(self._control.getBKGDicts())
+        
         self._signalHandling = iintSignalHandling.iintSignalHandling(self._control.getSIGDict())
         self._signalHandling.passModels(self._control.getFitModels())
         self._signalHandling.modelcfg.connect(self.openFitDialog)

@@ -59,7 +59,6 @@ class iintTrackedDataChoice(QtGui.QWidget):
         self._currentSelectedItemHeaders  = 0
         self.show()
 
-##
     def _fillLists(self):
         self._untrackedDataColumns = sorted(self._initialNamesColumns[:])
         self._untrackedDataHeaders = sorted(self._initialNamesHeaders[:])
