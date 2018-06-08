@@ -358,6 +358,15 @@ class InteractiveP09ProcessingControl():
         except KeyError:
             return {}
 
+    def setBkgModel(self, modelname):
+        if modelname == "linearModel":
+            self._processParameters["bkgfit"]["model"] = { "linbkg_" : {"modeltype" : modelname}}
+        elif modelname == "constantModel":
+            self._processParameters["bkgfit"]["model"] = { "constbkg_" : {"modeltype" : modelname}}
+        else:
+            print("Unknown model for background. Check.")
+
+
     def getBKGDicts(self):
         try:
             return (self._processParameters["bkgselect"],

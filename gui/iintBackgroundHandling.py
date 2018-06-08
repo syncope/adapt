@@ -24,6 +24,7 @@ from adapt.utilities import getUIFile
 
 class iintBackgroundHandling(QtGui.QWidget):
     bkgDicts = QtCore.pyqtSignal(dict, dict, dict, dict)
+    bkgmodel = QtCore.pyqtSignal(str)
 
     def __init__(self, pDicts, parent=None):
         super(iintBackgroundHandling, self).__init__(parent)
@@ -36,6 +37,9 @@ class iintBackgroundHandling(QtGui.QWidget):
         self._fitParDict = {}
         self._calcParDict = {}
         self._subtractParDict = {}
+        # if there are just two options, only one toggle needs to be connected
+        #~ self.linearBkg.toggled.connect(self._setModel)
+        self.constBkg.toggled.connect(self._setModel)
         self.fitBkg.clicked.connect(self.emittem)
         self.fitBkg.setDisabled(True)
         self._noBKG = True
@@ -53,6 +57,13 @@ class iintBackgroundHandling(QtGui.QWidget):
     def _toggle(self):
         self._noBKG = not self._noBKG
         self.fitBkg.setDisabled(self._noBKG)
+
+    def _setModel(self):
+        if self.linearBkg.isChecked():
+            self._model = "linearModel"
+        elif self.constBkg.isChecked():
+            self._model = "constantModel"
+        self.bkgmodel.emit(self._model)
 
     def setParameterDicts(self, dicts):
         self._selectParDict = dicts[0]
