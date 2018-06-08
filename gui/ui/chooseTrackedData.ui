@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>588</width>
-    <height>454</height>
+    <width>532</width>
+    <height>460</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,14 +19,14 @@
      <item>
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>Choose data to track</string>
+        <string>Choose columns to track</string>
        </property>
       </widget>
      </item>
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
-        <widget class="QListWidget" name="listAll"/>
+        <widget class="QListWidget" name="listAllColumns"/>
        </item>
        <item>
         <layout class="QVBoxLayout" name="verticalLayout">
@@ -44,14 +44,14 @@
           </spacer>
          </item>
          <item>
-          <widget class="QPushButton" name="addToList">
+          <widget class="QPushButton" name="addToListColumns">
            <property name="text">
             <string>&gt;&gt;</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="removeFromList">
+          <widget class="QPushButton" name="removeFromListColumns">
            <property name="text">
             <string>&lt;&lt;</string>
            </property>
@@ -73,7 +73,68 @@
         </layout>
        </item>
        <item>
-        <widget class="QListWidget" name="listSelected"/>
+        <widget class="QListWidget" name="listSelectedColumns"/>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>Choose headers to track</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <item>
+        <widget class="QListWidget" name="listAllHeaders"/>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
+          <spacer name="verticalSpacer_3">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QPushButton" name="addToListHeaders">
+           <property name="text">
+            <string>&gt;&gt;</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="removeFromListHeaders">
+           <property name="text">
+            <string>&lt;&lt;</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="verticalSpacer_4">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QListWidget" name="listSelectedHeaders"/>
        </item>
       </layout>
      </item>
@@ -95,7 +156,10 @@
        <item>
         <widget class="QPushButton" name="okBtn">
          <property name="text">
-          <string>Choose</string>
+          <string>Done</string>
+         </property>
+         <property name="default">
+          <bool>true</bool>
          </property>
         </widget>
        </item>

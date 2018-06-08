@@ -29,80 +29,138 @@ class iintTrackedDataChoice(QtGui.QWidget):
         super(iintTrackedDataChoice, self).__init__(parent)
         uic.loadUi(getUIFile("chooseTrackedData.ui"), self)
         self._data = dataelement
-        self._initialNames = self._data.getLabels()
+        self._initialNamesColumns = self._data.getLabels()
+        self._initialNamesHeaders = []
         for elem in list(self._data.getCustomKeys()):
-            self._initialNames.append(elem)
+            self._initialNamesHeaders.append(elem)
         self._fillLists()
         self.okBtn.clicked.connect(self._emitTrackedData)
         self.okBtn.clicked.connect(self._reset)
         self.cancel.clicked.connect(self._reset)
-        self.addToList.setDisabled(True)
-        self.addToList.clicked.connect(self._moveButtonToSelected)
-        self.removeFromList.clicked.connect(self._moveButtonToUnselected)
-        self.removeFromList.setDisabled(True)
-        self.listAll.itemClicked.connect(self._pickedUnselectedItem)
-        self.listAll.itemDoubleClicked.connect(self._moveToSelected)
-        self.listSelected.itemClicked.connect(self._pickedSelectedItem)
-        self.listSelected.itemDoubleClicked.connect(self._moveToUnselected)
-        self._currentUnSelectedItem  = 0
-        self._currentSelectedItem  = 0
+        self.addToListColumns.setDisabled(True)
+        self.addToListHeaders.setDisabled(True)
+        self.addToListColumns.clicked.connect(self._moveButtonToSelectedColumns)
+        self.addToListHeaders.clicked.connect(self._moveButtonToSelectedHeaders)
+        self.removeFromListColumns.clicked.connect(self._moveButtonToUnselectedColumns)
+        self.removeFromListHeaders.clicked.connect(self._moveButtonToUnselectedHeaders)
+        self.removeFromListColumns.setDisabled(True)
+        self.removeFromListHeaders.setDisabled(True)
+        self.listAllColumns.itemClicked.connect(self._pickedUnselectedItemColumns)
+        self.listAllColumns.itemDoubleClicked.connect(self._moveToSelectedColumns)
+        self.listSelectedColumns.itemClicked.connect(self._pickedSelectedItemColumns)
+        self.listSelectedColumns.itemDoubleClicked.connect(self._moveToUnselectedColumns)
+        self.listAllHeaders.itemClicked.connect(self._pickedUnselectedItemHeaders)
+        self.listAllHeaders.itemDoubleClicked.connect(self._moveToSelectedHeaders)
+        self.listSelectedHeaders.itemClicked.connect(self._pickedSelectedItemHeaders)
+        self.listSelectedHeaders.itemDoubleClicked.connect(self._moveToUnselectedHeaders)
+        self._currentUnSelectedItemColumns  = 0
+        self._currentSelectedItemColumns  = 0
+        self._currentUnSelectedItemHeaders  = 0
+        self._currentSelectedItemHeaders  = 0
         self.show()
 
+##
     def _fillLists(self):
-        self._untrackedData = self._initialNames[:]
-        self._trackedData = []
-        self.listAll.addItems(self._untrackedData)
+        self._untrackedDataColumns = self._initialNamesColumns[:]
+        self._untrackedDataHeaders = self._initialNamesHeaders[:]
+        self._trackedDataColumns = []
+        self._trackedDataHeaders = []
+        self.listAllColumns.addItems(self._untrackedDataColumns)
+        self.listAllHeaders.addItems(self._untrackedDataHeaders)
 
     def _reset(self):
-        self.listAll.clear()
-        self.listSelected.clear()
-        self._untrackedData.clear()
-        self._trackedData.clear()
-        #~ self._fillLists()
+        self.listAllColumns.clear()
+        self._untrackedDataColumns.clear()
+        self._trackedDataColumns.clear()
+        self.listAllHeaders.clear()
+        self._untrackedDataHeaders.clear()
+        self._trackedDataHeaders.clear()
         self.close()
 
-    def _pickedUnselectedItem(self, item):
-        self._currentUnSelectedItem = item
-        self.addToList.setDisabled(False)
+    def _pickedUnselectedItemColumns(self, item):
+        self._currentUnSelectedItemColumns = item
+        self.addToListColumns.setDisabled(False)
 
-    def _pickedSelectedItem(self, item):
-        self._currentSelectedItem = item
-        self.removeFromList.setDisabled(False)
+    def _pickedUnselectedItemHeaders(self, item):
+        self._currentUnSelectedItemHeaders = item
+        self.addToListHeaders.setDisabled(False)
 
-    def _moveButtonToSelected(self):
-        index = self._untrackedData.index(self._currentUnSelectedItem.text())
-        self._trackedData.append(self._untrackedData.pop(index))
-        self.listSelected.addItem(self.listAll.takeItem(self.listAll.row(self._currentUnSelectedItem)))
-        self.listAll.setCurrentRow(-1)
+    def _pickedSelectedItemColumns(self, item):
+        self._currentSelectedItemColumns = item
+        self.removeFromListColumns.setDisabled(False)
 
-    def _moveButtonToUnselected(self):
-        index = self._trackedData.index(self._currentSelectedItem.text())
-        self._untrackedData.append(self._trackedData.pop(index))
-        self.listAll.addItem(self.listSelected.takeItem(self.listSelected.row(self._currentSelectedItem)))
-        self.listSelected.setCurrentRow(-1)
+    def _pickedSelectedItemHeaders(self, item):
+        self._currentSelectedItemHeaders = item
+        self.removeFromListHeaders.setDisabled(False)
 
-    def _moveToSelected(self, item):
-        index = self._untrackedData.index(item.text())
-        self._trackedData.append(self._untrackedData.pop(index))
-        self.listSelected.addItem(self.listAll.takeItem(self.listAll.row(item)))
-        if self.listAll.__len__() == 0:
-            self.addToList.setDisabled(True)
+    def _moveButtonToSelectedColumns(self):
+        index = self._untrackedDataColumns.index(self._currentUnSelectedItemColumns.text())
+        self._trackedDataColumns.append(self._untrackedDataColumns.pop(index))
+        self.listSelectedColumns.addItem(self.listAllColumns.takeItem(self.listAllColumns.row(self._currentUnSelectedItemColumns)))
+        self.listAllColumns.setCurrentRow(-1)
 
-    def _moveToUnselected(self, item):
-        index = self._trackedData.index(item.text())
-        self._untrackedData.append(self._trackedData.pop(index))
-        self.listAll.addItem(self.listSelected.takeItem(self.listSelected.row(item)))
-        if self.listSelected.__len__() == 0:
-            self.removeFromList.setDisabled(True)
+    def _moveButtonToSelectedHeaders(self):
+        index = self._untrackedDataHeaders.index(self._currentUnSelectedItemHeaders.text())
+        self._trackedDataHeaders.append(self._untrackedDataHeaders.pop(index))
+        self.listSelectedHeaders.addItem(self.listAllHeaders.takeItem(self.listAllHeaders.row(self._currentUnSelectedItemHeaders)))
+        self.listAllHeaders.setCurrentRow(-1)
 
-    def _addToList(self):
-        self._moveToSelected(self.listAll.selectedItems())
+    def _moveButtonToUnselectedColumns(self):
+        index = self._trackedDataColumns.index(self._currentSelectedItemColumns.text())
+        self._untrackedDataColumns.append(self._trackedDataColumns.pop(index))
+        self.listAllColumns.addItem(self.listSelectedColumns.takeItem(self.listSelectedColumns.row(self._currentSelectedItemColumns)))
+        self.listSelectedColumns.setCurrentRow(-1)
 
-    def _removeFromList(self):
-        self.listSelected.addItems(self.listSelected.selectedItems())
-        for elem in self.listSelected.selectedItems():
-            self.listSelected.takeItem(self.listSelected.row(elem))
+    def _moveButtonToUnselectedHeaders(self):
+        index = self._trackedDataHeaders.index(self._currentSelectedItemHeaders.text())
+        self._untrackedDataHeaders.append(self._trackedDataHeaders.pop(index))
+        self.listAllHeaders.addItem(self.listSelectedHeaders.takeItem(self.listSelectedHeaders.row(self._currentSelectedItemHeaders)))
+        self.listSelectedHeaders.setCurrentRow(-1)
+
+    def _moveToSelectedColumns(self, item):
+        index = self._untrackedDataColumns.index(item.text())
+        self._trackedDataColumns.append(self._untrackedDataColumns.pop(index))
+        self.listSelectedColumns.addItem(self.listAllColumns.takeItem(self.listAllColumns.row(item)))
+        if self.listAllColumns.__len__() == 0:
+            self.addToListColumns.setDisabled(True)
+
+    def _moveToSelectedHeaders(self, item):
+        index = self._untrackedDataHeaders.index(item.text())
+        self._trackedDataHeaders.append(self._untrackedDataHeaders.pop(index))
+        self.listSelectedHeaders.addItem(self.listAllHeaders.takeItem(self.listAllHeaders.row(item)))
+        if self.listAllHeaders.__len__() == 0:
+            self.addToListHeaders.setDisabled(True)
+
+    def _moveToUnselectedColumns(self, item):
+        index = self._trackedDataColumns.index(item.text())
+        self._untrackedDataColumns.append(self._trackedDataColumns.pop(index))
+        self.listAllColumns.addItem(self.listSelectedColumns.takeItem(self.listSelectedColumns.row(item)))
+        if self.listSelectedColumns.__len__() == 0:
+            self.removeFromListColumns.setDisabled(True)
+
+    def _moveToUnselectedHeaders(self, item):
+        index = self._trackedDataHeaders.index(item.text())
+        self._untrackedDataHeaders.append(self._trackedDataHeaders.pop(index))
+        self.listAllHeaders.addItem(self.listSelectedHeaders.takeItem(self.listSelectedHeaders.row(item)))
+        if self.listSelectedHeaders.__len__() == 0:
+            self.removeFromListHeaders.setDisabled(True)
+
+    def _addToListColumns(self):
+        self._moveToSelectedColumns(self.listAllColumns.selectedItems())
+
+    def _addToListHeaders(self):
+        self._moveToSelectedHeaders(self.listAllHeaders.selectedItems())
+
+    def _removeFromListColumns(self):
+        self.listSelectedColumns.addItems(self.listSelectedColumns.selectedItems())
+        for elem in self.listSelectedColumns.selectedItems():
+            self.listSelectedColumns.takeItem(self.listSelectedColumns.row(elem))
+
+    def _removeFromListHeaders(self):
+        self.listSelectedHeaders.addItems(self.listSelectedHeaders.selectedItems())
+        for elem in self.listSelectedHeaders.selectedItems():
+            self.listSelectedHeaders.takeItem(self.listSelectedHeaders.row(elem))
 
     def _emitTrackedData(self):
-        self.trackedData.emit(self._trackedData)
-
+        emitterData = self._trackedDataColumns + self._trackedDataHeaders
+        self.trackedData.emit(emitterData)
