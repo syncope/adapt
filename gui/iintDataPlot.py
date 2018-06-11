@@ -26,7 +26,7 @@ from adapt.utilities import getUIFile
 
 
 class iintDataPlot(QtGui.QDialog):
-    mouseposition = QtCore.pyqtSignal(float,float)
+    #~ mouseposition = QtCore.pyqtSignal(float,float)
     currentIndex = QtCore.pyqtSignal(int)
 
     def __init__(self, parent=None):
@@ -194,9 +194,9 @@ class iintDataPlot(QtGui.QDialog):
 
     def mouse_click(self, event):
         position = self._theDrawItem.mapFromScene(event.pos())
-        x = float("%.3f" % position.x())
-        y = float("%.3f" % position.y())
-        self.mouseposition.emit(x, y)
+        self.xPosition.setText("%.3f" % position.x())
+        self.yPosition.setText("%.3f" % position.y())
+        #~ self.mouseposition.emit(x, y)
 
     def getCurrentIndex(self):
         return self._currentIndex
