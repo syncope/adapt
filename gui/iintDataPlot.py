@@ -19,6 +19,8 @@
 # Boston, MA  02110-1301, USA.
 
 from PyQt4 import QtCore, QtGui, uic
+import numpy as np
+
 from adapt.utilities import getUIFile
 
 
@@ -29,7 +31,7 @@ class iintDataPlot(QtGui.QDialog):
 
     def __init__(self, parent=None):
         super(iintDataPlot, self).__init__(parent)
-        uic.loadUi(getUIFile("iint_simplePlot.ui"), self)
+        uic.loadUi(getUIFile("iintSimplePlot.ui"), self)
         self.showPreviousBtn.clicked.connect(self.decrementCurrentScanID)
         self.showNextBtn.clicked.connect(self.incrementCurrentScanID)
         self.showRAW.stateChanged.connect(self._toggleRAW)
@@ -37,11 +39,13 @@ class iintDataPlot(QtGui.QDialog):
         self.showBKG.stateChanged.connect(self._toggleBKG)
         self.showSIG.stateChanged.connect(self._toggleSIG)
         self.showFIT.stateChanged.connect(self._toggleFIT)
+        self.logScale.stateChanged.connect(self._toggleLOG)
         self.showRAW.stateChanged.connect(self.plot)
         self.showDES.stateChanged.connect(self.plot)
         self.showBKG.stateChanged.connect(self.plot)
         self.showSIG.stateChanged.connect(self.plot)
         self.showFIT.stateChanged.connect(self.plot)
+        self.logScale.stateChanged.connect(self.plot)
         self.viewPart.scene().sigMouseClicked.connect(self.mouse_click)
         self._currentIndex = 0
         self.currentIndex.emit(self._currentIndex)
@@ -50,6 +54,7 @@ class iintDataPlot(QtGui.QDialog):
         self._showbkg = False
         self._showbkgsubtracted = False
         self._tmpFit = None
+        self._logScale = False
         self._showsigfit = False
         self.setGeometry(640,1,840,840)
 
@@ -123,6 +128,10 @@ class iintDataPlot(QtGui.QDialog):
         self.showID.setText(str(datum.getData("scannumber")))
         xdata = datum.getData(self._motorName)
         ydata = datum.getData(self._observableName)
+        if ( self._logScale ):
+            trimmeddata = np.clip(ydata, 10e-3, np.inf)
+            ydata = np.log10(trimmeddata)
+
         self.viewPart.clear()
         if( self._showraw):
             self._theDrawItem = self.viewPart.plot(xdata, ydata, pen=None, symbolPen='w', symbolBrush='w', symbol='+')
@@ -165,6 +174,9 @@ class iintDataPlot(QtGui.QDialog):
 
     def _toggleFIT(self):
         self._showsigfit = not self._showsigfit
+
+    def _toggleLOG(self):
+        self._logScale = not self._logScale
 
     def incrementCurrentScanID(self):
         self._currentIndex += 1
