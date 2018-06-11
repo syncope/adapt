@@ -125,7 +125,7 @@ class iintDataPlot(QtGui.QDialog):
         ydata = datum.getData(self._observableName)
         self.viewPart.clear()
         if( self._showraw):
-            self.viewPart.plot(xdata, ydata, pen=None, symbolPen='w', symbolBrush='w', symbol='+')
+            self._theDrawItem = self.viewPart.plot(xdata, ydata, pen=None, symbolPen='w', symbolBrush='w', symbol='+')
         if( self._showdespike ):
             despikeData = datum.getData(self._despObservableName)
             self.viewPart.plot(xdata, despikeData, pen=None, symbolPen='y', symbolBrush='y', symbol='o')
@@ -181,13 +181,10 @@ class iintDataPlot(QtGui.QDialog):
         self.plot()
 
     def mouse_click(self, event):
-        try:
-            mousepos = self.viewPart.mapFromScene(event)
-            xdata = mousepos.x()
-            ydata = mousepos.y()
-            self.mouseposition.emit(xdata, ydata)
-        except:
-            pass
+        position = self._theDrawItem.mapFromScene(event.pos())
+        x = float("%.3f" % position.x())
+        y = float("%.3f" % position.y())
+        self.mouseposition.emit(x, y)
 
     def getCurrentIndex(self):
         return self._currentIndex

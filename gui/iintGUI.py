@@ -70,6 +70,7 @@ class iintGUI(QtGui.QMainWindow):
         self._rawdataobject = None
 
         self._simpleImageView = iintDataPlot.iintDataPlot(parent=self)
+        self._simpleImageView.mouseposition.connect(print)
 
         self._resetQuestion = resetDialog.ResetDialog()
         self._resetQuestion.resetOK.connect(self._resetAll)
