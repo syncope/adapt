@@ -296,7 +296,7 @@ class InteractiveP09ProcessingControl():
         handler.writeConfig(filename, procconfig)
 
 
-    def proposeSaveFileName(self, suffix):
+    def proposeSaveFileName(self, suffix, number=None):
         # use the scanlist entries and the input spec file name
         try:
             import os.path
@@ -486,6 +486,9 @@ class trackedInformation():
         self.error = error
         self.names = sorted(info.keys())
         self.values = info
+
+    def getName(self):
+        return self.name
 
     def getValues(self, name):
         tmpval = []

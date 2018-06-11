@@ -69,6 +69,9 @@ class iintGUI(QtGui.QMainWindow):
         self._motorname = ""
         self._rawdataobject = None
 
+        self.imageTabs.removeTab(1)
+        self.imageTabs.removeTab(0)
+        self.imageTabs.hide()
         self._simpleImageView = iintDataPlot.iintDataPlot(parent=self)
         #~ self._simpleImageView.mouseposition.connect(print)
 
@@ -247,6 +250,8 @@ class iintGUI(QtGui.QMainWindow):
                                         self._control.getFittedSignalName(),
                                         )
         self._simpleImageView.plot()
+        self.imageTabs.addTab(self._simpleImageView,"Image Display")
+        self.imageTabs.show()
         self._simpleImageView.show()
 
     def openFitDialog(self, modelname, index):
@@ -272,7 +277,7 @@ class iintGUI(QtGui.QMainWindow):
         if( self._simpleImageView != None):
             self._simpleImageView.update("plotfit")
         fitresults = self._control.getDefaultSignalFitResults()
-        self._widgetList.append(iintMultiTrackedDataView.iintMultiTrackedDataView(fitresults))
+        self.imageTabs.addTab(iintMultiTrackedDataView.iintMultiTrackedDataView(fitresults), fitresults.getName())
         self.message(" ... done.\n")
 
     def _updateCurrentImage(self):
@@ -298,7 +303,7 @@ class iintGUI(QtGui.QMainWindow):
     def _showTracked(self, namelist):
         for name in namelist:
             trackinfo = self._control.getTrackInformation(name)
-            self._widgetList.append(iintMultiTrackedDataView.iintMultiTrackedDataView(trackinfo))
+            self.imageTabs.addTab(iintMultiTrackedDataView.iintMultiTrackedDataView(trackinfo), trackinfo.getName())
 
     def _saveResultsFile(self):
         self._saveResultsDialog.setName(self._control.proposeSaveFileName(""))
