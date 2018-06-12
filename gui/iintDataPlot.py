@@ -129,23 +129,29 @@ class iintDataPlot(QtGui.QDialog):
         xdata = datum.getData(self._motorName)
         ydata = datum.getData(self._observableName)
         if ( self._logScale ):
-            trimmeddata = np.clip(ydata, 10e-3, np.inf)
-            ydata = np.log10(trimmeddata)
-
+            ydata = np.log10(np.clip(ydata, 10e-3, np.inf))
         self.viewPart.clear()
         if( self._showraw):
             self._theDrawItem = self.viewPart.plot(xdata, ydata, pen=None, symbolPen='w', symbolBrush='w', symbol='+')
         if( self._showdespike ):
             despikeData = datum.getData(self._despObservableName)
+            if ( self._logScale ):
+                despikeData = np.log10(np.clip(despikeData, 10e-3, np.inf))
             self.viewPart.plot(xdata, despikeData, pen=None, symbolPen='y', symbolBrush='y', symbol='o')
         if( self._showbkg ):
             bkg = datum.getData(self._backgroundPointsName)
+            if ( self._logScale ):
+                bkg = np.log10(np.clip(bkg, 10e-3, np.inf))
             self.viewPart.plot(xdata, bkg, pen=None, symbolPen='r', symbolBrush='r', symbol='+')
         if( self._showbkgsubtracted ):
             signal = datum.getData(self._signalName)
+            if ( self._logScale ):
+                signal = np.log10(np.clip(signal, 10e-3, np.inf))
             self.viewPart.plot(xdata, signal, pen=None, symbolPen='b', symbolBrush='b', symbol='o')
         if( self._showsigfit ):
             fitdata = datum.getData(self._fittedSignalName)
+            if ( self._logScale ):
+                fitdata = np.log10(np.clip(fitdata, 10e-3, np.inf))
             self.viewPart.plot(xdata, fitdata, pen='r')
 
     def plotFit(self, ydata):
@@ -154,6 +160,8 @@ class iintDataPlot(QtGui.QDialog):
         if self._tmpFit != None:
             self._tmpFit.clear()
         self.viewPart.disableAutoRange()
+        if ( self._logScale ):
+            ydata = np.log10(np.clip(ydata, 10e-3, np.inf))
         self._tmpFit = self.viewPart.plot(xdata, ydata, pen='g') #, symbol='+')
 
     def removeGuess(self):
