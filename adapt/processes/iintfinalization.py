@@ -32,12 +32,14 @@ class iintfinalization(IProcess):
     def __init__(self, ptype="iintfinalization"):
         super(iintfinalization, self).__init__(ptype)
         self._namesPar = ProcessParameter("trackedData", list)
+        self._rawdataPar = ProcessParameter("specdataname", str)
         self._outfilenamePar = ProcessParameter("outfilename", str)
         self._pdfoutfilenamePar = ProcessParameter("pdffilename", str)
         self._pdfmotorPar = ProcessParameter("motor", str)
         self._pdfobservablePar = ProcessParameter("observable", str)
         self._pdffitresultPar = ProcessParameter("fitresult", str)
         self._parameters.add(self._namesPar)
+        self._parameters.add(self._rawdataPar)
         self._parameters.add(self._outfilenamePar)
         self._parameters.add(self._pdfoutfilenamePar)
         self._parameters.add(self._pdfmotorPar)
@@ -46,6 +48,7 @@ class iintfinalization(IProcess):
 
     def initialize(self):
         self._names = self._namesPar.get()
+        self._rawdata = self._rawdataPar.get()
         self._outfilename = self._outfilenamePar.get()
         self._pdfoutfilename = self._pdfoutfilenamePar.get()
         self._pdfmotor = self._pdfmotorPar.get()
@@ -63,7 +66,17 @@ class iintfinalization(IProcess):
         if len(self._trackedData) > 0:
             skip = True
         for name in self._names:
-            datum = data.getData(name)
+            try:
+                datum = data.getData(name)
+            except KeyError:
+                try:
+                    datum = data.getData(self._rawdata).getArray(name)
+                except KeyError:
+                    try:
+                        datum = data.getData(self._rawdata).getCustomVar(name)
+                    except: 
+                        print("Could not retrieve the data to track. Name: " + str(name))
+                        pass
             if name == "scannumber":
                 scannumber = int(datum)
             if isinstance(datum, np.ndarray):
@@ -84,7 +97,7 @@ class iintfinalization(IProcess):
                         self._trackedData.append(pname)
                         self._trackedData.append(pname + "_stderr")
             else:
-                tmpValues.append(datum)
+                tmpValues.append(float(datum))
                 if not skip:
                     self._trackedData.append(name)
         self._values.append(tmpValues)

@@ -160,7 +160,9 @@ class InteractiveP09ProcessingControl():
         self._processParameters["trapint"]["observable"] = self._signalName
         self._processParameters["trapint"]["output"] = self._trapintName
         # finalization: saving files
+        self._processParameters["finalize"]["specdataname"] = self._rawName
         self._processParameters["finalize"]["fitresult"] = self._fittedSignalName
+        
 
     def getRawDataName(self):
         return self._rawName
