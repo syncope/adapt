@@ -143,7 +143,7 @@ class iintObservableDefinition(QtGui.QWidget):
             self._trapintDict["type"] = "trapezoidintegration"
             self._trapintDict["motor"] = self._motorname
             self._trapintDict["observable"] = "signalObservable"
-            self._trapintDict["output"] = "trapint"
+            self._trapintDict["output"] = "trapezoidIntegral"
         
         self.observableDicts.emit(self._obsDict, self._despikeDict, self._trapintDict)
 
