@@ -80,6 +80,7 @@ class iintDataPlot(QtGui.QDialog):
         self._checkDataAvailability()
         if(action == "plotfit"):
             self.showFIT.setChecked(True)
+        self.plot()
 
     def passData(self, datalist, motorname, obsname, despobsname, bkgname, signalname, fittedsignalname):
         self._dataList = datalist
