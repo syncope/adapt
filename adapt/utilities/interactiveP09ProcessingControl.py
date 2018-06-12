@@ -421,6 +421,8 @@ class InteractiveP09ProcessingControl():
             fitresult = datum.getData(self._fittedSignalName)
             params = fitresult.params
             for param in params:
+                if "fwhm" in param:
+                    continue
                 try:
                     infoholder[params[param].name].append((params[param].value, params[param].stderr))
                 except KeyError:
@@ -458,6 +460,8 @@ class InteractiveP09ProcessingControl():
             fitresult = datum.getData(self._fittedSignalName)
             params = fitresult.params
             for param in params:
+                if "fwhm" in param:
+                    continue
                 try:
                     infoholder[params[param].name].append((params[param].value, params[param].stderr))
                 except KeyError:
@@ -466,7 +470,7 @@ class InteractiveP09ProcessingControl():
 
             value.append(datum.getData(self._rawName).getScanNumber())
             error.append(0.)
-
+        
         return trackedInformation(name, value, error, infoholder)
 
     def setResultFilename(self, filename):
