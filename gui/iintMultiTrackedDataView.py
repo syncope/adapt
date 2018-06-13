@@ -32,7 +32,8 @@ class iintMultiTrackedDataView(pg.GraphicsLayoutWidget):
         trackedDataErrors = trackinfo.error
         resultNames = trackinfo.names
         plotnumber = len(resultNames)
-
+        self.scene().sigMouseClicked.connect(self._mouseclick)
+        
         # divide the plotWidget - decision table how many plots per row
         plotsPerRow = 0
         if plotnumber < 4:
@@ -49,11 +50,27 @@ class iintMultiTrackedDataView(pg.GraphicsLayoutWidget):
         self.setWindowTitle(trackinfo.name)
 
         plotcounter = 0
+        self._plots = {}
         for paramname in resultNames:
-            p = self.addPlot(title=paramname, x=trackedDataValues, y=trackinfo.getValues(paramname), pen=None, symbolPen=None, symbolSize=10, symbolBrush=(255, 255, 255, 100))
+            self._plots[paramname] = self.addPlot(title=paramname, x=trackedDataValues, y=trackinfo.getValues(paramname), pen=None, symbolPen=None, symbolSize=10, symbolBrush=(255, 255, 255, 100))
             plotcounter += 1
             if ( plotcounter % plotsPerRow ) == 0:
                 self.nextRow()
                 plotcounter = 0
         self.show()
 
+    def _mouseclick(self, ev):
+        # check whether a point on a plot has been clicked
+        if isinstance(ev.currentItem, pg.graphicsItems.ScatterPlotItem.ScatterPlotItem):
+            ci = ev.currentItem
+            ci.sigClicked.connect(self._spotIt)
+            #~ print(" the ci has these functions: " + str(dir(ci)))
+        # effectively this means: double-click will call the appropriate function
+            #~ for plot in self._plots.items():
+                #~ print("plot " + str(plot[0]) + " is " + str(plot))
+                #~ print(" has items: " + str(plot[1].listDataItems()))
+
+    def _spotIt(self, spi, si):
+        # point position:
+        # si[0].pos()
+        pass
