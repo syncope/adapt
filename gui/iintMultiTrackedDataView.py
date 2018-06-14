@@ -24,6 +24,8 @@ import pyqtgraph as pg
 
 class iintMultiTrackedDataView(pg.GraphicsLayoutWidget):
 
+    pickedTrackedDataPoint = QtCore.pyqtSignal(str, float, float)
+
     def __init__(self, trackinfo, parent = None):
         super(iintMultiTrackedDataView, self).__init__(parent)
 
@@ -61,16 +63,17 @@ class iintMultiTrackedDataView(pg.GraphicsLayoutWidget):
 
     def _mouseclick(self, ev):
         # check whether a point on a plot has been clicked
+        # at second click the connection is activated
+        # effectively this means: double-click will call the appropriate function
         if isinstance(ev.currentItem, pg.graphicsItems.ScatterPlotItem.ScatterPlotItem):
             ci = ev.currentItem
             ci.sigClicked.connect(self._spotIt)
-            #~ print(" the ci has these functions: " + str(dir(ci)))
-        # effectively this means: double-click will call the appropriate function
-            #~ for plot in self._plots.items():
-                #~ print("plot " + str(plot[0]) + " is " + str(plot))
-                #~ print(" has items: " + str(plot[1].listDataItems()))
 
     def _spotIt(self, spi, si):
+        # called 
+        for plot in self._plots.items():
+            if spi in plot[1].vb.allChildren():
+                plotname = plot[0]
         # point position:
-        # si[0].pos()
-        pass
+        position= si[0].pos()
+        self.pickedTrackedDataPoint.emit(plotname, position.x(), position.y())
