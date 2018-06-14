@@ -113,6 +113,7 @@ class iintGUI(QtGui.QMainWindow):
         
         self.setGeometry(0,0,600,840)
         self._widgetList = []
+        self._trackedDataList = []
 
     def closeEvent(self, event):
         event.ignore()
@@ -277,7 +278,10 @@ class iintGUI(QtGui.QMainWindow):
         if( self._simpleImageView != None):
             self._simpleImageView.update("plotfit")
         fitresults = self._control.getDefaultSignalFitResults()
-        self.imageTabs.addTab(iintMultiTrackedDataView.iintMultiTrackedDataView(fitresults), fitresults.getName())
+        tdv = iintMultiTrackedDataView.iintMultiTrackedDataView(fitresults)
+        self._trackedDataList.append(tdv)
+        self.imageTabs.addTab(tdv, fitresults.getName())
+        tdv.pickedTrackedDataPoint.connect(self._setFocusToSpectrum)
         self.message(" ... done.\n")
 
     def _updateCurrentImage(self):
@@ -303,7 +307,10 @@ class iintGUI(QtGui.QMainWindow):
     def _showTracked(self, namelist):
         for name in namelist:
             trackinfo = self._control.getTrackInformation(name)
-            self.imageTabs.addTab(iintMultiTrackedDataView.iintMultiTrackedDataView(trackinfo), trackinfo.getName())
+            tdv = iintMultiTrackedDataView.iintMultiTrackedDataView(trackinfo)
+            self._trackedDataList.append(tdv)
+            self.imageTabs.addTab(tdv, trackinfo.getName())
+            tdv.pickedTrackedDataPoint.connect(self._setFocusToSpectrum)
 
     def _saveResultsFile(self):
         self._saveResultsDialog.setName(self._control.proposeSaveFileName(""))
