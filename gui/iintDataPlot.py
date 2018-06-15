@@ -73,8 +73,8 @@ class iintDataPlot(QtGui.QDialog):
         self._showbkg = False
         self._showbkgsubtracted = False
         self._showsigfit = False
-        
         self.viewPart.clear()
+        self.hide()
 
     def update(self, action=None):
         self._checkDataAvailability()
