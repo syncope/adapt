@@ -35,6 +35,9 @@ from adapt.processes import trapezoidintegration
 from adapt.processes import iintfinalization
 
 import numpy as np
+import datetime
+
+
 
 class InteractiveP09ProcessingControl():
     '''The central control object for interactive processing.
@@ -267,8 +270,11 @@ class InteractiveP09ProcessingControl():
         processDict = {}
         processDict["read"] = self.getSFRDict()
         processDict["observabledef"] = self.getOBSDict()
-        if processDict["observabledef"]["attenuationFactor_column"] == None:
-            del processDict["observabledef"]["attenuationFactor_column"]
+        try:
+            if processDict["observabledef"]["attenuationFactor_column"] == None:
+                del processDict["observabledef"]["attenuationFactor_column"]
+        except KeyError:
+            pass ## key is not present -- don't worry
         if not self._nodespike:
             execlist.append("despike")
             processDict["despike"] = self.getDESDict()
@@ -298,7 +304,7 @@ class InteractiveP09ProcessingControl():
         handler.writeConfig(filename, procconfig)
 
 
-    def proposeSaveFileName(self, suffix, number=None):
+    def proposeSaveFileName(self, suffix):
         # use the scanlist entries and the input spec file name
         try:
             import os.path
@@ -336,7 +342,7 @@ class InteractiveP09ProcessingControl():
             stridesuffix = "-s" + str(stride)
         else:
             stridesuffix = ''
-        return basename + "_S" + str(startnumber) + "E" + str(endnumber) + stridesuffix + suffix
+        return basename + "_S" + str(startnumber) + "E" + str(endnumber) + stridesuffix + suffix, datetime.datetime.now().strftime ("_%Y%m%d-%Hh%M")
 
     def getSFRDict(self):
         return self._processParameters["read"]
