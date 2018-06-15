@@ -24,7 +24,7 @@ import pyqtgraph as pg
 
 class iintMultiTrackedDataView(pg.GraphicsLayoutWidget):
 
-    pickedTrackedDataPoint = QtCore.pyqtSignal(str, float, float)
+    pickedTrackedDataPoint = QtCore.pyqtSignal(str, str, float, float)
 
     def __init__(self, trackinfo, parent = None):
         super(iintMultiTrackedDataView, self).__init__(parent)
@@ -48,8 +48,8 @@ class iintMultiTrackedDataView(pg.GraphicsLayoutWidget):
             plotsPerRow = 4
         else:
             plotsPerRow = 5
-
-        self.setWindowTitle(trackinfo.name)
+        self.title = trackinfo.name
+        self.setWindowTitle(self.title)
 
         plotcounter = 0
         self._plots = {}
@@ -73,7 +73,7 @@ class iintMultiTrackedDataView(pg.GraphicsLayoutWidget):
         # called 
         for plot in self._plots.items():
             if spi in plot[1].vb.allChildren():
-                plotname = plot[0]
+                paramname = plot[0]
         # point position:
         position= si[0].pos()
-        self.pickedTrackedDataPoint.emit(plotname, position.x(), position.y())
+        self.pickedTrackedDataPoint.emit(self.title, paramname, position.x(), position.y())

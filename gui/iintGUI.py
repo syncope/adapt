@@ -114,7 +114,11 @@ class iintGUI(QtGui.QMainWindow):
         
         self.setGeometry(0,0,600,840)
         self._widgetList = []
-        self._trackedDataList = []
+        self._trackedDataDict = {}
+
+    def _resetInternals(self):
+        del self._widgetList[:]
+        self._trackedDataDict.clear()
 
     def closeEvent(self, event):
         event.ignore()
@@ -144,6 +148,7 @@ class iintGUI(QtGui.QMainWindow):
         self._loggingBox.addText(text)
 
     def _resetAll(self):
+        self._resetInternals()
         self._simpleImageView.reset()
         self._fileInfo.reset()
         self._obsDef.reset()
@@ -279,10 +284,27 @@ class iintGUI(QtGui.QMainWindow):
             self._simpleImageView.update("plotfit")
         fitresults = self._control.getDefaultSignalFitResults()
         tdv = iintMultiTrackedDataView.iintMultiTrackedDataView(fitresults)
-        self._trackedDataList.append(tdv)
+        self._trackedDataDict[fitresults.getName()] = fitresults
         self.imageTabs.addTab(tdv, fitresults.getName())
-        #~ tdv.pickedTrackedDataPoint.connect(self._setFocusToSpectrum)
+        tdv.pickedTrackedDataPoint.connect(self._setFocusToSpectrum)
         self.message(" ... done.\n")
+
+    def _setFocusToSpectrum(self, title, name, xpos, ypos):
+        import math
+        import numpy as np
+        xvallist = self._trackedDataDict[title].getTrackedValues()
+        yvallist = [i[0] for i in self._trackedDataDict[title].getFitParameterValue(name)]
+        # this does not work ... 
+        #~ xindex = np.where(math.fabs(xvallist - xpos) < 0.00001)
+        #~ yindex = np.where(math.fabs(yvallist - ypos) < 0.00001)
+        #~ print(" x index: " + str(xindex) + " y index: " + str(yindex))
+        #~ values = self._trackedDataDict[name].getValues()
+        #~ print("picked " + str(name) + " with values: " + str(values))
+        
+        pass
+        #~ fitresult = retrieveFromName(name)
+        #~ elementnumber = find(fitresult(xpos, ypos)
+        #~ showSpectrum(elementnumber)
 
     def _updateCurrentImage(self):
         ydata = self._fitWidget.getCurrentFitData()
@@ -308,12 +330,14 @@ class iintGUI(QtGui.QMainWindow):
         for name in namelist:
             trackinfo = self._control.getTrackInformation(name)
             tdv = iintMultiTrackedDataView.iintMultiTrackedDataView(trackinfo)
-            self._trackedDataList.append(tdv)
+            self._trackedDataDict[trackinfo.getName()] = trackinfo
             self.imageTabs.addTab(tdv, trackinfo.getName())
             tdv.pickedTrackedDataPoint.connect(self._setFocusToSpectrum)
 
     def _saveResultsFile(self):
-        self._saveResultsDialog.setName(self._control.proposeSaveFileName(""))
+        name, timesuffix = self._control.proposeSaveFileName('')
+        self._saveResultsDialog.setName(name)
+        self._saveResultsDialog.setName(name+timesuffix)
         self._saveResultsDialog.show()
         return
 
