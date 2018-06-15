@@ -63,6 +63,7 @@ class iintGUI(QtGui.QMainWindow):
         # the quit dialog
         self._quit = quitDialog.QuitDialog()
         self._quit.quitandsave.clicked.connect(self._saveConfig)
+        self._quit.quitandsave.clicked.connect(exit)
         self._quit.justquit.clicked.connect(exit)
 
         # the core independent variable in iint:
@@ -157,11 +158,10 @@ class iintGUI(QtGui.QMainWindow):
         self._quit.show()
 
     def _saveConfig(self, num=None):
-        tempfilename = self._control.proposeSaveFileName(".icfg")
-        savename = QtGui.QFileDialog.getSaveFileName(self, 'Choose iint config file to save', tempfilename, "iint cfg files (*.icfg)")
-        if savename != '':
-            self._control.saveConfig(savename)
-            self.message("Saving config file " + str(savename) + ".")
+        savename, timesuffix  = self._control.proposeSaveFileName('')
+        self._control.saveConfig(savename+".icfg")
+        self._control.saveConfig(savename+timesuffix+".icfg")
+        self.message("Saved config file " + str(savename) + ".\n")
         return
 
     def _askReset(self):
@@ -281,7 +281,7 @@ class iintGUI(QtGui.QMainWindow):
         tdv = iintMultiTrackedDataView.iintMultiTrackedDataView(fitresults)
         self._trackedDataList.append(tdv)
         self.imageTabs.addTab(tdv, fitresults.getName())
-        tdv.pickedTrackedDataPoint.connect(self._setFocusToSpectrum)
+        #~ tdv.pickedTrackedDataPoint.connect(self._setFocusToSpectrum)
         self.message(" ... done.\n")
 
     def _updateCurrentImage(self):
