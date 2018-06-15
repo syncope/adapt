@@ -423,12 +423,16 @@ class InteractiveP09ProcessingControl():
         self.settingChoiceDesBkg()
 
     def getTrackInformation(self, name):
+        '''Collect the tracked data given by name.
+           Returns the name, value and error of the tracked parameter, 
+           plus a dictionary of the fitted parameters including their error.'''
         value, error = [], []
         infoholder = {}
         for datum in self._dataList:
             fitresult = datum.getData(self._fittedSignalName)
             params = fitresult.params
             for param in params:
+                # exclude the duplicate part for gauss/lorentz
                 if "fwhm" in param:
                     continue
                 try:
@@ -468,6 +472,7 @@ class InteractiveP09ProcessingControl():
             fitresult = datum.getData(self._fittedSignalName)
             params = fitresult.params
             for param in params:
+                # exclude the duplicate part for gauss/lorentz
                 if "fwhm" in param:
                     continue
                 try:
@@ -502,6 +507,9 @@ class trackedInformation():
     def getName(self):
         return self.name
 
+    def getTrackedValues(self):
+        return self.value
+
     def getValues(self, name):
         tmpval = []
         for val in self.values[name]:
@@ -514,3 +522,5 @@ class trackedInformation():
             tmpval.append(val[1])
         return np.array(tmpval)
 
+    def getFitParameterValue(self, name):
+        return self.values[name]
