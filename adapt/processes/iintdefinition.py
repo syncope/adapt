@@ -141,5 +141,5 @@ class iintdefinitionGUI(QtGui.QWidget):
         if self._useAttenuationFactor:
             self._iintDefDict["attenuationFactor_column"] = self._attF
         self._iintDefDict["observableoutput"] = "default"
-        self._iintDefDict["id"] = "id"
+        self._iintDefDict["id"] = "scannumber"
         self.pDict.emit(self._iintDefDict)
