@@ -54,6 +54,7 @@ class InteractiveP09ProcessingControl():
         self._notrapint = True
         self._motorName = ""
         self._rawName = "rawdata"
+        self._id = "scannumber"
         self._observableName = "observable"
         self._despObservableName = "despikedObservable"
         self._backgroundPointsName = "bkgPoints"
@@ -121,6 +122,7 @@ class InteractiveP09ProcessingControl():
         self._processParameters["observabledef"]["detector_column"] =  "exp_c01"
         self._processParameters["observabledef"]["monitor_column"] = "sumvfcs_counts"
         self._processParameters["observabledef"]["exposureTime_column"] = "exp_t01"
+        self._processParameters["observabledef"]["id"] = self._id
         
         # from out to in:
         self._processParameters["despike"]["input"] =  self._observableName
@@ -247,6 +249,14 @@ class InteractiveP09ProcessingControl():
         proc.initialize()
         proc.loopExecuteWithOverwrite(self._dataList, emitProgress=True)
 
+    def processAll(self, pDict):
+        if pDict is None:
+            return
+        proc = self._procBuilder.createProcessFromDictionary(pDict)
+        proc.initialize()
+        proc.loopExecuteWithOverwrite(self._dataList, emitProgress=True)
+        proc.finalize(self._dataList[0])
+
     def loadConfig(self, processConfig):
         self._procRunList.clear()
         execOrder = processConfig.getOrderOfExecution()
@@ -304,7 +314,7 @@ class InteractiveP09ProcessingControl():
         handler.writeConfig(filename, procconfig)
 
 
-    def proposeSaveFileName(self, suffix):
+    def proposeSaveFileName(self, suffix=''):
         # use the scanlist entries and the input spec file name
         try:
             import os.path
@@ -408,6 +418,10 @@ class InteractiveP09ProcessingControl():
             return self._processParameters["trapint"]
 
     def getFinalizingDict(self):
+        tdlist = self._processParameters["finalize"]["trackedData"]
+        #~ tdlist.append('scannumber')
+        print("the finalizing part: " + str(self._processParameters["finalize"]))
+        self._processParameters["finalize"]["trackedData"] = tdlist
         return self._processParameters["finalize"]
 
     def useBKG(self, value):
@@ -491,6 +505,7 @@ class InteractiveP09ProcessingControl():
         self._processParameters["finalize"]["pdffilename"] = filename
 
     def setTrackedData(self, namelist):
+        # where to put this, it always needs to be recorded !?
         self._processParameters["finalize"]["trackedData"] = namelist
 
 
