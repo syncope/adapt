@@ -76,7 +76,7 @@ class iintfinalization(IProcess):
                         datum = data.getData(self._rawdata).getCustomVar(name)
                     except: 
                         print("Could not retrieve the data to track. Name: " + str(name))
-                        pass
+                        continue
             if name == "scannumber":
                 scannumber = int(datum)
             if isinstance(datum, np.ndarray):
