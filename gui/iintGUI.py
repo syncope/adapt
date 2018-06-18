@@ -335,15 +335,13 @@ class iintGUI(QtGui.QMainWindow):
             tdv.pickedTrackedDataPoint.connect(self._setFocusToSpectrum)
 
     def _saveResultsFile(self):
-        name, timesuffix = self._control.proposeSaveFileName('')
-        self._saveResultsDialog.setName(name)
+        name, timesuffix = self._control.proposeSaveFileName()
         self._saveResultsDialog.setName(name+timesuffix)
         self._saveResultsDialog.show()
-        return
 
     def runOutputSaving(self):
         finalDict = self._control.getFinalizingDict()
 
         self.message("Saving results file ...")
-        self._control.createAndBulkExecute(finalDict)
+        self._control.processAll(finalDict)
         self.message(" ... done.\n")
