@@ -77,8 +77,6 @@ class iintfinalization(IProcess):
                     except: 
                         print("Could not retrieve the data to track. Name: " + str(name))
                         continue
-            if name == "scannumber":
-                scannumber = int(datum)
             if isinstance(datum, np.ndarray):
                 tmpValues.append(np.mean(datum))
                 tmpValues.append(np.std(datum))
@@ -102,6 +100,7 @@ class iintfinalization(IProcess):
                     self._trackedData.append(name)
         self._values.append(tmpValues)
 
+        scannumber = int(data.getData("scannumber"))
         observable = data.getData(self._pdfobservable)
         motor = data.getData(self._pdfmotor)
         fitresult = data.getData(self._pdffitresult)
