@@ -290,21 +290,24 @@ class iintGUI(QtGui.QMainWindow):
         self.message(" ... done.\n")
 
     def _setFocusToSpectrum(self, title, name, xpos, ypos):
+        # very special function; lots of assumptions
         import math
         import numpy as np
         xvallist = self._trackedDataDict[title].getTrackedValues()
         yvallist = [i[0] for i in self._trackedDataDict[title].getFitParameterValue(name)]
-        # this does not work ... 
-        #~ xindex = np.where(math.fabs(xvallist - xpos) < 0.00001)
-        #~ yindex = np.where(math.fabs(yvallist - ypos) < 0.00001)
-        #~ print(" x index: " + str(xindex) + " y index: " + str(yindex))
-        #~ values = self._trackedDataDict[name].getValues()
-        #~ print("picked " + str(name) + " with values: " + str(values))
-        
-        pass
-        #~ fitresult = retrieveFromName(name)
-        #~ elementnumber = find(fitresult(xpos, ypos)
-        #~ showSpectrum(elementnumber)
+        xindices = []
+        yindices = []
+        # since numpy does not provide a approximate 'where', iterate manually
+        for xval in xvallist:
+            if math.fabs(xval - xpos) < 0.00001:
+                xindices.append(xvallist.index(xval))
+        for yval in yvallist:
+            if math.fabs(yval - ypos) < 0.00001:
+                yindices.append(yvallist.index(yval))
+        if len(xindices) == 1 and len(yindices) == 1:
+            if xindices[0] == yindices[0]:
+                self._simpleImageView.setCurrentIndex(xindices[0])
+                self.imageTabs.setCurrentIndex(self.imageTabs.indexOf(self._simpleImageView))
 
     def _updateCurrentImage(self):
         ydata = self._fitWidget.getCurrentFitData()

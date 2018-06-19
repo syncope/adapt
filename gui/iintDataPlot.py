@@ -210,6 +210,10 @@ class iintDataPlot(QtGui.QDialog):
     def getCurrentIndex(self):
         return self._currentIndex
 
+    def setCurrentIndex(self, index):
+        self._currentIndex = index
+        self.plot()
+
     def getCurrentSignal(self):
         datum = self._dataList[self._currentIndex]
         return datum.getData(self._motorName), datum.getData(self._signalName)
