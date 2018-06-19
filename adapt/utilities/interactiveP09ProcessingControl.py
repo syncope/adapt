@@ -254,8 +254,8 @@ class InteractiveP09ProcessingControl():
             return
         proc = self._procBuilder.createProcessFromDictionary(pDict)
         proc.initialize()
-        proc.loopExecuteWithOverwrite(self._dataList, emitProgress=True)
-        proc.finalize(self._dataList[0])
+        proc.loopExecute(self._dataList, emitProgress=True)
+        proc.finalize(data=None)
 
     def loadConfig(self, processConfig):
         self._procRunList.clear()
@@ -305,14 +305,12 @@ class InteractiveP09ProcessingControl():
         processDict["signalcurvefit"] = self.getSIGDict()
         execlist.append("finalize")
         processDict["finalize"] = self.getFinalizingDict()
-
         procconfig = processingConfiguration.ProcessingConfiguration()
         procconfig.addProcessDefinition(processDict)
         procconfig.setOrderOfExecution(execlist)
         from adapt import configurationHandler
         handler = configurationHandler.ConfigurationHandler()
         handler.writeConfig(filename, procconfig)
-
 
     def proposeSaveFileName(self, suffix=''):
         # use the scanlist entries and the input spec file name
@@ -418,10 +416,8 @@ class InteractiveP09ProcessingControl():
             return self._processParameters["trapint"]
 
     def getFinalizingDict(self):
-        tdlist = self._processParameters["finalize"]["trackedData"]
-        #~ tdlist.append('scannumber')
-        print("the finalizing part: " + str(self._processParameters["finalize"]))
-        self._processParameters["finalize"]["trackedData"] = tdlist
+        tdl = ['scannumber', self._fittedSignalName] + self._processParameters["finalize"]["trackedData"]
+        self._processParameters["finalize"]["trackedData"] = tdl
         return self._processParameters["finalize"]
 
     def useBKG(self, value):
