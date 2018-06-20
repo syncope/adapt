@@ -70,7 +70,7 @@ class iintMultiTrackedDataView(pg.GraphicsLayoutWidget):
             ci.sigClicked.connect(self._spotIt)
 
     def _spotIt(self, spi, si):
-        # called 
+        # called from the mouseClick event after the point has been connected
         for plot in self._plots.items():
             if spi in plot[1].vb.allChildren():
                 paramname = plot[0]

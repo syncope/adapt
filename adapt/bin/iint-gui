@@ -21,7 +21,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 try:
-    import gui.iintGUI as iintGUI
+    from adapt.gui import iintGUI
 except ImportError:
     print("[iint-gui] Library not found. Exiting!")
     exit()

@@ -27,19 +27,19 @@ from adapt.utilities import interactiveP09ProcessingControl
 from adapt.utilities import getUIFile
 from adapt.processes import specfilereader
 
-from gui import iintDataPlot
-from gui import fileInfo
-from gui import iintObservableDefinition
-from gui import iintBackgroundHandling
-from gui import iintSignalHandling
-from gui import iintTrackedDataChoice
-from gui import quitDialog
-from gui import loggerBox
-from gui import resetDialog
-from gui import showFileContents
-from gui import iintMultiTrackedDataView
-from gui import iintInspectAnalyze
-from gui import selectResultOutput
+from . import iintDataPlot
+from . import fileInfo
+from . import iintObservableDefinition
+from . import iintBackgroundHandling
+from . import iintSignalHandling
+from . import iintTrackedDataChoice
+from . import quitDialog
+from . import loggerBox
+from . import resetDialog
+from . import showFileContents
+from . import iintMultiTrackedDataView
+from . import iintInspectAnalyze
+from . import selectResultOutput
 
 __version__ ="0.0.5alpha"
 

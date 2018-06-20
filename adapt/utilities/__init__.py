@@ -21,7 +21,7 @@
 
 def getUIFile(uifile):
     import os
-    import gui.ui as ui
+    import adapt.gui.ui as ui
     dir_path = os.path.dirname(os.path.realpath(ui.uifilebase))
     formfile = os.path.join(dir_path, uifile)
     return formfile
