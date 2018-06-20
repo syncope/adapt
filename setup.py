@@ -43,7 +43,6 @@ setup(
     packages=['adapt',],
     
     package_dir = { 'adapt':'adapt',},
-    
     include_package_data=True,
     
     

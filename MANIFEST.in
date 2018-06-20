@@ -1,0 +1,8 @@
+include LICENSE
+include COPYRIGHT
+include adapt/gui/ui/__init__.py
+recursive-include adapt/gui/ui *.ui 
+recursive-include adapt/gui *.py
+include adapt/bin/adapt
+include adapt/bin/iint-gui
+
