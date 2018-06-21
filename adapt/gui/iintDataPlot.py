@@ -204,7 +204,7 @@ class iintDataPlot(QtGui.QDialog):
 
     def decrementCurrentScanID(self):
         self._currentIndex -= 1
-        if ( self._currentIndex < (-1)*len(self._dataList) ):
+        if ( self._currentIndex < 0  ):
             self._currentIndex += len(self._dataList)
         self.currentIndex.emit(self._currentIndex)
         self.plot()
@@ -228,6 +228,10 @@ class iintDataPlot(QtGui.QDialog):
 
     def _blacklisting(self):
         ci = self._currentIndex
+        if ci < 0:
+            ci = len(self._dataList) + ci
+        elif ci > len(self._dataList):
+            ci -= len(self._dataList)
         if ci in self._blacklist:
             i = self._blacklist.index(ci)
             del self._blacklist[i]
