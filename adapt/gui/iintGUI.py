@@ -357,4 +357,5 @@ class iintGUI(QtGui.QMainWindow):
                 self.imageTabs.removeTab(tab)
         for k,v  in self._trackedDataDict.items():
             tdv = iintMultiTrackedDataView.iintMultiTrackedDataView(v, blacklist)
+            tdv.pickedTrackedDataPoint.connect(self._setFocusToSpectrum)
             self.imageTabs.addTab(tdv, k)
