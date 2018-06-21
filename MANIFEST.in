@@ -1,6 +1,9 @@
 include LICENSE
 include COPYRIGHT
 include adapt/gui/ui/__init__.py
+recursive-include adapt/processes *.py
+recursive-include adapt/processes/ui *.ui
+recursive-include adapt/utilities *.py
 recursive-include adapt/gui/ui *.ui 
 recursive-include adapt/gui *.py
 include adapt/bin/adapt
