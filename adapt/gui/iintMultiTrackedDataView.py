@@ -20,18 +20,26 @@
 
 from PyQt4 import QtCore, QtGui, uic
 import pyqtgraph as pg
-
+import numpy as np
 
 class iintMultiTrackedDataView(pg.GraphicsLayoutWidget):
 
     pickedTrackedDataPoint = QtCore.pyqtSignal(str, str, float, float)
 
-    def __init__(self, trackinfo, parent = None):
+    def __init__(self, trackinfo, blacklist=[], parent = None):
         super(iintMultiTrackedDataView, self).__init__(parent)
 
         # check the number of plots
-        trackedDataValues = trackinfo.value
-        trackedDataErrors = trackinfo.error
+        trackedDataValues = np.array(trackinfo.value)
+        trackedDataErrors = np.array(trackinfo.error)
+        
+        # remove elements from list by creating and applying a mask
+        if blacklist != []:
+            blackmask = np.ones(len(trackedDataValues), dtype=bool)
+            blackindices = np.array(blacklist)
+            blackmask[blackindices] = False
+            trackedDataValues = trackedDataValues[blackmask]
+            trackedDataErrors = trackedDataErrors[blackmask]
         resultNames = trackinfo.names
         plotnumber = len(resultNames)
         self.scene().sigMouseClicked.connect(self._mouseclick)
@@ -54,7 +62,10 @@ class iintMultiTrackedDataView(pg.GraphicsLayoutWidget):
         plotcounter = 0
         self._plots = {}
         for paramname in resultNames:
-            self._plots[paramname] = self.addPlot(title=paramname, x=trackedDataValues, y=trackinfo.getValues(paramname), pen=None, symbolPen=None, symbolSize=10, symbolBrush=(255, 255, 255, 100))
+            yvalues = np.array(trackinfo.getValues(paramname))
+            if blacklist != []:
+                yvalues = yvalues[blackmask]
+            self._plots[paramname] = self.addPlot(title=paramname, x=trackedDataValues, y=yvalues, pen=None, symbolPen=None, symbolSize=10, symbolBrush=(255, 255, 255, 100))
             plotcounter += 1
             if ( plotcounter % plotsPerRow ) == 0:
                 self.nextRow()

@@ -74,7 +74,7 @@ class iintGUI(QtGui.QMainWindow):
         self.imageTabs.removeTab(0)
         self.imageTabs.hide()
         self._simpleImageView = iintDataPlot.iintDataPlot(parent=self)
-        #~ self._simpleImageView.mouseposition.connect(print)
+        self._simpleImageView.blacklist.connect(self._retrackDataDisplay)
 
         self._resetQuestion = resetDialog.ResetDialog()
         self._resetQuestion.resetOK.connect(self._resetAll)
@@ -282,10 +282,10 @@ class iintGUI(QtGui.QMainWindow):
         self._control.createAndBulkExecute(self._control.getSignalFitDict())
         if( self._simpleImageView != None):
             self._simpleImageView.update("plotfit")
-        fitresults = self._control.getDefaultSignalFitResults()
-        tdv = iintMultiTrackedDataView.iintMultiTrackedDataView(fitresults)
-        self._trackedDataDict[fitresults.getName()] = fitresults
-        self.imageTabs.addTab(tdv, fitresults.getName())
+        trackinfo = self._control.getDefaultTrackInformation()
+        tdv = iintMultiTrackedDataView.iintMultiTrackedDataView(trackinfo)
+        self._trackedDataDict[trackinfo.getName()] = trackinfo
+        self.imageTabs.addTab(tdv, trackinfo.getName())
         tdv.pickedTrackedDataPoint.connect(self._setFocusToSpectrum)
         self.message(" ... done.\n")
 
@@ -348,3 +348,13 @@ class iintGUI(QtGui.QMainWindow):
         self.message("Saving results file ...")
         self._control.processAll(finalDict)
         self.message(" ... done.\n")
+
+    def _retrackDataDisplay(self, blacklist):
+        # if the blacklist has been changed, re-display the tracked data
+        ivtab = self.imageTabs.indexOf(self._simpleImageView)
+        for tab in range(self.imageTabs.count()):
+            if tab != ivtab:
+                self.imageTabs.removeTab(tab)
+        for k,v  in self._trackedDataDict.items():
+            tdv = iintMultiTrackedDataView.iintMultiTrackedDataView(v, blacklist)
+            self.imageTabs.addTab(tdv, k)

@@ -474,7 +474,7 @@ class InteractiveP09ProcessingControl():
             pass
         return resultlist
 
-    def getDefaultSignalFitResults(self):
+    def getDefaultTrackInformation(self):
         value, error = [], []
         infoholder = {}
         name = 'ScanNumber'
