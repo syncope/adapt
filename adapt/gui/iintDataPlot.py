@@ -28,6 +28,7 @@ from adapt.utilities import getUIFile
 class iintDataPlot(QtGui.QDialog):
     #~ mouseposition = QtCore.pyqtSignal(float,float)
     currentIndex = QtCore.pyqtSignal(int)
+    blacklist = QtCore.pyqtSignal(list)
 
     def __init__(self, parent=None):
         super(iintDataPlot, self).__init__(parent)
@@ -47,6 +48,9 @@ class iintDataPlot(QtGui.QDialog):
         self.showFIT.stateChanged.connect(self.plot)
         self.logScale.stateChanged.connect(self.plot)
         self.viewPart.scene().sigMouseClicked.connect(self.mouse_click)
+        self.blacklistButton.clicked.connect(self._blacklisting)
+        self._setBLB2Add()
+        self._blacklist = []
         self._currentIndex = 0
         self.currentIndex.emit(self._currentIndex)
         self._showraw = True
@@ -125,7 +129,11 @@ class iintDataPlot(QtGui.QDialog):
 
     def plot(self):
         datum = self._dataList[self._currentIndex]
-
+        if( self._currentIndex in self._blacklist):
+            self._setBLB2Rm()
+        else:
+            self._setBLB2Add()
+        
         self.showID.setText(str(datum.getData("scannumber")))
         xdata = datum.getData(self._motorName)
         ydata = datum.getData(self._observableName)
@@ -217,3 +225,23 @@ class iintDataPlot(QtGui.QDialog):
     def getCurrentSignal(self):
         datum = self._dataList[self._currentIndex]
         return datum.getData(self._motorName), datum.getData(self._signalName)
+
+    def _blacklisting(self):
+        ci = self._currentIndex
+        if ci in self._blacklist:
+            i = self._blacklist.index(ci)
+            del self._blacklist[i]
+            self._setBLB2Add()
+        else:
+            self._blacklist.append(ci)
+            self._setBLB2Rm()
+        self.blacklist.emit(self._blacklist)
+
+    def _setBLB2Add(self):
+        self.blacklistButton.setStyleSheet("color: white;background-color: green;")
+        self.blacklistButton.setText("Add to blacklist")
+
+    def _setBLB2Rm(self):
+        self.blacklistButton.setStyleSheet("color: yellow;background-color: red;")
+        self.blacklistButton.setText("Remove from blacklist")
+
