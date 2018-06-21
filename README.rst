@@ -1,4 +1,4 @@
-ADAPT: a data processing toolkit
+ADAPT: A DAta Processing Toolkit
 --------------------------------
 
 Formally it is a library that can be used to execute pre-defined processes by providing a yaml-style configuration file.
