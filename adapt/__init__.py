@@ -26,3 +26,5 @@ from . import processBuilder
 from . import processingConfiguration
 from . import processingControl
 from . import valueMap
+
+__version__ = '0.3.1'
