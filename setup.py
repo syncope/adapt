@@ -45,7 +45,7 @@ setup(
     package_dir = { 'adapt':'adapt',},
     include_package_data=True,
 
-    scripts = ['bin/adapt','bin/iint-gui'],
+    scripts = ['adapt/bin/adapt','adapt/bin/iint-gui'],
     
     
     cmdclass={'build_sphinx': BuildDoc,},
