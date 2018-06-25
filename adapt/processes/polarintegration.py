@@ -18,7 +18,11 @@
 
 # this is a first shot at an azimuthal integrator based on pyFAI
 
-import pyFAI
+try:
+    import pyFAI
+except ImportError:
+    print("pyFAI is not installed, azimuthal integration is not available.")
+    pass
 
 from adapt.iProcess import *
 

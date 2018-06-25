@@ -19,7 +19,11 @@
 # special for p09: collect and output results
 
 import numpy as np
-import lmfit
+try:
+    import lmfit
+except ImportError:
+    print("lmfit package is not available, please install.")
+    pass
 
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages

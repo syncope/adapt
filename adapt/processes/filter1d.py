@@ -19,7 +19,12 @@
 
 # 1d filtering process -- signal shaping
 
-import scipy.signal
+try:
+    import scipy.signal
+except ImportError:
+    print("Filtering depends on scipy, which is not available. Please install.")
+    pass()
+
 import numpy as np
 
 from adapt.iProcess import *

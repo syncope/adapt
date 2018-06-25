@@ -1,4 +1,4 @@
-# Copyright (C) 2017  Christoph Rosemann, DESY, Notkestr. 85, D-22607 Hamburg
+# Copyright (C) 2017-8  Christoph Rosemann, DESY, Notkestr. 85, D-22607 Hamburg
 # email contact: christoph.rosemann@desy.de
 #
 # This program is free software; you can redistribute it and/or
@@ -19,7 +19,11 @@
 # this is the abstract definition of the persistency of configuration
 # currently only one method is foreseen, but maybe this wil change
 
-import yaml
+try:
+    import yaml
+except ImportError:
+    print("The yaml library is required, please install it on the system.")
+    exit()
 
 from . import iConfigurationHandler
 from . import processingConfiguration

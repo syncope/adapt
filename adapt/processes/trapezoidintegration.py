@@ -20,7 +20,11 @@
 
 import numpy as np
 from math import fabs
-from scipy.interpolate import interp1d
+try:
+    from scipy.interpolate import interp1d
+except ImportError:
+    print("Trapezoidal integration needs scipy for interpolation; which is missing. Please install.")
+    pass
 
 from adapt.iProcess import *
 
