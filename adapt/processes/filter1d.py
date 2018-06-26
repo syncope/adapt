@@ -23,7 +23,7 @@ try:
     import scipy.signal
 except ImportError:
     print("Filtering depends on scipy, which is not available. Please install.")
-    pass()
+    pass
 
 import numpy as np
 

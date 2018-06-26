@@ -21,11 +21,11 @@
 from adapt import iProcess
 
 
-class $NAMEdef(iProcess.IProcessDefinition):
+class XYZdef(iProcess.IProcessDefinition):
 
     def __init__(self):
-        super($NAMEdef, self).__init__()
-        self._ptype = "$NAME"
+        super(XYZdef, self).__init__()
+        self._ptype = "XYZ"
         #~ self.createParameter("@@@@@@@", "STRING")
         #~ self.createParameter("@@@@@@@", "INT")
         #~ self.createParameter("@@@@@@@", "FLOAT")
@@ -36,10 +36,10 @@ class $NAMEdef(iProcess.IProcessDefinition):
         #~ self.createParameter("@@@@@@@", "BOOLLIST")
         #~ self.createParameter("@@@@@@@", "STRING", optional=True)
 
-class $NAME(iProcess.IProcess):
+class XYZ(iProcess.IProcess):
 
     def __init__(self, procDef):
-        super($NAME, self).__init__(procDef)
+        super(XYZ, self).__init__(procDef)
 
     def initialize(self):
         pass
