@@ -1,0 +1,13 @@
+#!/usr/bin/make -f
+
+override_dh_auto_build:
+
+override_dh_auto_install:
+	python3  setup.py install --no-compile --install-layout=deb --root=$(shell pwd)/debian/tmp
+	mkdir -p debian/python3-adapt/usr/bin/
+	ln -s debian/python3-adapt/usr/lib/python3/dist-packages/adapt/bin/adapt debian/python3-adapt/usr/bin/adapt
+	ln -s debian/python3-adapt/usr/lib/python3/dist-packages/adapt/bin/iint-gui debian/python3-adapt/usr/bin/iint-gui
+
+
+%:
+	dh $@ --with python3
