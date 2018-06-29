@@ -134,10 +134,9 @@ class iintGUI(QtGui.QMainWindow):
         except AttributeError:
             self.message("Can't show config file, since none is present.\n")
 
-
     def _showSpecFile(self):
         try:
-            self._widgetList.append(showFileContents(open(self._sfrGUI.getParameterDict()["filename"]).read()))
+            self._widgetList.append(showFileContents.ShowFileContents(open(self._sfrGUI.getParameterDict()["filename"]).read()))
         except TypeError:
             self.message("Can't show spec file, since none has been selected yet.\n")
         return
