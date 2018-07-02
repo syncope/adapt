@@ -41,7 +41,7 @@ from . import iintMultiTrackedDataView
 from . import iintInspectAnalyze
 from . import selectResultOutput
 
-__version__ ="0.0.5alpha"
+__version__ ="0.3.3"
 
 class iintGUI(QtGui.QMainWindow):
     
@@ -73,6 +73,7 @@ class iintGUI(QtGui.QMainWindow):
         self.imageTabs.removeTab(1)
         self.imageTabs.removeTab(0)
         self.imageTabs.hide()
+        self.imageTabs.tabCloseRequested.connect(self.imageTabs.removeTab)
         self._simpleImageView = iintDataPlot.iintDataPlot(parent=self)
         self._simpleImageView.blacklist.connect(self._retrackDataDisplay)
         self._blacklist = []
@@ -121,6 +122,12 @@ class iintGUI(QtGui.QMainWindow):
         del self._widgetList[:]
         self._trackedDataDict.clear()
 
+    def resetTabs(self):
+        while self.imageTabs.count() >= 1:
+            for tab in range(self.imageTabs.count()):
+                self.imageTabs.removeTab(tab)
+        self.imageTabs.hide()
+
     def closeEvent(self, event):
         event.ignore()
         self._closeApp()
@@ -163,6 +170,7 @@ class iintGUI(QtGui.QMainWindow):
         self._bkgHandling.reset()
         self._signalHandling.reset()
         self._control.resetAll()
+        self.resetTabs()
 
     def _closeApp(self):
         for i in self._widgetList:
