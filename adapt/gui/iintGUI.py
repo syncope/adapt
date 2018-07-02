@@ -141,6 +141,14 @@ class iintGUI(QtGui.QMainWindow):
             self.message("Can't show spec file, since none has been selected yet.\n")
         return
 
+    def _showResultsFile(self):
+        #~ try:
+            #~ self._widgetList.append(showFileContents.ShowFileContents(open(self._sfrGUI.getParameterDict()["filename"]).read()))
+        #~ except TypeError:
+            #~ self.message("Can't show spec file, since none has been selected yet.\n")
+        return
+        
+
     def _showFitResults(self):
         self._widgetList.append(showFileContents.ShowFileContents(''.join(self._control.getSignalFitResults())))
         
@@ -205,8 +213,9 @@ class iintGUI(QtGui.QMainWindow):
     def runFileReader(self):
         filereaderdict = self._sfrGUI.getParameterDict()
         self._fileInfo.setNames(filereaderdict["filename"], filereaderdict["scanlist"])
+        self._control.setSpecFile(filereaderdict["filename"],filereaderdict["scanlist"])
         self.message("Reading spec file: " + str(filereaderdict["filename"]))
-
+        
         sfr = self._control.createAndInitialize(filereaderdict)
         self._control.createDataList(sfr.getData(), self._control.getRawDataName())
         # to set the displayed columns etc. one element of the selected data is needed

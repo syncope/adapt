@@ -374,6 +374,10 @@ class InteractiveP09ProcessingControl():
         except KeyError:
             return {}
 
+    def setSpecFile(self, name, scanlist):
+        self._processParameters["read"]["filename"] = name
+        self._processParameters["read"]["scanlist"] = scanlist
+
     def setBkgModel(self, modelname):
         if modelname == "linearModel":
             self._processParameters["bkgfit"]["model"] = { "linbkg_" : {"modeltype" : modelname}}
