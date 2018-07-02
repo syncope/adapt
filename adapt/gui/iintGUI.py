@@ -41,7 +41,7 @@ from . import iintMultiTrackedDataView
 from . import iintInspectAnalyze
 from . import selectResultOutput
 
-__version__ ="0.0.5alpha"
+__version__ ="0.3.3"
 
 class iintGUI(QtGui.QMainWindow):
     
