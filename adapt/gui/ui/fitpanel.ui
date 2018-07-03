@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>224</width>
-    <height>216</height>
+    <height>218</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -52,6 +52,9 @@
           </item>
           <item>
            <widget class="QPushButton" name="configureFirst">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="text">
              <string>Configure</string>
             </property>
@@ -212,6 +215,9 @@
           </item>
           <item>
            <widget class="QPushButton" name="performFitPushBtn">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="text">
              <string>Fit</string>
             </property>

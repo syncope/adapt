@@ -41,10 +41,11 @@ class iintBackgroundHandling(QtGui.QWidget):
         #~ self.linearBkg.toggled.connect(self._setModel)
         self.constBkg.toggled.connect(self._setModel)
         self.fitBkg.clicked.connect(self.emittem)
-        self.fitBkg.setDisabled(True)
         self._noBKG = True
         self.useBkg.stateChanged.connect(self._toggle)
         self.setParameterDicts(pDicts)
+        self.fitBkg.setDisabled(True)
+        self._noBKG = False
 
     def reset(self):
         self._selectParDict = {}
@@ -53,6 +54,10 @@ class iintBackgroundHandling(QtGui.QWidget):
         self._subtractParDict = {}
         self.bkgStartPointsSB.setValue(3)
         self.bkgEndPointsSB.setValue(3)
+        self.fitBkg.setDisabled(True)
+
+    def activate(self):
+        self.fitBkg.setDisabled(False)
 
     def _toggle(self):
         self._noBKG = not self._noBKG

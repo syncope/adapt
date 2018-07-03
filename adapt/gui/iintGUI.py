@@ -238,6 +238,7 @@ class iintGUI(QtGui.QMainWindow):
         # pass info to the observable definition part
         self._obsDef.passInfo(self._rawdataobject)
         self.message("... done.\n")
+        self._bkgHandling.activate()
 
     def runObservable(self, obsDict, despDict):
         self.message("Computing the observable...")
