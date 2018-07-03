@@ -130,7 +130,7 @@ class InteractiveP09ProcessingControl():
         self._processParameters["despike"]["output"] =  self._despObservableName
         # from out to in
         self._processParameters["bkgselect"]["input"] = [ self._despObservableName, self._motorName]
-        self._processParameters["bkgselect"]["output"] =  ["bkgX" ,"bkgY"]
+        self._processParameters["bkgselect"]["output"] =  ["bkgY" ,"bkgX"]
         self._processParameters["bkgselect"]["selectors"] =  ["selectfromstart" ,"selectfromend"]
         self._processParameters["bkgselect"]["startpointnumber"] =  3
         self._processParameters["bkgselect"]["endpointnumber"] =  3
