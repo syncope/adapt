@@ -41,7 +41,7 @@ from . import iintMultiTrackedDataView
 from . import iintInspectAnalyze
 from . import selectResultOutput
 
-__version__ ="0.3.3"
+__version__ ="0.3.5"
 
 class iintGUI(QtGui.QMainWindow):
     
@@ -119,8 +119,23 @@ class iintGUI(QtGui.QMainWindow):
         self._trackedDataDict = {}
 
     def _resetInternals(self):
+        self._motorname = ""
         del self._widgetList[:]
         self._trackedDataDict.clear()
+        self._rawdataobject = None
+        del self._blacklist[:]
+        del self._fitList[:]
+
+    def _resetAll(self):
+        self._resetInternals()
+        self._simpleImageView.reset()
+        self._fileInfo.reset()
+        self._obsDef.reset()
+        self._bkgHandling.reset()
+        self._signalHandling.reset()
+        self._control.resetAll()
+        self._sfrGUI.reset()
+        self.resetTabs()
 
     def resetTabs(self):
         while self.imageTabs.count() >= 1:
@@ -161,16 +176,6 @@ class iintGUI(QtGui.QMainWindow):
         
     def message(self, text):
         self._loggingBox.addText(text)
-
-    def _resetAll(self):
-        self._resetInternals()
-        self._simpleImageView.reset()
-        self._fileInfo.reset()
-        self._obsDef.reset()
-        self._bkgHandling.reset()
-        self._signalHandling.reset()
-        self._control.resetAll()
-        self.resetTabs()
 
     def _closeApp(self):
         for i in self._widgetList:
