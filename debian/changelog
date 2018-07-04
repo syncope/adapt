@@ -1,3 +1,10 @@
+adapt (0.3.6-2+deb8u10~fsec) jessie; urgency=low
+
+  * Anyone, anything? 
+
+ -- Christoph Rosemann <christoph.rosemann@desy.de>  Wed, 04 Jul 2018 17:00:00 +0200
+
+
 adapt (0.3.6-1+deb8u10~fsec) jessie; urgency=low
 
   * Getting lost in the maze of the debian packaging nightmare.
