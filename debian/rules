@@ -2,11 +2,15 @@
 
 override_dh_auto_build:
 
+
+override_dh_auto_clean:
+	dh_auto_clean
+	rm -rf build
+
 override_dh_auto_install:
 	python3  setup.py install --no-compile --install-layout=deb --root=$(shell pwd)/debian/tmp
 
-	mv debian/tmp/usr/lib/python3/dist-packages/adapt/bin/adapt debian/tmp/usr/bin/adapt
-	mv debian/tmp/usr/lib/python3/dist-packages/adapt/bin/iint-gui debian/tmp/usr/bin/iint-gui
+	dh_auto_install
 
 
 %:
