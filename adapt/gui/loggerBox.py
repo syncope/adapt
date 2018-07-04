@@ -29,5 +29,6 @@ class LoggerBox(QtGui.QWidget):
         uic.loadUi(getUIFile("logBOX.ui"), self)
 
     def addText(self,text):
-        self.messageWindow.insertPlainText(text)
+        self.messageWindow.appendPlainText(text)
+        #~ self.messageWindow.insertPlainText(text)
 
