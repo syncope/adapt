@@ -29,7 +29,7 @@ class iintInspectAnalyze(QtGui.QWidget):
         super(iintInspectAnalyze, self).__init__(parent)
         uic.loadUi(getUIFile("inspectAnalyze.ui"), self)
 
-    def activateButtons(self):
+    def activate(self):
         self.trackData.setDisabled(False)
         self.saveResults.setDisabled(False)
 

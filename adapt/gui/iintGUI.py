@@ -238,7 +238,6 @@ class iintGUI(QtGui.QMainWindow):
         # pass info to the observable definition part
         self._obsDef.passInfo(self._rawdataobject)
         self.message("... done.\n")
-        self._bkgHandling.activate()
 
     def runObservable(self, obsDict, despDict):
         self.message("Computing the observable...")
@@ -250,6 +249,8 @@ class iintGUI(QtGui.QMainWindow):
         self.message(" and plotting ...")
         self.plotit()
         self.message(" done.\n")
+        self._bkgHandling.activate()
+        self._signalHandling.activate()
 
     def runBkgProcessing(self, selDict, fitDict, calcDict, subtractDict):
         self.message("Fitting background ...")
@@ -311,6 +312,7 @@ class iintGUI(QtGui.QMainWindow):
         self.imageTabs.addTab(tdv, trackinfo.getName())
         tdv.pickedTrackedDataPoint.connect(self._setFocusToSpectrum)
         self.message(" ... done.\n")
+        self._inspectAnalyze.activate()
 
     def _setFocusToSpectrum(self, title, name, xpos, ypos):
         # very special function; lots of assumptions
