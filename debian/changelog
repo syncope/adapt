@@ -1,3 +1,10 @@
+adapt (0.3.6-1+deb8u10~fsec) jessie; urgency=low
+
+  * Getting lost in the maze of the debian packaging nightmare.
+
+ -- Christoph Rosemann <christoph.rosemann@desy.de>  Wed, 04 Jul 2018 16:51:00 +0200
+
+
 adapt (0.3.5-5+deb8u10~fsec) jessie; urgency=low
 
   * Wrong python version before -- fixed and fingers crossed.
