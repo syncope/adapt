@@ -2,35 +2,35 @@ adapt (0.3.5-5+deb8u10~fsec) jessie; urgency=low
 
   * Wrong python version before -- fixed and fingers crossed.
 
- -- Christoph Rosemann <christoph.rosemann@desy.de>  Wed, 03 Jul 2018 15:10:00 +0200
+ -- Christoph Rosemann <christoph.rosemann@desy.de>  Wed, 04 Jul 2018 15:10:00 +0200
 
 
 adapt (0.3.5-4+deb8u10~fsec) jessie; urgency=low
 
   * Still trying to get the symbolic link to executable to work.
 
- -- Christoph Rosemann <christoph.rosemann@desy.de>  Wed, 03 Jul 2018 14:44:00 +0200
+ -- Christoph Rosemann <christoph.rosemann@desy.de>  Wed, 04 Jul 2018 14:44:00 +0200
 
 
 adapt (0.3.5-3+deb8u10~fsec) jessie; urgency=low
 
   * Another try to get the symbolic link to executable to work.
 
- -- Christoph Rosemann <christoph.rosemann@desy.de>  Wed, 03 Jul 2018 14:27:00 +0200
+ -- Christoph Rosemann <christoph.rosemann@desy.de>  Wed, 04 Jul 2018 14:27:00 +0200
 
 
 adapt (0.3.5-2+deb8u10~fsec) jessie; urgency=low
 
   * Try to get the symbolic link to executable to work.
 
- -- Christoph Rosemann <christoph.rosemann@desy.de>  Wed, 03 Jul 2018 14:00:00 +0200
+ -- Christoph Rosemann <christoph.rosemann@desy.de>  Wed, 04 Jul 2018 14:00:00 +0200
 
 
 adapt (0.3.5-1+deb8u10~fsec) jessie; urgency=low
 
   * Bugfixes on the road to a first production release.
 
- -- Christoph Rosemann <christoph.rosemann@desy.de>  Wed, 03 Jul 2018 13:37:00 +0200
+ -- Christoph Rosemann <christoph.rosemann@desy.de>  Wed, 04 Jul 2018 13:37:00 +0200
 
 
 adapt (0.3.2-1+deb8u10~fsec) jessie; urgency=low
