@@ -100,18 +100,41 @@ class InteractiveP09ProcessingControl():
         self._setupProcessParameters()
         self._setupDefaultNames()
 
+    def resetRAWdata(self):
+        for elem in self._dataList:
+            try:
+                elem.clearCurrent(self._rawName)
+            except KeyError:
+                pass
+
+    def resetOBSdata(self):
+        for elem in self._dataList:
+            try:
+                elem.clearCurrent(self._observableName)
+            except KeyError:
+                pass
+
     def resetBKGdata(self):
         for elem in self._dataList:
-            elem.clearCurrent(self._backgroundPointsName)
+            try:
+                elem.clearCurrent(self._backgroundPointsName)
+            except KeyError:
+                pass
 
     def resetSIGdata(self):
         for elem in self._dataList:
-            elem.clearCurrent(self._signalName)
+            try:
+                elem.clearCurrent(self._signalName)
+            except KeyError:
+                pass
 
     def resetFITdata(self):
         for elem in self._dataList:
-            elem.clearCurrent(self._fittedSignalName)
-            elem.clearCurrent(self._fitSignalPointsName)
+            try:
+                elem.clearCurrent(self._fittedSignalName)
+                elem.clearCurrent(self._fitSignalPointsName)
+            except KeyError:
+                pass
 
     def _setupProcessParameters(self):
         self._processParameters["read"] = specfilereader.specfilereader().getProcessDictionary()
@@ -246,6 +269,14 @@ class InteractiveP09ProcessingControl():
             pd = processData.ProcessData()
             pd.addData(name, datum)
             self._dataList.append(pd)
+
+    def checkDataIntegrity(self, motor):
+        error = False
+        for datum in self._dataList:
+            if motor != datum.getData(self.getRawDataName()).getMotorName():
+                error = True
+                break
+        return error
 
     def getDataList(self):
         return self._dataList

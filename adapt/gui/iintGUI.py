@@ -181,6 +181,9 @@ class iintGUI(QtGui.QMainWindow):
     def message(self, text):
         self._loggingBox.addText(text)
 
+    def warning(self, text):
+        self._loggingBox.addRedText(text)
+
     def _closeApp(self):
         for i in self._widgetList:
             i.close()
@@ -238,17 +241,24 @@ class iintGUI(QtGui.QMainWindow):
         self._signalHandling.setParameterDict(self._control.getSIGDict())
         self.resetTabs()
         self._inspectAnalyze.reset()
+        self._control.resetAll()
 
         filereaderdict = self._sfrGUI.getParameterDict()
         self._fileInfo.setNames(filereaderdict["filename"], filereaderdict["scanlist"])
         self._control.setSpecFile(filereaderdict["filename"],filereaderdict["scanlist"])
         self.message("Reading spec file: " + str(filereaderdict["filename"]))
-        
+       
         sfr = self._control.createAndInitialize(filereaderdict)
         self._control.createDataList(sfr.getData(), self._control.getRawDataName())
+
         # to set the displayed columns etc. one element of the selected data is needed
         self._rawdataobject = self._control.getDataList()[0].getData(self._control.getRawDataName())
         self._motorname = self._rawdataobject.getMotorName()
+        check = self._control.checkDataIntegrity(self._motorname)
+        if check:
+            self.warning("There are different motor names in the selection!\n Can't continue, please correct!")
+            return
+
         self._control.setMotorName(self._motorname)
         # pass info to the observable definition part
         self._obsDef.passInfo(self._rawdataobject)
