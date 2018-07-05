@@ -79,8 +79,6 @@ class InteractiveP09ProcessingControl():
         self._setupDefaultNames()
 
     def resetAll(self):
-        self._setupProcessParameters()
-        self._setupDefaultNames()
         for elem in self._dataList:
             elem.clearAll()
         del self._dataList[:]
@@ -99,6 +97,8 @@ class InteractiveP09ProcessingControl():
         self._fittedSignalName = "signalcurvefitresult"
         self._fitSignalPointsName = "signalFitPoints"
         self._trapintName = "trapezoidIntegral"
+        self._setupProcessParameters()
+        self._setupDefaultNames()
 
     def _setupProcessParameters(self):
         self._processParameters["read"] = specfilereader.specfilereader().getProcessDictionary()

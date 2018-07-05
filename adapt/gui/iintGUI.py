@@ -132,10 +132,13 @@ class iintGUI(QtGui.QMainWindow):
         self._fileInfo.reset()
         self._obsDef.reset()
         self._bkgHandling.reset()
+        self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
         self._signalHandling.reset()
+        self._signalHandling.setParameterDict(self._control.getSIGDict())
         self._control.resetAll()
         self._sfrGUI.reset()
         self.resetTabs()
+        self._inspectAnalyze.reset()
 
     def resetTabs(self):
         while self.imageTabs.count() >= 1:
@@ -220,10 +223,21 @@ class iintGUI(QtGui.QMainWindow):
         self.runFileReader()
         self._obsDef.setParameterDicts(self._control.getOBSDict(), self._control.getDESDict(), self._control.getTrapIntDict())
         self._obsDef.emittit()
-        self._bkgHandling.setParameterDicts( self._control.getBKGDicts())
+        self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
         self._bkgHandling.emittem()
 
     def runFileReader(self):
+        self._resetInternals()
+        self._obsDef.reset()
+        self._simpleImageView.reset()
+        self._fileInfo.reset()
+        self._bkgHandling.reset()
+        self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
+        self._signalHandling.reset()
+        self._signalHandling.setParameterDict(self._control.getSIGDict())
+        self.resetTabs()
+        self._inspectAnalyze.reset()
+
         filereaderdict = self._sfrGUI.getParameterDict()
         self._fileInfo.setNames(filereaderdict["filename"], filereaderdict["scanlist"])
         self._control.setSpecFile(filereaderdict["filename"],filereaderdict["scanlist"])

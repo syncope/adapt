@@ -65,6 +65,9 @@ class iintObservableDefinition(QtGui.QWidget):
     def reset(self):
         self._defaultSettings()
 
+    def activate(self):
+        self._notEnabled(False)
+
     def passInfo(self, dataobject):
         if dataobject == None:
             self._notEnabled(True)
