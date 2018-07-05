@@ -35,8 +35,8 @@ class iintTrackedDataChoice(QtGui.QWidget):
             self._initialNamesHeaders.append(elem)
         self._fillLists(namelist)
         self.okBtn.clicked.connect(self._emitTrackedData)
-        self.okBtn.clicked.connect(self._reset)
-        self.cancel.clicked.connect(self._reset)
+        self.okBtn.clicked.connect(self.reset)
+        self.cancel.clicked.connect(self.reset)
         self.addToListColumns.setDisabled(True)
         self.addToListHeaders.setDisabled(True)
         self.addToListColumns.clicked.connect(self._moveButtonToSelectedColumns)
@@ -77,7 +77,7 @@ class iintTrackedDataChoice(QtGui.QWidget):
         self.listAllColumns.addItems(self._untrackedDataColumns)
         self.listAllHeaders.addItems(self._untrackedDataHeaders)
 
-    def _reset(self):
+    def reset(self):
         self.listAllColumns.clear()
         self._untrackedDataColumns.clear()
         self._trackedDataColumns.clear()

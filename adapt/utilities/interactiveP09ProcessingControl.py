@@ -99,6 +99,7 @@ class InteractiveP09ProcessingControl():
         self._trapintName = "trapezoidIntegral"
         self._setupProcessParameters()
         self._setupDefaultNames()
+        self.resetTrackedData()
 
     def resetRAWdata(self):
         for elem in self._dataList:
@@ -468,6 +469,16 @@ class InteractiveP09ProcessingControl():
         self._processParameters["finalize"]["trackedData"] = tdl
         return self._processParameters["finalize"]
 
+    def setTrackedData(self, namelist):
+        # where to put this, it always needs to be recorded !?
+        self._processParameters["finalize"]["trackedData"] = namelist
+
+    def getTrackedData(self):
+        return self._processParameters["finalize"]["trackedData"]
+
+    def resetTrackedData(self):
+        self._processParameters["finalize"]["trackedData"] = []
+
     def useBKG(self, value):
         self._nobkg = not value
         self.settingChoiceDesBkg()
@@ -548,12 +559,6 @@ class InteractiveP09ProcessingControl():
         self._processParameters["finalize"]["outfilename"] = filename + ".iint"
         self._processParameters["finalize"]["pdffilename"] = filename
 
-    def setTrackedData(self, namelist):
-        # where to put this, it always needs to be recorded !?
-        self._processParameters["finalize"]["trackedData"] = namelist
-
-    def getTrackedData(self):
-        return self._processParameters["finalize"]["trackedData"]
 
 
 class trackedInformation():
