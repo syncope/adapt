@@ -143,11 +143,20 @@ class iintGUI(QtGui.QMainWindow):
         self.resetTabs()
         self._inspectAnalyze.reset()
 
-    def resetTabs(self):
-        while self.imageTabs.count() >= 1:
-            for tab in range(self.imageTabs.count()):
-                self.imageTabs.removeTab(tab)
-        self.imageTabs.hide()
+    def resetTabs(self, keepSpectra=False):
+        self._control.resetTrackedData()
+        if keepSpectra:
+            ivtab = self.imageTabs.indexOf(self._simpleImageView)
+            while self.imageTabs.count() > 1:
+                for tab in range(self.imageTabs.count()):
+                    if tab != ivtab:
+                        self.imageTabs.removeTab(tab)
+                        continue
+        else:
+            while self.imageTabs.count() >= 1:
+                for tab in range(self.imageTabs.count()):
+                    self.imageTabs.removeTab(tab)
+            self.imageTabs.hide()
 
     def closeEvent(self, event):
         event.ignore()
@@ -237,6 +246,7 @@ class iintGUI(QtGui.QMainWindow):
         self._fileInfo.reset()
         self._bkgHandling.reset()
         self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
+        self._control.resetSIGdata()
         self._signalHandling.reset()
         self._signalHandling.setParameterDict(self._control.getSIGDict())
         self.resetTabs()
@@ -266,15 +276,14 @@ class iintGUI(QtGui.QMainWindow):
 
     def runObservable(self, obsDict, despDict):
         self._simpleImageView.reset()
-        self._bkgHandling.reset()
-        self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
-        self._signalHandling.reset()
-        self._signalHandling.setParameterDict(self._control.getSIGDict())
-        self.resetTabs()
+        self.resetTabs(keepSpectra=True)
         self._inspectAnalyze.reset()
         self._control.resetBKGdata()
+        self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
         self._control.resetSIGdata()
+        self._signalHandling.setParameterDict(self._control.getSIGDict())
         self._control.resetFITdata()
+        self._control.resetTrackedData()
 
         self.message("Computing the observable...")
         self._control.createAndBulkExecute(obsDict)
@@ -289,6 +298,16 @@ class iintGUI(QtGui.QMainWindow):
         self._signalHandling.activate()
 
     def runBkgProcessing(self, selDict, fitDict, calcDict, subtractDict):
+        self._inspectAnalyze.reset()
+        self._control.resetSIGdata()
+        self._signalHandling.setParameterDict(self._control.getSIGDict())
+        self._control.resetFITdata()
+        self._control.resetBKGdata()
+        self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
+
+        self._control.resetTrackedData()
+        self.resetTabs(keepSpectra=True)
+        
         self.message("Fitting background ...")
         if selDict == {}:
             self._control.useBKG(False)
@@ -335,6 +354,10 @@ class iintGUI(QtGui.QMainWindow):
         self.runSignalFitting(fitDict)
 
     def runSignalFitting(self, fitDict):
+        self._inspectAnalyze.reset()
+        self._control.resetTrackedData()
+        self.resetTabs(keepSpectra=True)
+        
         self.message("Fitting the signal, this can take a while ...")
         rundict = self._control.getSIGDict()
         rundict['model'] = fitDict
