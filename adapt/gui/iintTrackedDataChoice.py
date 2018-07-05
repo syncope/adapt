@@ -25,7 +25,7 @@ from adapt.utilities import getUIFile
 class iintTrackedDataChoice(QtGui.QWidget):
     trackedData = QtCore.pyqtSignal(list)
 
-    def __init__(self, dataelement=None, parent=None):
+    def __init__(self, dataelement=None, namelist=None, parent=None):
         super(iintTrackedDataChoice, self).__init__(parent)
         uic.loadUi(getUIFile("chooseTrackedData.ui"), self)
         self._data = dataelement
@@ -33,7 +33,7 @@ class iintTrackedDataChoice(QtGui.QWidget):
         self._initialNamesHeaders = []
         for elem in list(self._data.getCustomKeys()):
             self._initialNamesHeaders.append(elem)
-        self._fillLists()
+        self._fillLists(namelist)
         self.okBtn.clicked.connect(self._emitTrackedData)
         self.okBtn.clicked.connect(self._reset)
         self.cancel.clicked.connect(self._reset)
@@ -59,11 +59,21 @@ class iintTrackedDataChoice(QtGui.QWidget):
         self._currentSelectedItemHeaders  = 0
         self.show()
 
-    def _fillLists(self):
+    def _fillLists(self, namelist):
         self._untrackedDataColumns = sorted(self._initialNamesColumns[:])
         self._untrackedDataHeaders = sorted(self._initialNamesHeaders[:])
         self._trackedDataColumns = []
         self._trackedDataHeaders = []
+        if namelist != None:
+            for elem in namelist:
+                try:
+                    self._untrackedDataColumns.remove(elem)
+                    self._trackedDataColumns.append(elem)
+                except ValueError:
+                    self._untrackedDataHeaders.remove(elem)
+                    self._trackedDataHeaders.append(elem)
+        self.listSelectedColumns.addItems(sorted(self._trackedDataColumns))
+        self.listSelectedHeaders.addItems(sorted(self._trackedDataHeaders))
         self.listAllColumns.addItems(self._untrackedDataColumns)
         self.listAllHeaders.addItems(self._untrackedDataHeaders)
 

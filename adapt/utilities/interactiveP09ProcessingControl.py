@@ -552,6 +552,8 @@ class InteractiveP09ProcessingControl():
         # where to put this, it always needs to be recorded !?
         self._processParameters["finalize"]["trackedData"] = namelist
 
+    def getTrackedData(self):
+        return self._processParameters["finalize"]["trackedData"]
 
 
 class trackedInformation():

@@ -383,7 +383,7 @@ class iintGUI(QtGui.QMainWindow):
 
     def _dataToTrack(self):
         rawScanData = self._control.getDataList()[0].getData(self._control.getRawDataName())
-        self._trackedDataChoice = iintTrackedDataChoice.iintTrackedDataChoice(rawScanData)
+        self._trackedDataChoice = iintTrackedDataChoice.iintTrackedDataChoice(rawScanData,self._control.getTrackedData() )
         self._trackedDataChoice.trackedData.connect(self._showTracked)
         self._trackedDataChoice.trackedData.connect(self._control.setTrackedData)
         
