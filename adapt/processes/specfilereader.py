@@ -89,6 +89,10 @@ class specfilereaderGUI(QtGui.QWidget):
         self._specReaderDict = {}
         self._file = None
 
+    def reset(self):
+        self._file = None
+        self._specReaderDict.clear()
+
     def getAndOpenFile(self):
         self._file = QtGui.QFileDialog.getOpenFileName(self, 'Choose spec file', '.', "SPEC files (*.spc *.spe *.spec)")
         self.inputFileLE.setText(self._file)

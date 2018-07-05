@@ -41,7 +41,7 @@ from . import iintMultiTrackedDataView
 from . import iintInspectAnalyze
 from . import selectResultOutput
 
-__version__ ="0.3.3"
+
 
 class iintGUI(QtGui.QMainWindow):
     
@@ -119,8 +119,23 @@ class iintGUI(QtGui.QMainWindow):
         self._trackedDataDict = {}
 
     def _resetInternals(self):
+        self._motorname = ""
         del self._widgetList[:]
         self._trackedDataDict.clear()
+        self._rawdataobject = None
+        del self._blacklist[:]
+        del self._fitList[:]
+
+    def _resetAll(self):
+        self._resetInternals()
+        self._simpleImageView.reset()
+        self._fileInfo.reset()
+        self._obsDef.reset()
+        self._bkgHandling.reset()
+        self._signalHandling.reset()
+        self._control.resetAll()
+        self._sfrGUI.reset()
+        self.resetTabs()
 
     def resetTabs(self):
         while self.imageTabs.count() >= 1:
@@ -141,29 +156,26 @@ class iintGUI(QtGui.QMainWindow):
         except AttributeError:
             self.message("Can't show config file, since none is present.\n")
 
-
     def _showSpecFile(self):
         try:
-            self._widgetList.append(showFileContents(open(self._sfrGUI.getParameterDict()["filename"]).read()))
+            self._widgetList.append(showFileContents.ShowFileContents(open(self._sfrGUI.getParameterDict()["filename"]).read()))
         except TypeError:
             self.message("Can't show spec file, since none has been selected yet.\n")
         return
+
+    def _showResultsFile(self):
+        #~ try:
+            #~ self._widgetList.append(showFileContents.ShowFileContents(open(self._sfrGUI.getParameterDict()["filename"]).read()))
+        #~ except TypeError:
+            #~ self.message("Can't show spec file, since none has been selected yet.\n")
+        return
+        
 
     def _showFitResults(self):
         self._widgetList.append(showFileContents.ShowFileContents(''.join(self._control.getSignalFitResults())))
         
     def message(self, text):
         self._loggingBox.addText(text)
-
-    def _resetAll(self):
-        self._resetInternals()
-        self._simpleImageView.reset()
-        self._fileInfo.reset()
-        self._obsDef.reset()
-        self._bkgHandling.reset()
-        self._signalHandling.reset()
-        self._control.resetAll()
-        self.resetTabs()
 
     def _closeApp(self):
         for i in self._widgetList:
@@ -214,8 +226,9 @@ class iintGUI(QtGui.QMainWindow):
     def runFileReader(self):
         filereaderdict = self._sfrGUI.getParameterDict()
         self._fileInfo.setNames(filereaderdict["filename"], filereaderdict["scanlist"])
+        self._control.setSpecFile(filereaderdict["filename"],filereaderdict["scanlist"])
         self.message("Reading spec file: " + str(filereaderdict["filename"]))
-
+        
         sfr = self._control.createAndInitialize(filereaderdict)
         self._control.createDataList(sfr.getData(), self._control.getRawDataName())
         # to set the displayed columns etc. one element of the selected data is needed
@@ -236,6 +249,8 @@ class iintGUI(QtGui.QMainWindow):
         self.message(" and plotting ...")
         self.plotit()
         self.message(" done.\n")
+        self._bkgHandling.activate()
+        self._signalHandling.activate()
 
     def runBkgProcessing(self, selDict, fitDict, calcDict, subtractDict):
         self.message("Fitting background ...")
@@ -297,6 +312,7 @@ class iintGUI(QtGui.QMainWindow):
         self.imageTabs.addTab(tdv, trackinfo.getName())
         tdv.pickedTrackedDataPoint.connect(self._setFocusToSpectrum)
         self.message(" ... done.\n")
+        self._inspectAnalyze.activate()
 
     def _setFocusToSpectrum(self, title, name, xpos, ypos):
         # very special function; lots of assumptions

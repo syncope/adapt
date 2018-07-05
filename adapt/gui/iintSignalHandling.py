@@ -48,6 +48,12 @@ class iintSignalHandling(QtGui.QWidget):
         self._secondModelDict = {}
         self._thirdModelDict = {}
         self._fourthModelDict = {}
+        self.performFitPushBtn.setDisabled(True)
+        self.configureFirst.setDisabled(True)
+
+    def activate(self):
+        self.configureFirst.setDisabled(False)
+        self.performFitPushBtn.setDisabled(False)
 
     def _toggleFirst(self):
         self._inactive[0] = not self._inactive[0]

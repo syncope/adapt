@@ -68,6 +68,7 @@ class curvefitting(IProcess):
         else:
             variableWeight = 1./data.getData(errorname)
 
+        # check if the previous result should be used OR if it's the first fit
         if (not self._usePreviousResult) or self._firstguess:
             try:
                 self.model.params = self.model.guess(dependentVariable, x=independentVariable)
@@ -124,6 +125,7 @@ class curvefitting(IProcess):
                     pass
             tmppars = tmpmodel.make_params()
             mlist.append(tmpmodel)
+        # build the model; start with the first one and then add from the list
         self.model = mlist.pop()
         for m in mlist:
             self.model += m

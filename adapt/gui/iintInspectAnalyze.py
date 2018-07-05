@@ -28,3 +28,11 @@ class iintInspectAnalyze(QtGui.QWidget):
     def __init__(self, parent=None):
         super(iintInspectAnalyze, self).__init__(parent)
         uic.loadUi(getUIFile("inspectAnalyze.ui"), self)
+
+    def activate(self):
+        self.trackData.setDisabled(False)
+        self.saveResults.setDisabled(False)
+
+    def reset(self):
+        self.trackData.setDisabled(True)
+        self.saveResults.setDisabled(True)
