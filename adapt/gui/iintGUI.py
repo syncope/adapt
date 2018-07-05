@@ -56,6 +56,7 @@ class iintGUI(QtGui.QMainWindow):
         self.action_Config_File.triggered.connect(self._showConfig)
         self.action_Spec_File.triggered.connect(self._showSpecFile)
         self.action_Fit_Results.triggered.connect(self._showFitResults)
+        self.action_Results_File.triggered.connect(self._showResultsFile)
 
         # the steering helper object
         self._control = interactiveP09ProcessingControl.InteractiveP09ProcessingControl()
@@ -117,6 +118,7 @@ class iintGUI(QtGui.QMainWindow):
         self.setGeometry(0,0,600,840)
         self._widgetList = []
         self._trackedDataDict = {}
+        self._resultFileName = None
 
     def _resetInternals(self):
         self._motorname = ""
@@ -125,6 +127,7 @@ class iintGUI(QtGui.QMainWindow):
         self._rawdataobject = None
         del self._blacklist[:]
         del self._fitList[:]
+        self._resultFileName = None
 
     def _resetAll(self):
         self._resetInternals()
@@ -167,12 +170,10 @@ class iintGUI(QtGui.QMainWindow):
         return
 
     def _showResultsFile(self):
-        #~ try:
-            #~ self._widgetList.append(showFileContents.ShowFileContents(open(self._sfrGUI.getParameterDict()["filename"]).read()))
-        #~ except TypeError:
-            #~ self.message("Can't show spec file, since none has been selected yet.\n")
-        return
-        
+        try:
+            self._widgetList.append(showFileContents.ShowFileContents(open(self._resultFileName).read()))
+        except TypeError:
+            self.message("Can't show results file, there is none yet.\n")
 
     def _showFitResults(self):
         self._widgetList.append(showFileContents.ShowFileContents(''.join(self._control.getSignalFitResults())))
@@ -397,6 +398,7 @@ class iintGUI(QtGui.QMainWindow):
 
         self.message("Saving results file ...")
         self._control.processAll(finalDict)
+        self._resultFileName = finalDict["outfilename"]
         self.message(" ... done.\n")
 
     def _retrackDataDisplay(self, blacklist):
