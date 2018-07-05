@@ -254,6 +254,17 @@ class iintGUI(QtGui.QMainWindow):
         self.message("... done.\n")
 
     def runObservable(self, obsDict, despDict):
+        self._simpleImageView.reset()
+        self._bkgHandling.reset()
+        self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
+        self._signalHandling.reset()
+        self._signalHandling.setParameterDict(self._control.getSIGDict())
+        self.resetTabs()
+        self._inspectAnalyze.reset()
+        self._control.resetBKGdata()
+        self._control.resetSIGdata()
+        self._control.resetFITdata()
+
         self.message("Computing the observable...")
         self._control.createAndBulkExecute(obsDict)
         # check whether despiking is activated, otherwise unset names

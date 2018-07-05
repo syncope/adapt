@@ -100,6 +100,19 @@ class InteractiveP09ProcessingControl():
         self._setupProcessParameters()
         self._setupDefaultNames()
 
+    def resetBKGdata(self):
+        for elem in self._dataList:
+            elem.clearCurrent(self._backgroundPointsName)
+
+    def resetSIGdata(self):
+        for elem in self._dataList:
+            elem.clearCurrent(self._signalName)
+
+    def resetFITdata(self):
+        for elem in self._dataList:
+            elem.clearCurrent(self._fittedSignalName)
+            elem.clearCurrent(self._fitSignalPointsName)
+
     def _setupProcessParameters(self):
         self._processParameters["read"] = specfilereader.specfilereader().getProcessDictionary()
         self._processParameters["observabledef"] = iintdefinition.iintdefinition().getProcessDictionary()
