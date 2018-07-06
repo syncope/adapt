@@ -287,12 +287,15 @@ class iintGUI(QtGui.QMainWindow):
 
         self.message("Computing the observable...")
         self._control.createAndBulkExecute(obsDict)
+        self.message(" and plotting ...")
+        self.plotit()
+
         # check whether despiking is activated, otherwise unset names
         if despDict != {}:
             self._control.useDespike(True)
             self._control.createAndBulkExecute(despDict)
-        self.message(" and plotting ...")
-        self.plotit()
+            if( self._simpleImageView != None):
+                self._simpleImageView.update("des")
         self.message(" done.\n")
         self._bkgHandling.activate()
         self._signalHandling.activate()
@@ -319,7 +322,7 @@ class iintGUI(QtGui.QMainWindow):
         self._control.createAndBulkExecute(calcDict)
         self._control.createAndBulkExecute(subtractDict)
         if( self._simpleImageView != None):
-            self._simpleImageView.update()
+            self._simpleImageView.update("bkg")
         if self._obsDef._dotrapint:
             self._control.createAndBulkExecute(self._control.getTrapIntDict())
         self.message(" ... done.\n")

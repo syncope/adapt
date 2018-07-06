@@ -82,6 +82,11 @@ class iintDataPlot(QtGui.QDialog):
 
     def update(self, action=None):
         self._checkDataAvailability()
+        if(action == "des"):
+            self.showDES.setChecked(True)
+        if(action == "bkg"):
+            self.showBKG.setChecked(True)
+            self.showSIG.setChecked(True)
         if(action == "plotfit"):
             self.showFIT.setChecked(True)
         self.plot()
