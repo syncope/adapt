@@ -29,6 +29,11 @@ class LoggerBox(QtGui.QWidget):
         uic.loadUi(getUIFile("logBOX.ui"), self)
 
     def addText(self,text):
-        self.messageWindow.appendPlainText(text)
+        self.messageWindow.append(text)
         #~ self.messageWindow.insertPlainText(text)
+
+    def addRedText(self, text):
+        self.messageWindow.setTextColor(QtGui.QColor(255, 0, 0))
+        self.messageWindow.append(text)
+        self.messageWindow.setTextColor(QtGui.QColor(0, 0, 0))
 

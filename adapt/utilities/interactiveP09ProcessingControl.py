@@ -79,8 +79,6 @@ class InteractiveP09ProcessingControl():
         self._setupDefaultNames()
 
     def resetAll(self):
-        self._setupProcessParameters()
-        self._setupDefaultNames()
         for elem in self._dataList:
             elem.clearAll()
         del self._dataList[:]
@@ -99,6 +97,45 @@ class InteractiveP09ProcessingControl():
         self._fittedSignalName = "signalcurvefitresult"
         self._fitSignalPointsName = "signalFitPoints"
         self._trapintName = "trapezoidIntegral"
+        self._setupProcessParameters()
+        self._setupDefaultNames()
+        self.resetTrackedData()
+
+    def resetRAWdata(self):
+        for elem in self._dataList:
+            try:
+                elem.clearCurrent(self._rawName)
+            except KeyError:
+                pass
+
+    def resetOBSdata(self):
+        for elem in self._dataList:
+            try:
+                elem.clearCurrent(self._observableName)
+            except KeyError:
+                pass
+
+    def resetBKGdata(self):
+        for elem in self._dataList:
+            try:
+                elem.clearCurrent(self._backgroundPointsName)
+            except KeyError:
+                pass
+
+    def resetSIGdata(self):
+        for elem in self._dataList:
+            try:
+                elem.clearCurrent(self._signalName)
+            except KeyError:
+                pass
+
+    def resetFITdata(self):
+        for elem in self._dataList:
+            try:
+                elem.clearCurrent(self._fittedSignalName)
+                elem.clearCurrent(self._fitSignalPointsName)
+            except KeyError:
+                pass
 
     def _setupProcessParameters(self):
         self._processParameters["read"] = specfilereader.specfilereader().getProcessDictionary()
@@ -233,6 +270,14 @@ class InteractiveP09ProcessingControl():
             pd = processData.ProcessData()
             pd.addData(name, datum)
             self._dataList.append(pd)
+
+    def checkDataIntegrity(self, motor):
+        error = False
+        for datum in self._dataList:
+            if motor != datum.getData(self.getRawDataName()).getMotorName():
+                error = True
+                break
+        return error
 
     def getDataList(self):
         return self._dataList
@@ -424,6 +469,16 @@ class InteractiveP09ProcessingControl():
         self._processParameters["finalize"]["trackedData"] = tdl
         return self._processParameters["finalize"]
 
+    def setTrackedData(self, namelist):
+        # where to put this, it always needs to be recorded !?
+        self._processParameters["finalize"]["trackedData"] = namelist
+
+    def getTrackedData(self):
+        return self._processParameters["finalize"]["trackedData"]
+
+    def resetTrackedData(self):
+        self._processParameters["finalize"]["trackedData"] = []
+
     def useBKG(self, value):
         self._nobkg = not value
         self.settingChoiceDesBkg()
@@ -503,10 +558,6 @@ class InteractiveP09ProcessingControl():
     def setResultFilename(self, filename):
         self._processParameters["finalize"]["outfilename"] = filename + ".iint"
         self._processParameters["finalize"]["pdffilename"] = filename
-
-    def setTrackedData(self, namelist):
-        # where to put this, it always needs to be recorded !?
-        self._processParameters["finalize"]["trackedData"] = namelist
 
 
 

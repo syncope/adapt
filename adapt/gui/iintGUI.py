@@ -56,6 +56,7 @@ class iintGUI(QtGui.QMainWindow):
         self.action_Config_File.triggered.connect(self._showConfig)
         self.action_Spec_File.triggered.connect(self._showSpecFile)
         self.action_Fit_Results.triggered.connect(self._showFitResults)
+        self.action_Results_File.triggered.connect(self._showResultsFile)
 
         # the steering helper object
         self._control = interactiveP09ProcessingControl.InteractiveP09ProcessingControl()
@@ -117,6 +118,7 @@ class iintGUI(QtGui.QMainWindow):
         self.setGeometry(0,0,600,840)
         self._widgetList = []
         self._trackedDataDict = {}
+        self._resultFileName = None
 
     def _resetInternals(self):
         self._motorname = ""
@@ -125,6 +127,7 @@ class iintGUI(QtGui.QMainWindow):
         self._rawdataobject = None
         del self._blacklist[:]
         del self._fitList[:]
+        self._resultFileName = None
 
     def _resetAll(self):
         self._resetInternals()
@@ -132,16 +135,28 @@ class iintGUI(QtGui.QMainWindow):
         self._fileInfo.reset()
         self._obsDef.reset()
         self._bkgHandling.reset()
+        self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
         self._signalHandling.reset()
+        self._signalHandling.setParameterDict(self._control.getSIGDict())
         self._control.resetAll()
         self._sfrGUI.reset()
         self.resetTabs()
+        self._inspectAnalyze.reset()
 
-    def resetTabs(self):
-        while self.imageTabs.count() >= 1:
-            for tab in range(self.imageTabs.count()):
-                self.imageTabs.removeTab(tab)
-        self.imageTabs.hide()
+    def resetTabs(self, keepSpectra=False):
+        self._control.resetTrackedData()
+        if keepSpectra:
+            ivtab = self.imageTabs.indexOf(self._simpleImageView)
+            while self.imageTabs.count() > 1:
+                for tab in range(self.imageTabs.count()):
+                    if tab != ivtab:
+                        self.imageTabs.removeTab(tab)
+                        continue
+        else:
+            while self.imageTabs.count() >= 1:
+                for tab in range(self.imageTabs.count()):
+                    self.imageTabs.removeTab(tab)
+            self.imageTabs.hide()
 
     def closeEvent(self, event):
         event.ignore()
@@ -164,18 +179,19 @@ class iintGUI(QtGui.QMainWindow):
         return
 
     def _showResultsFile(self):
-        #~ try:
-            #~ self._widgetList.append(showFileContents.ShowFileContents(open(self._sfrGUI.getParameterDict()["filename"]).read()))
-        #~ except TypeError:
-            #~ self.message("Can't show spec file, since none has been selected yet.\n")
-        return
-        
+        try:
+            self._widgetList.append(showFileContents.ShowFileContents(open(self._resultFileName).read()))
+        except TypeError:
+            self.message("Can't show results file, there is none yet.\n")
 
     def _showFitResults(self):
         self._widgetList.append(showFileContents.ShowFileContents(''.join(self._control.getSignalFitResults())))
         
     def message(self, text):
         self._loggingBox.addText(text)
+
+    def warning(self, text):
+        self._loggingBox.addRedText(text)
 
     def _closeApp(self):
         for i in self._widgetList:
@@ -220,39 +236,81 @@ class iintGUI(QtGui.QMainWindow):
         self.runFileReader()
         self._obsDef.setParameterDicts(self._control.getOBSDict(), self._control.getDESDict(), self._control.getTrapIntDict())
         self._obsDef.emittit()
-        self._bkgHandling.setParameterDicts( self._control.getBKGDicts())
+        self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
         self._bkgHandling.emittem()
 
     def runFileReader(self):
+        self._resetInternals()
+        self._obsDef.reset()
+        self._simpleImageView.reset()
+        self._fileInfo.reset()
+        self._bkgHandling.reset()
+        self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
+        self._control.resetSIGdata()
+        self._signalHandling.reset()
+        self._signalHandling.setParameterDict(self._control.getSIGDict())
+        self.resetTabs()
+        self._inspectAnalyze.reset()
+        self._control.resetAll()
+
         filereaderdict = self._sfrGUI.getParameterDict()
         self._fileInfo.setNames(filereaderdict["filename"], filereaderdict["scanlist"])
         self._control.setSpecFile(filereaderdict["filename"],filereaderdict["scanlist"])
         self.message("Reading spec file: " + str(filereaderdict["filename"]))
-        
+
         sfr = self._control.createAndInitialize(filereaderdict)
         self._control.createDataList(sfr.getData(), self._control.getRawDataName())
+
         # to set the displayed columns etc. one element of the selected data is needed
         self._rawdataobject = self._control.getDataList()[0].getData(self._control.getRawDataName())
         self._motorname = self._rawdataobject.getMotorName()
+        check = self._control.checkDataIntegrity(self._motorname)
+        if check:
+            self.warning("There are different motor names in the selection!\n Can't continue, please correct!")
+            return
+
         self._control.setMotorName(self._motorname)
         # pass info to the observable definition part
         self._obsDef.passInfo(self._rawdataobject)
         self.message("... done.\n")
 
     def runObservable(self, obsDict, despDict):
+        self._simpleImageView.reset()
+        self.resetTabs(keepSpectra=True)
+        self._inspectAnalyze.reset()
+        self._control.resetBKGdata()
+        self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
+        self._control.resetSIGdata()
+        self._signalHandling.setParameterDict(self._control.getSIGDict())
+        self._control.resetFITdata()
+        self._control.resetTrackedData()
+
         self.message("Computing the observable...")
         self._control.createAndBulkExecute(obsDict)
+        self.message(" and plotting ...")
+        self.plotit()
+
         # check whether despiking is activated, otherwise unset names
         if despDict != {}:
             self._control.useDespike(True)
             self._control.createAndBulkExecute(despDict)
-        self.message(" and plotting ...")
-        self.plotit()
+            if( self._simpleImageView != None):
+                self._simpleImageView.update("des")
         self.message(" done.\n")
         self._bkgHandling.activate()
         self._signalHandling.activate()
 
     def runBkgProcessing(self, selDict, fitDict, calcDict, subtractDict):
+        self._inspectAnalyze.reset()
+        self._control.resetSIGdata()
+        self._signalHandling.setParameterDict(self._control.getSIGDict())
+        self._control.resetFITdata()
+        self._control.resetBKGdata()
+        self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
+
+        self._control.resetTrackedData()
+        self.resetTabs(keepSpectra=True)
+        
         self.message("Fitting background ...")
         if selDict == {}:
             self._control.useBKG(False)
@@ -264,7 +322,7 @@ class iintGUI(QtGui.QMainWindow):
         self._control.createAndBulkExecute(calcDict)
         self._control.createAndBulkExecute(subtractDict)
         if( self._simpleImageView != None):
-            self._simpleImageView.update()
+            self._simpleImageView.update("bkg")
         if self._obsDef._dotrapint:
             self._control.createAndBulkExecute(self._control.getTrapIntDict())
         self.message(" ... done.\n")
@@ -299,6 +357,10 @@ class iintGUI(QtGui.QMainWindow):
         self.runSignalFitting(fitDict)
 
     def runSignalFitting(self, fitDict):
+        self._inspectAnalyze.reset()
+        self._control.resetTrackedData()
+        self.resetTabs(keepSpectra=True)
+        
         self.message("Fitting the signal, this can take a while ...")
         rundict = self._control.getSIGDict()
         rundict['model'] = fitDict
@@ -347,7 +409,7 @@ class iintGUI(QtGui.QMainWindow):
 
     def _dataToTrack(self):
         rawScanData = self._control.getDataList()[0].getData(self._control.getRawDataName())
-        self._trackedDataChoice = iintTrackedDataChoice.iintTrackedDataChoice(rawScanData)
+        self._trackedDataChoice = iintTrackedDataChoice.iintTrackedDataChoice(rawScanData,self._control.getTrackedData() )
         self._trackedDataChoice.trackedData.connect(self._showTracked)
         self._trackedDataChoice.trackedData.connect(self._control.setTrackedData)
         
@@ -372,6 +434,7 @@ class iintGUI(QtGui.QMainWindow):
 
         self.message("Saving results file ...")
         self._control.processAll(finalDict)
+        self._resultFileName = finalDict["outfilename"]
         self.message(" ... done.\n")
 
     def _retrackDataDisplay(self, blacklist):

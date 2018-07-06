@@ -89,6 +89,7 @@
     <addaction name="action_Config_File"/>
     <addaction name="action_Spec_File"/>
     <addaction name="action_Fit_Results"/>
+    <addaction name="action_Results_File"/>
    </widget>
    <widget class="QMenu" name="menu_Help">
     <property name="title">
@@ -150,6 +151,11 @@
   <action name="action_Output_File">
    <property name="text">
     <string>&amp;Output File</string>
+   </property>
+  </action>
+  <action name="action_Results_File">
+   <property name="text">
+    <string>&amp;Results File</string>
    </property>
   </action>
  </widget>
