@@ -121,16 +121,19 @@ class iintDataPlot(QtGui.QDialog):
             self.showBKG.setDisabled(False)
         except KeyError:
             self.showBKG.setDisabled(True)
+            self.showBKG.setChecked(False)
         try:
             datum.getData(self._signalName)
             self.showSIG.setDisabled(False)
         except KeyError:
             self.showSIG.setDisabled(True)
+            self.showSIG.setChecked(False)
         try:
             datum.getData(self._fittedSignalName)
             self.showFIT.setDisabled(False)
         except KeyError:
             self.showFIT.setDisabled(True)
+            self.showFIT.setChecked(False)
 
     def plot(self):
         datum = self._dataList[self._currentIndex]
