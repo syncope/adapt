@@ -42,6 +42,7 @@ class iintfinalization(IProcess):
         self._pdfmotorPar = ProcessParameter("motor", str)
         self._pdfobservablePar = ProcessParameter("observable", str)
         self._pdffitresultPar = ProcessParameter("fitresult", str)
+        self._trapintPar = ProcessParameter("trapintname", str, optional=True)
         self._parameters.add(self._namesPar)
         self._parameters.add(self._rawdataPar)
         self._parameters.add(self._outfilenamePar)
@@ -49,6 +50,7 @@ class iintfinalization(IProcess):
         self._parameters.add(self._pdfmotorPar)
         self._parameters.add(self._pdfobservablePar)
         self._parameters.add(self._pdffitresultPar)
+        self._parameters.add(self._trapintPar)
 
     def initialize(self):
         self._names = self._namesPar.get()
@@ -58,6 +60,10 @@ class iintfinalization(IProcess):
         self._pdfmotor = self._pdfmotorPar.get()
         self._pdfobservable = self._pdfobservablePar.get()
         self._pdffitresult = self._pdffitresultPar.get()
+        try: 
+            self._trapintname = self._trapintPar.get()
+        except:
+            self._trapintname = "trapezoidIntegral"
         self._trackedData = []
         self._values = []
         self._plotstuff = []
@@ -108,7 +114,12 @@ class iintfinalization(IProcess):
         observable = data.getData(self._pdfobservable)
         motor = data.getData(self._pdfmotor)
         fitresult = data.getData(self._pdffitresult)
-        self._plotstuff.append((scannumber, motor, observable, fitresult.best_fit))
+        try:
+            trapint = data.getData(self._trapintname)
+            trapinterr = data.getData(self._trapintname+"_stderr")
+        except:
+            pass
+        self._plotstuff.append((scannumber, motor, observable, fitresult.best_fit, trapint, trapinterr))
 
     def finalize(self, data):
         import math as m
@@ -130,7 +141,7 @@ class iintfinalization(IProcess):
         # determine number of figures
         nof = m.ceil(len(self._plotstuff)/9)
         for n in range(len(self._plotstuff)):
-            scannumber, motor, observable, fitresult = self._plotstuff[n]
+            scannumber, motor, observable, fitresult, iint, iinterr= self._plotstuff[n]
             fn, index, check = m.floor(n/9), int(n%9)+1, n/9.
             if check > fn*nof:
                 fn += 1

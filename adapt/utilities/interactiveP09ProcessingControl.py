@@ -202,6 +202,7 @@ class InteractiveP09ProcessingControl():
         # finalization: saving files
         self._processParameters["finalize"]["specdataname"] = self._rawName
         self._processParameters["finalize"]["fitresult"] = self._fittedSignalName
+        self._processParameters["finalize"]["trapintname"] = self._trapintName
 
     def getRawDataName(self):
         return self._rawName
@@ -455,7 +456,7 @@ class InteractiveP09ProcessingControl():
         return self._processParameters["trapint"]
 
     def getFinalizingDict(self):
-        tdl = ['scannumber', self._fittedSignalName] + self._processParameters["finalize"]["trackedData"]
+        tdl = ['scannumber', self._fittedSignalName, self._trapintName, self._trapintName+"_stderr"] + self._processParameters["finalize"]["trackedData"]
         self._processParameters["finalize"]["trackedData"] = tdl
         return self._processParameters["finalize"]
 

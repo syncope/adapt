@@ -72,7 +72,8 @@ class trapezoidintegration(IProcess):
             integraln10=integraln10+0.5*(fnew[p+1]+fnew[p])*fabs(xnew[p+1]-xnew[p])
         integral_stderr=integraln10-integral
         
-        data.addData(self._output, [integral, integral_stderr])
+        data.addData(self._output, integral)
+        data.addData(self._output + "_stderr", integral_stderr)
 
     def finalize(self, data):
         pass
