@@ -29,6 +29,7 @@ except ImportError:
 from adapt.iProcess import *
 
 
+
 class trapezoidintegration(IProcess):
 
     def __init__(self, ptype="trapezoidintegration"):
@@ -70,7 +71,7 @@ class trapezoidintegration(IProcess):
         for p in range(0,len(xnew)-1):
             integraln10=integraln10+0.5*(fnew[p+1]+fnew[p])*fabs(xnew[p+1]-xnew[p])
         integral_stderr=integraln10-integral
-        	
+        
         data.addData(self._output, [integral, integral_stderr])
 
     def finalize(self, data):

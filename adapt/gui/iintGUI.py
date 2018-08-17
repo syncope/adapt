@@ -85,7 +85,6 @@ class iintGUI(QtGui.QMainWindow):
         self._sfrGUI = specfilereader.specfilereaderGUI()
         self._obsDef = iintObservableDefinition.iintObservableDefinition()
         self._obsDef.doDespike.connect(self._control.useDespike)
-        self._obsDef.doTrapint.connect(self._control.useTrapInt)
         self._bkgHandling = iintBackgroundHandling.iintBackgroundHandling(self._control.getBKGDicts())
         self._bkgHandling.bkgmodel.connect(self._control.setBkgModel)
         self._signalHandling = iintSignalHandling.iintSignalHandling(self._control.getSIGDict())
@@ -234,10 +233,12 @@ class iintGUI(QtGui.QMainWindow):
         self._control.loadConfig(self._procconf)
         self._sfrGUI.setParameterDict(self._control.getSFRDict())
         self.runFileReader()
-        self._obsDef.setParameterDicts(self._control.getOBSDict(), self._control.getDESDict(), self._control.getTrapIntDict())
+        self._obsDef.setParameterDicts(self._control.getOBSDict(), self._control.getDESDict())
         self._obsDef.emittit()
         self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
         self._bkgHandling.emittem()
+        if self._control.getDESDict() != {}:
+            self._obsDef.activateDespikingBox()
 
     def runFileReader(self):
         self._resetInternals()
@@ -274,7 +275,7 @@ class iintGUI(QtGui.QMainWindow):
         self._obsDef.passInfo(self._rawdataobject)
         self.message("... done.\n")
 
-    def runObservable(self, obsDict, despDict):
+    def runObservable(self, obsDict, despDict, trapIntDict):
         self._simpleImageView.reset()
         self.resetTabs(keepSpectra=True)
         self._inspectAnalyze.reset()
@@ -296,9 +297,9 @@ class iintGUI(QtGui.QMainWindow):
             self._control.createAndBulkExecute(despDict)
             if( self._simpleImageView != None):
                 self._simpleImageView.update("des")
-        self.message(" done.\n")
         self._bkgHandling.activate()
         self._signalHandling.activate()
+        self.message(" done.\n")
 
     def runBkgProcessing(self, selDict, fitDict, calcDict, subtractDict):
         self._inspectAnalyze.reset()
@@ -310,7 +311,7 @@ class iintGUI(QtGui.QMainWindow):
 
         self._control.resetTrackedData()
         self.resetTabs(keepSpectra=True)
-        
+
         self.message("Fitting background ...")
         if selDict == {}:
             self._control.useBKG(False)
@@ -323,8 +324,7 @@ class iintGUI(QtGui.QMainWindow):
         self._control.createAndBulkExecute(subtractDict)
         if( self._simpleImageView != None):
             self._simpleImageView.update("bkg")
-        if self._obsDef._dotrapint:
-            self._control.createAndBulkExecute(self._control.getTrapIntDict())
+
         self.message(" ... done.\n")
 
     def plotit(self):
@@ -354,6 +354,12 @@ class iintGUI(QtGui.QMainWindow):
         fitDict =  {}
         for fit in self._fitList:
             fitDict.update(fit.getCurrentParameterDict())
+        self.runSignalProcessing(fitDict)
+
+    def runSignalProcessing(self, fitDict):
+        self.message("Signal processing: first trapezoidal integration ...")
+        self._control.createAndBulkExecute(self._control.getTrapIntDict())
+        self.message(" ... done.")
         self.runSignalFitting(fitDict)
 
     def runSignalFitting(self, fitDict):

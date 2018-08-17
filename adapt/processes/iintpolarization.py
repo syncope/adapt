@@ -18,28 +18,30 @@
 
 # polarization analysis specific to beamline p09 @ DESY PS
 
-from adapt import iProcess
+import numpy as np
+from scipy.optimize import curve_fit
+from math import pi, cos, sin
+
+from adapt.iProcess import *
 
 
-class p09polarizationdef(iProcess.IProcessDefinition):
 
-    def __init__(self):
-        super(p09polarizationdef, self).__init__()
-        self._ptype = "p09polarization"
-        #~ self.createParameter("@@@@@@@", "STRING")
-        #~ self.createParameter("@@@@@@@", "INT")
-        #~ self.createParameter("@@@@@@@", "FLOAT")
-        #~ self.createParameter("@@@@@@@", "BOOL")
-        #~ self.createParameter("@@@@@@@", "STRINGLIST")
-        #~ self.createParameter("@@@@@@@", "INTLIST")
-        #~ self.createParameter("@@@@@@@", "FLOATLIST")
-        #~ self.createParameter("@@@@@@@", "BOOLLIST")
-        #~ self.createParameter("@@@@@@@", "STRING", optional=True)
+class iintpolarization(IProcess):
 
-class p09polarization(iProcess.IProcess):
-
-    def __init__(self, procDef):
-        super(p09polarization, self).__init__(procDef)
+    def __init__(self, ptype="iintpolarization"):
+        super(iintpolarization, self).__init__(ptype)
+        self._inputPar = ProcessParameter("inputFilename", str)
+        self._outputNamePar = ProcessParameter("outputName", str)
+        self._pr1chiNamePar = ProcessParameter("pr1chi", str, optional=True)
+        self._pr2chiNamePar = ProcessParameter("pr2chi", str, optional=True)
+        self._petaNamePar = ProcessParameter("peta", str, optional=True)
+        self._ptthNamePar = ProcessParameter("ptth", str, optional=True)
+        self._parameters.add(self._inputPar)
+        self._parameters.add(self._outputNamePar)
+        self._parameters.add(self._pr1chiNamePar)
+        self._parameters.add(self._pr2chiNamePar)
+        self._parameters.add(self._petaNamePar)
+        self._parameters.add(self._ptthNamePar)
 
     def initialize(self):
         pass
@@ -48,10 +50,35 @@ class p09polarization(iProcess.IProcess):
         pass
 
     def finalize(self, data):
-        pass
+        # the name of the input file
+        infile = self._inputPar.get()
+
+        # first obtain the layout of the file by parsing the header
+        with open(infile) as f:
+            first_line = f.readline()
+            # - remove the leading hash
+            line = first_line.split('# ')[1]
+            headers = [i for i in line.split('\t')]
+            # - remove the trailing newline
+            headers.remove('\n')
+        # parse the data file
+        rawdata = np.loadtxt(infile, unpack=True)
+        
+        # and finally: build the associative data block
+        poldata = { headers[i]: rawdata[i] for i in range(len(headers)) }
+
+        pr1chiana = np.unique(poldata[self._pr1chiNamePar.get()])
+        pr2chiana = np.unique(poldata[self._pr2chiNamePar.get()])
+        petaana = np.unique(poldata[self._petaNamePar.get()])
+
+        tthana = np.mean(poldata[self._ptthNamePar.get()])
+
 
     def check(self, data):
         pass
 
     def clearPreviousData(self, data):
         data.clearCurrent(self._output)
+
+    def fitfunc(self, x, a0, a1, a2):
+        return (a0/2.)*( 1. + ( cos(self.tthana*pi/180.) )**2 + ( (sin(self.tthana*pi/180.))**2 ) * ( a1*np.cos(2*(x)*pi/180.) + a2*np.sin(2*(x)*pi/180.) ))

@@ -51,7 +51,6 @@ class InteractiveP09ProcessingControl():
         self._processList = []
         self._nodespike = True
         self._nobkg = True
-        self._notrapint = True
         self._motorName = ""
         self._rawName = "rawdata"
         self._id = "scannumber"
@@ -85,9 +84,8 @@ class InteractiveP09ProcessingControl():
         self._dataList = []
         del self._processList[:]
         self._processList = []
-        self._nodespike = True
-        self._nobkg = True
-        self._notrapint = True
+        #~ self._nodespike = True
+        #~ self._nobkg = True
         self._motorName = ""
         self._rawName = "rawdata"
         self._observableName = "observable"
@@ -204,7 +202,6 @@ class InteractiveP09ProcessingControl():
         # finalization: saving files
         self._processParameters["finalize"]["specdataname"] = self._rawName
         self._processParameters["finalize"]["fitresult"] = self._fittedSignalName
-        
 
     def getRawDataName(self):
         return self._rawName
@@ -313,10 +310,9 @@ class InteractiveP09ProcessingControl():
                     self._processParameters[proc][k]=v
             else:
                 print("Wrong configuration file, unrecognized process name/type: " + str(proc))
-        if "trapint" in execOrder:
-            self._notrapint = False
         if "despike" in execOrder:
             self._nodespike = False
+
         if "bkgsubtract" in execOrder:
             self._nobkg = False
 
@@ -343,9 +339,8 @@ class InteractiveP09ProcessingControl():
             processDict["bkgfit"] = ds[1]
             processDict["calcbkgpoints"] = ds[2]
             processDict["bkgsubtract"] = ds[3]
-        if not self._notrapint:
-            execlist.append("trapint")
-            processDict["trapint"] = self.getTrapIntDict()
+        execlist.append("trapint")
+        processDict["trapint"] = self.getTrapIntDict()
         execlist.append("signalcurvefit")
         processDict["signalcurvefit"] = self.getSIGDict()
         execlist.append("finalize")
@@ -412,8 +407,6 @@ class InteractiveP09ProcessingControl():
             return {}
 
     def getTrapIntDict(self):
-        if self._notrapint:
-            return {}
         try:
             return self._processParameters["trapint"]
         except KeyError:
@@ -459,10 +452,7 @@ class InteractiveP09ProcessingControl():
         return self._processParameters["calcfitpoints"]
 
     def getTrapIntDict(self):
-        if(self._notrapint):
-            return {}
-        else:
-            return self._processParameters["trapint"]
+        return self._processParameters["trapint"]
 
     def getFinalizingDict(self):
         tdl = ['scannumber', self._fittedSignalName] + self._processParameters["finalize"]["trackedData"]
@@ -481,10 +471,6 @@ class InteractiveP09ProcessingControl():
 
     def useBKG(self, value):
         self._nobkg = not value
-        self.settingChoiceDesBkg()
-
-    def useTrapInt(self, value):
-        self._notrapint = not value
         self.settingChoiceDesBkg()
 
     def useDespike(self, value):
