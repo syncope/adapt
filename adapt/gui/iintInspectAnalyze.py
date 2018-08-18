@@ -31,8 +31,10 @@ class iintInspectAnalyze(QtGui.QWidget):
 
     def activate(self):
         self.trackData.setDisabled(False)
+        self.polAnalysis.setDisabled(False)
         self.saveResults.setDisabled(False)
 
     def reset(self):
         self.trackData.setDisabled(True)
+        self.polAnalysis.setDisabled(True)
         self.saveResults.setDisabled(True)

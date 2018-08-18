@@ -382,7 +382,7 @@ class iintGUI(QtGui.QMainWindow):
         self.message(" ... done.\n")
         self._inspectAnalyze.activate()
 
-    def runPolarizationAnalysis(self):
+    def _runPolarizationAnalysis(self):
         self.message("Running the polarization analysis ...")
         self._control.processAll(self._control.getPOLANADict())
         self.message(" ... done.\n")
@@ -424,9 +424,6 @@ class iintGUI(QtGui.QMainWindow):
         self._trackedDataChoice.trackedData.connect(self._showTracked)
         self._trackedDataChoice.trackedData.connect(self._control.setTrackedData)
         
-    def _runPolarizationAnalysis(self):
-        pass
-
     def _showTracked(self, namelist):
         for name in namelist:
             trackinfo = self._control.getTrackInformation(name)
