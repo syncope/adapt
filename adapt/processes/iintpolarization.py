@@ -42,7 +42,7 @@ class iintpolarization(IProcess):
     def initialize(self):
         self._output = self._outputNamePar.get()
         self._rawdata = self._rawdataPar.get()
-        self._fit = self._fitresultPar.get()
+        self._fitresult = self._fitresultPar.get()
         self._trapint = self._trapintPar.get()
         self._storage = {}
         self._storage["scannumber"] = []
