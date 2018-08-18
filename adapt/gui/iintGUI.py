@@ -382,6 +382,11 @@ class iintGUI(QtGui.QMainWindow):
         self.message(" ... done.\n")
         self._inspectAnalyze.activate()
 
+    def runPolarizationAnalysis(self):
+        self.message("Running the polarization analysis ...")
+        self._control.processAll(self._control.getPOLANADict())
+        self.message(" ... done.\n")
+                
     def _setFocusToSpectrum(self, title, name, xpos, ypos):
         # very special function; lots of assumptions
         import math

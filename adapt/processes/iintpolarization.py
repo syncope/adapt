@@ -40,50 +40,49 @@ class iintpolarization(IProcess):
         self._parameters.add(self._trapintPar)
 
     def initialize(self):
-		self._output = self._outputNamePar.get()
-		self._fit = self._fitNamePar.get()
-		self._trapint = self._trapintPar.get()
-		self._storage = {}
-		self._storage["scannumber"] = []
-		self._storage["peta"] = []
-		self._storage["ptth"] = []
-		self._storage["pr1chi"] = []
-		self._storage["pr2chi"] = []
-		self._storage["trapint"] = []
-		self._storage["trapint_stderr"] = []
-		self._storage["gaussint"] = []
-		self._storage["gaussint_stderr"] = []
+        self._output = self._outputNamePar.get()
+        self._fit = self._fitNamePar.get()
+        self._trapint = self._trapintPar.get()
+        self._storage = {}
+        self._storage["scannumber"] = []
+        self._storage["peta"] = []
+        self._storage["ptth"] = []
+        self._storage["pr1chi"] = []
+        self._storage["pr2chi"] = []
+        self._storage["trapint"] = []
+        self._storage["trapint_stderr"] = []
+        self._storage["gaussint"] = []
+        self._storage["gaussint_stderr"] = []
 
     def execute(self, data):
-		self._storage["scannumber"].append( int(data.getData("scannumber")) )
-		self._storage["peta"].append( data.getData(self._rawdata).getCustomVar('peta') )
-		self._storage["ptth"].append( data.getData(self._rawdata).getCustomVar('ptth') )
-		self._storage["pr1chi"].append( data.getData(self._rawdata).getCustomVar('pr1chi') )
-		self._storage["pr2chi"].append( data.getData(self._rawdata).getCustomVar('pr2chi') )
-		self._storage["trapint"].append( data.getData(self._trapint) )
-		self._storage["trapint_stderr"].append( data.getData(self._trapint + "_stderr") )
-		fitresult = (data.getData(self._fitresult)).best_fit
-		self._storage["gaussint"].append( fitresult['m0_amplitude'] )
-		self._storage["gaussint_stderr"].append( fitresult['m0_amplitude_stderr'] )
+        self._storage["scannumber"].append( int(data.getData("scannumber")) )
+        self._storage["peta"].append( data.getData(self._rawdata).getCustomVar('peta') )
+        self._storage["ptth"].append( data.getData(self._rawdata).getCustomVar('ptth') )
+        self._storage["pr1chi"].append( data.getData(self._rawdata).getCustomVar('pr1chi') )
+        self._storage["pr2chi"].append( data.getData(self._rawdata).getCustomVar('pr2chi') )
+        self._storage["trapint"].append( data.getData(self._trapint) )
+        self._storage["trapint_stderr"].append( data.getData(self._trapint + "_stderr") )
+        fitresult = (data.getData(self._fitresult)).best_fit
+        self._storage["gaussint"].append( fitresult['m0_amplitude'] )
+        self._storage["gaussint_stderr"].append( fitresult['m0_amplitude_stderr'] )
 
-
-		#~ eta = poldata["peta"][(index-1)*length:index*length]
-		#~ iint = poldata["trapezoidIntegral"][(index-1)*length:index*length]
-		#~ iinterr = poldata["trapezoidIntegral_stderr"][(index-1)*length:index*length]
-		#~ iintgauss = poldata["m0_amplitude"][(index-1)*length:index*length]
-		#~ iintgausserr = poldata["m0_amplitude_stderr"][(index-1)*length:index*length]
-		#~ pr2chi = np.mean(poldata["pr2chi"][(index-1)*length:index*length])
-		#~ pr1chi = np.mean(poldata["pr1chi"][(index-1)*length:index*length])
-		#~ polangle = 2*pr2chi
+        #~ eta = poldata["peta"][(index-1)*length:index*length]
+        #~ iint = poldata["trapezoidIntegral"][(index-1)*length:index*length]
+        #~ iinterr = poldata["trapezoidIntegral_stderr"][(index-1)*length:index*length]
+        #~ iintgauss = poldata["m0_amplitude"][(index-1)*length:index*length]
+        #~ iintgausserr = poldata["m0_amplitude_stderr"][(index-1)*length:index*length]
+        #~ pr2chi = np.mean(poldata["pr2chi"][(index-1)*length:index*length])
+        #~ pr1chi = np.mean(poldata["pr1chi"][(index-1)*length:index*length])
+        #~ polangle = 2*pr2chi
         pass
-
+    
     def finalize(self, data):
-		pass
-		
+        pass
+        
         # the name of the input file
         infile = self._inputPar.get()
-
-        # first obtain the layout of the file by parsing the header
+        
+            # first obtain the layout of the file by parsing the header
         with open(infile) as f:
             first_line = f.readline()
             # - remove the leading hash

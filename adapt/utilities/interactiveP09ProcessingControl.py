@@ -72,7 +72,8 @@ class InteractiveP09ProcessingControl():
                                "signalcurvefit",
                                "calcfitpoints",
                                "trapint",
-                               "finalize" ]
+                               "finalize",
+                               "polana"]
         self._procRunList = []
         self._processParameters = {}
         self._setupProcessParameters()
@@ -148,7 +149,7 @@ class InteractiveP09ProcessingControl():
         self._processParameters["calcfitpoints"] = gendatafromfunction.gendatafromfunction().getProcessDictionary()
         self._processParameters["trapint"] = trapezoidintegration.trapezoidintegration().getProcessDictionary()
         self._processParameters["finalize"] = iintfinalization.iintfinalization().getProcessDictionary()
-        self._processParameters["polarizationana"] = iintpolarization.iintpolarization().getProcessDictionary()
+        self._processParameters["polana"] = iintpolarization.iintpolarization().getProcessDictionary()
         
         self._fitmodels = curvefitting.curvefitting().getFitModels()
 
@@ -206,6 +207,10 @@ class InteractiveP09ProcessingControl():
         self._processParameters["finalize"]["specdataname"] = self._rawName
         self._processParameters["finalize"]["fitresult"] = self._fittedSignalName
         self._processParameters["finalize"]["trapintname"] = self._trapintName
+        # polarization analysis
+        self._processParameters["polana"]["specdataname"] = self._rawName
+        self._processParameters["polana"]["fitresult"] = self._fittedSignalName
+        self._processParameters["polana"]["trapintname"] = self._trapintName
 
     def getRawDataName(self):
         return self._rawName
@@ -444,6 +449,14 @@ class InteractiveP09ProcessingControl():
         except KeyError:
             return {}
 
+    def getPOLANADict(self):
+        try:
+            name, suff = self.proposeSaveFileName()
+            self._processParameters["polana"]["outputname"] = str(name+suff)
+            return self._processParameters["polana"]
+        except KeyError:
+            return {}
+    
     def getFitModels(self):
         return curvefitting.curvefitting().getFitModels()
 
