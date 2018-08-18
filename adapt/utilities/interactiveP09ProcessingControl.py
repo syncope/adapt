@@ -33,6 +33,7 @@ from adapt.processes import gendatafromfunction
 from adapt.processes import backgroundsubtraction
 from adapt.processes import trapezoidintegration
 from adapt.processes import iintfinalization
+from adapt.processes import iintpolarization
 
 import numpy as np
 import datetime
@@ -147,6 +148,8 @@ class InteractiveP09ProcessingControl():
         self._processParameters["calcfitpoints"] = gendatafromfunction.gendatafromfunction().getProcessDictionary()
         self._processParameters["trapint"] = trapezoidintegration.trapezoidintegration().getProcessDictionary()
         self._processParameters["finalize"] = iintfinalization.iintfinalization().getProcessDictionary()
+        self._processParameters["polarizationana"] = iintpolarization.iintpolarization().getProcessDictionary()
+        
         self._fitmodels = curvefitting.curvefitting().getFitModels()
 
     def _setupDefaultNames(self):

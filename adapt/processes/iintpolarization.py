@@ -30,26 +30,56 @@ class iintpolarization(IProcess):
 
     def __init__(self, ptype="iintpolarization"):
         super(iintpolarization, self).__init__(ptype)
-        self._inputPar = ProcessParameter("inputFilename", str)
-        self._outputNamePar = ProcessParameter("outputName", str)
-        self._pr1chiNamePar = ProcessParameter("pr1chi", str, optional=True)
-        self._pr2chiNamePar = ProcessParameter("pr2chi", str, optional=True)
-        self._petaNamePar = ProcessParameter("peta", str, optional=True)
-        self._ptthNamePar = ProcessParameter("ptth", str, optional=True)
-        self._parameters.add(self._inputPar)
+        self._outputNamePar = ProcessParameter("outputname", str)
+        self._rawdataPar = ProcessParameter("specdataname", str)
+        self._fitresultPar = ProcessParameter("fitresult", str)
+        self._trapintPar = ProcessParameter("trapintname", str)
         self._parameters.add(self._outputNamePar)
-        self._parameters.add(self._pr1chiNamePar)
-        self._parameters.add(self._pr2chiNamePar)
-        self._parameters.add(self._petaNamePar)
-        self._parameters.add(self._ptthNamePar)
+        self._parameters.add(self._rawdataPar)
+        self._parameters.add(self._fitresultPar)
+        self._parameters.add(self._trapintPar)
 
     def initialize(self):
-        pass
+		self._output = self._outputNamePar.get()
+		self._fit = self._fitNamePar.get()
+		self._trapint = self._trapintPar.get()
+		self._storage = {}
+		self._storage["scannumber"] = []
+		self._storage["peta"] = []
+		self._storage["ptth"] = []
+		self._storage["pr1chi"] = []
+		self._storage["pr2chi"] = []
+		self._storage["trapint"] = []
+		self._storage["trapint_stderr"] = []
+		self._storage["gaussint"] = []
+		self._storage["gaussint_stderr"] = []
 
     def execute(self, data):
+		self._storage["scannumber"].append( int(data.getData("scannumber")) )
+		self._storage["peta"].append( data.getData(self._rawdata).getCustomVar('peta') )
+		self._storage["ptth"].append( data.getData(self._rawdata).getCustomVar('ptth') )
+		self._storage["pr1chi"].append( data.getData(self._rawdata).getCustomVar('pr1chi') )
+		self._storage["pr2chi"].append( data.getData(self._rawdata).getCustomVar('pr2chi') )
+		self._storage["trapint"].append( data.getData(self._trapint) )
+		self._storage["trapint_stderr"].append( data.getData(self._trapint + "_stderr") )
+		fitresult = (data.getData(self._fitresult)).best_fit
+		self._storage["gaussint"].append( fitresult['m0_amplitude'] )
+		self._storage["gaussint_stderr"].append( fitresult['m0_amplitude_stderr'] )
+
+
+		#~ eta = poldata["peta"][(index-1)*length:index*length]
+		#~ iint = poldata["trapezoidIntegral"][(index-1)*length:index*length]
+		#~ iinterr = poldata["trapezoidIntegral_stderr"][(index-1)*length:index*length]
+		#~ iintgauss = poldata["m0_amplitude"][(index-1)*length:index*length]
+		#~ iintgausserr = poldata["m0_amplitude_stderr"][(index-1)*length:index*length]
+		#~ pr2chi = np.mean(poldata["pr2chi"][(index-1)*length:index*length])
+		#~ pr1chi = np.mean(poldata["pr1chi"][(index-1)*length:index*length])
+		#~ polangle = 2*pr2chi
         pass
 
     def finalize(self, data):
+		pass
+		
         # the name of the input file
         infile = self._inputPar.get()
 
