@@ -391,8 +391,8 @@ class iintGUI(QtGui.QMainWindow):
         filename = polanadict["outputname"] + "_polarizationAnalysis.pdf"
         self._control.processAll(polanadict)
         self.message(" ... done.\n")
-        from subprocess import call
-        call(["evince", filename])
+        from subprocess import Popen
+        Popen(["evince", filename])
 
     def _setFocusToSpectrum(self, title, name, xpos, ypos):
         # very special function; lots of assumptions
@@ -474,5 +474,5 @@ class iintGUI(QtGui.QMainWindow):
         self.message("Generating temporary control plots ...")
         self._control.processAll(tempDict)
         self.message(" ... done.\n")
-        from subprocess import call
-        call(["evince", filename])
+        from subprocess import Popen
+        Popen(["evince", filename])
