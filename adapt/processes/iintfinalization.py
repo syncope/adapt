@@ -56,7 +56,7 @@ class iintfinalization(IProcess):
         self._names = self._namesPar.get()
         self._rawdata = self._rawdataPar.get()
         self._outfilename = self._outfilenamePar.get()
-        self._pdfoutfilename = self._pdfoutfilenamePar.get()
+        self._pdfoutfilename = self._pdfoutfilenamePar.get() + ".pdf"
         self._pdfmotor = self._pdfmotorPar.get()
         self._pdfobservable = self._pdfobservablePar.get()
         self._pdffitresult = self._pdffitresultPar.get()
@@ -67,7 +67,7 @@ class iintfinalization(IProcess):
         self._trackedData = []
         self._values = []
         self._plotstuff = []
-        self._pdfoutfile = PdfPages(self._pdfoutfilename + ".pdf")
+        self._pdfoutfile = PdfPages(self._pdfoutfilename)
 
     def execute(self, data):
         skip = False
@@ -156,7 +156,7 @@ class iintfinalization(IProcess):
             plt.plot(motor,observable,'b+')
             plt.plot(motor, fitresult, 'r-')
             plt.title("Scan: #" + str(scannumber))
-            
+           
         self._pdfoutfile.savefig()
         self._pdfoutfile.close()
 

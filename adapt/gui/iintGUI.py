@@ -92,10 +92,13 @@ class iintGUI(QtGui.QMainWindow):
         self._signalHandling.modelcfg.connect(self.openFitDialog)
         self._signalHandling.performFitPushBtn.clicked.connect(self._prepareSignalFitting)
         self._fitList = []
+
         self._inspectAnalyze = iintInspectAnalyze.iintInspectAnalyze()
         self._inspectAnalyze.trackData.clicked.connect(self._dataToTrack)
         self._inspectAnalyze.polAnalysis.clicked.connect(self._runPolarizationAnalysis)
         self._inspectAnalyze.saveResults.clicked.connect(self._saveResultsFile)
+        self._inspectAnalyze.inspectionPlots.clicked.connect(self._showInspectionPlots)
+
         self._saveResultsDialog = selectResultOutput.SelectResultOutput()
         self._saveResultsDialog.accept.connect(self._control.setResultFilename)
         self._saveResultsDialog.accept.connect(self.runOutputSaving)
@@ -384,9 +387,13 @@ class iintGUI(QtGui.QMainWindow):
 
     def _runPolarizationAnalysis(self):
         self.message("Running the polarization analysis ...")
-        self._control.processAll(self._control.getPOLANADict())
+        polanadict = self._control.getPOLANADict()
+        filename = polanadict["outputname"] + "_polarizationAnalysis.pdf"
+        self._control.processAll(polanadict)
         self.message(" ... done.\n")
-                
+        from subprocess import call
+        call(["evince", filename])
+
     def _setFocusToSpectrum(self, title, name, xpos, ypos):
         # very special function; lots of assumptions
         import math
@@ -423,7 +430,7 @@ class iintGUI(QtGui.QMainWindow):
         self._trackedDataChoice = iintTrackedDataChoice.iintTrackedDataChoice(rawScanData,self._control.getTrackedData() )
         self._trackedDataChoice.trackedData.connect(self._showTracked)
         self._trackedDataChoice.trackedData.connect(self._control.setTrackedData)
-        
+
     def _showTracked(self, namelist):
         for name in namelist:
             trackinfo = self._control.getTrackInformation(name)
@@ -460,3 +467,12 @@ class iintGUI(QtGui.QMainWindow):
             tdv = iintMultiTrackedDataView.iintMultiTrackedDataView(v, blacklist)
             tdv.pickedTrackedDataPoint.connect(self._setFocusToSpectrum)
             self.imageTabs.addTab(tdv, k)
+
+    def _showInspectionPlots(self):
+        tempDict = self._control.getInspectionDict()
+        filename = tempDict["pdffilename"] + '.pdf'
+        self.message("Generating temporary control plots ...")
+        self._control.processAll(tempDict)
+        self.message(" ... done.\n")
+        from subprocess import call
+        call(["evince", filename])
