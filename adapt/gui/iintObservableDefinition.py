@@ -25,7 +25,6 @@ from adapt.utilities import getUIFile
 class iintObservableDefinition(QtGui.QWidget):
     observableDicts = QtCore.pyqtSignal(dict, dict, dict)
     doDespike = QtCore.pyqtSignal(int)
-    doTrapint = QtCore.pyqtSignal(int)
 
     def __init__(self, parent=None):
         super(iintObservableDefinition, self).__init__(parent)
@@ -42,9 +41,7 @@ class iintObservableDefinition(QtGui.QWidget):
         self.observableAttFacCB.setDisabled(True)
         self.observableAttFacCB.currentIndexChanged.connect(self.setAttFac)
         self.despikeCheckBox.stateChanged.connect(self.toggleDespiking)
-        self.trapintCheckBox.stateChanged.connect(self.toggleTrapint)
         self._despike = False
-        self._dotrapint = False
         self._notEnabled(True)
         self.obsNextBtn.clicked.connect(self.emittit)
         self._observableName = 'observable'
@@ -56,9 +53,7 @@ class iintObservableDefinition(QtGui.QWidget):
         self._useAttenuationFactor = False
         self.observableAttFacCB.setDisabled(True)
         self.despikeCheckBox.setChecked(False)
-        self.trapintCheckBox.setChecked(False)
         self._despike = False
-        self._dotrapint = False
         self._notEnabled(True)
         self._observableName = 'observable'
 
@@ -97,7 +92,6 @@ class iintObservableDefinition(QtGui.QWidget):
         self.observableTimeCB.setDisabled(state)
         self.observableAttFaccheck.setDisabled(state)
         self.despikeCheckBox.setDisabled(state)
-        self.trapintCheckBox.setDisabled(state)
         self.obsNextBtn.setDisabled(state)
 
     def toggleAttFac(self):
@@ -121,9 +115,8 @@ class iintObservableDefinition(QtGui.QWidget):
         self._despike = not self._despike
         self.doDespike.emit(self._despike)
 
-    def toggleTrapint(self):
-        self._dotrapint = not self._dotrapint
-        self.doTrapint.emit(self._dotrapint)
+    def activateDespikingBox(self):
+        self.despikeCheckBox.setDisabled(False)
 
     def emittit(self):
         self._obsDict["type"] = "iintdefinition"
@@ -142,15 +135,14 @@ class iintObservableDefinition(QtGui.QWidget):
             self._despikeDict["method"] = "p09despiking"
             self._despikeDict["input"] = "observable"
             self._despikeDict["output"] = "despikedObservable"
-        if(self._dotrapint):
-            self._trapintDict["type"] = "trapezoidintegration"
-            self._trapintDict["motor"] = self._motorname
-            self._trapintDict["observable"] = "signalObservable"
-            self._trapintDict["output"] = "trapezoidIntegral"
+        self._trapintDict["type"] = "trapezoidintegration"
+        self._trapintDict["motor"] = self._motorname
+        self._trapintDict["observable"] = "signalObservable"
+        self._trapintDict["output"] = "trapezoidIntegral"
         
         self.observableDicts.emit(self._obsDict, self._despikeDict, self._trapintDict)
 
-    def setParameterDicts(self, obsDict, despDict, trapintDict):
+    def setParameterDicts(self, obsDict, despDict):
         self.observableMotorLabel.setStyleSheet("color: blue;")
         self.observableMotorLabel.setText(obsDict["motor_column"])
         # first get index of element
@@ -168,7 +160,3 @@ class iintObservableDefinition(QtGui.QWidget):
 
         if ( despDict != {} ):
             self.despikeCheckBox.setChecked(True)
-
-        if ( trapintDict != {} ):
-            self.trapintCheckBox.setChecked(True)
-

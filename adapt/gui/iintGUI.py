@@ -85,7 +85,6 @@ class iintGUI(QtGui.QMainWindow):
         self._sfrGUI = specfilereader.specfilereaderGUI()
         self._obsDef = iintObservableDefinition.iintObservableDefinition()
         self._obsDef.doDespike.connect(self._control.useDespike)
-        self._obsDef.doTrapint.connect(self._control.useTrapInt)
         self._bkgHandling = iintBackgroundHandling.iintBackgroundHandling(self._control.getBKGDicts())
         self._bkgHandling.bkgmodel.connect(self._control.setBkgModel)
         self._signalHandling = iintSignalHandling.iintSignalHandling(self._control.getSIGDict())
@@ -93,10 +92,13 @@ class iintGUI(QtGui.QMainWindow):
         self._signalHandling.modelcfg.connect(self.openFitDialog)
         self._signalHandling.performFitPushBtn.clicked.connect(self._prepareSignalFitting)
         self._fitList = []
+
         self._inspectAnalyze = iintInspectAnalyze.iintInspectAnalyze()
         self._inspectAnalyze.trackData.clicked.connect(self._dataToTrack)
         self._inspectAnalyze.polAnalysis.clicked.connect(self._runPolarizationAnalysis)
         self._inspectAnalyze.saveResults.clicked.connect(self._saveResultsFile)
+        self._inspectAnalyze.inspectionPlots.clicked.connect(self._showInspectionPlots)
+
         self._saveResultsDialog = selectResultOutput.SelectResultOutput()
         self._saveResultsDialog.accept.connect(self._control.setResultFilename)
         self._saveResultsDialog.accept.connect(self.runOutputSaving)
@@ -234,10 +236,12 @@ class iintGUI(QtGui.QMainWindow):
         self._control.loadConfig(self._procconf)
         self._sfrGUI.setParameterDict(self._control.getSFRDict())
         self.runFileReader()
-        self._obsDef.setParameterDicts(self._control.getOBSDict(), self._control.getDESDict(), self._control.getTrapIntDict())
+        self._obsDef.setParameterDicts(self._control.getOBSDict(), self._control.getDESDict())
         self._obsDef.emittit()
         self._bkgHandling.setParameterDicts(self._control.getBKGDicts())
         self._bkgHandling.emittem()
+        if self._control.getDESDict() != {}:
+            self._obsDef.activateDespikingBox()
 
     def runFileReader(self):
         self._resetInternals()
@@ -257,7 +261,7 @@ class iintGUI(QtGui.QMainWindow):
         self._fileInfo.setNames(filereaderdict["filename"], filereaderdict["scanlist"])
         self._control.setSpecFile(filereaderdict["filename"],filereaderdict["scanlist"])
         self.message("Reading spec file: " + str(filereaderdict["filename"]))
-
+       
         sfr = self._control.createAndInitialize(filereaderdict)
         self._control.createDataList(sfr.getData(), self._control.getRawDataName())
 
@@ -274,7 +278,7 @@ class iintGUI(QtGui.QMainWindow):
         self._obsDef.passInfo(self._rawdataobject)
         self.message("... done.\n")
 
-    def runObservable(self, obsDict, despDict):
+    def runObservable(self, obsDict, despDict, trapIntDict):
         self._simpleImageView.reset()
         self.resetTabs(keepSpectra=True)
         self._inspectAnalyze.reset()
@@ -296,6 +300,8 @@ class iintGUI(QtGui.QMainWindow):
             self._control.createAndBulkExecute(despDict)
             if( self._simpleImageView != None):
                 self._simpleImageView.update("des")
+        self._bkgHandling.activate()
+        self._signalHandling.activate()
         self.message(" done.\n")
         self._bkgHandling.activate()
         self._signalHandling.activate()
@@ -310,7 +316,6 @@ class iintGUI(QtGui.QMainWindow):
 
         self._control.resetTrackedData()
         self.resetTabs(keepSpectra=True)
-        
         self.message("Fitting background ...")
         if selDict == {}:
             self._control.useBKG(False)
@@ -323,8 +328,6 @@ class iintGUI(QtGui.QMainWindow):
         self._control.createAndBulkExecute(subtractDict)
         if( self._simpleImageView != None):
             self._simpleImageView.update("bkg")
-        if self._obsDef._dotrapint:
-            self._control.createAndBulkExecute(self._control.getTrapIntDict())
         self.message(" ... done.\n")
 
     def plotit(self):
@@ -354,6 +357,12 @@ class iintGUI(QtGui.QMainWindow):
         fitDict =  {}
         for fit in self._fitList:
             fitDict.update(fit.getCurrentParameterDict())
+        self.runSignalProcessing(fitDict)
+
+    def runSignalProcessing(self, fitDict):
+        self.message("Signal processing: first trapezoidal integration ...")
+        self._control.createAndBulkExecute(self._control.getTrapIntDict())
+        self.message(" ... done.")
         self.runSignalFitting(fitDict)
 
     def runSignalFitting(self, fitDict):
@@ -375,6 +384,15 @@ class iintGUI(QtGui.QMainWindow):
         tdv.pickedTrackedDataPoint.connect(self._setFocusToSpectrum)
         self.message(" ... done.\n")
         self._inspectAnalyze.activate()
+
+    def _runPolarizationAnalysis(self):
+        self.message("Running the polarization analysis ...")
+        polanadict = self._control.getPOLANADict()
+        filename = polanadict["outputname"] + "_polarizationAnalysis.pdf"
+        self._control.processAll(polanadict)
+        self.message(" ... done.\n")
+        from subprocess import Popen
+        Popen(["evince", filename])
 
     def _setFocusToSpectrum(self, title, name, xpos, ypos):
         # very special function; lots of assumptions
@@ -412,9 +430,6 @@ class iintGUI(QtGui.QMainWindow):
         self._trackedDataChoice = iintTrackedDataChoice.iintTrackedDataChoice(rawScanData,self._control.getTrackedData() )
         self._trackedDataChoice.trackedData.connect(self._showTracked)
         self._trackedDataChoice.trackedData.connect(self._control.setTrackedData)
-        
-    def _runPolarizationAnalysis(self):
-        pass
 
     def _showTracked(self, namelist):
         for name in namelist:
@@ -452,3 +467,12 @@ class iintGUI(QtGui.QMainWindow):
             tdv = iintMultiTrackedDataView.iintMultiTrackedDataView(v, blacklist)
             tdv.pickedTrackedDataPoint.connect(self._setFocusToSpectrum)
             self.imageTabs.addTab(tdv, k)
+
+    def _showInspectionPlots(self):
+        tempDict = self._control.getInspectionDict()
+        filename = tempDict["outputname"] + '_controlPlots.pdf'
+        self.message("Generating temporary control plots ...")
+        self._control.processAll(tempDict)
+        self.message(" ... done.\n")
+        from subprocess import Popen
+        Popen(["evince", filename])

@@ -33,6 +33,8 @@ from adapt.processes import gendatafromfunction
 from adapt.processes import backgroundsubtraction
 from adapt.processes import trapezoidintegration
 from adapt.processes import iintfinalization
+from adapt.processes import iintpolarization
+from adapt.processes import iintcontrolplots
 
 import numpy as np
 import datetime
@@ -51,7 +53,6 @@ class InteractiveP09ProcessingControl():
         self._processList = []
         self._nodespike = True
         self._nobkg = True
-        self._notrapint = True
         self._motorName = ""
         self._rawName = "rawdata"
         self._id = "scannumber"
@@ -72,7 +73,9 @@ class InteractiveP09ProcessingControl():
                                "signalcurvefit",
                                "calcfitpoints",
                                "trapint",
-                               "finalize" ]
+                               "finalize",
+                               "polana",
+                               "inspection"]
         self._procRunList = []
         self._processParameters = {}
         self._setupProcessParameters()
@@ -85,9 +88,8 @@ class InteractiveP09ProcessingControl():
         self._dataList = []
         del self._processList[:]
         self._processList = []
-        self._nodespike = True
-        self._nobkg = True
-        self._notrapint = True
+        #~ self._nodespike = True
+        #~ self._nobkg = True
         self._motorName = ""
         self._rawName = "rawdata"
         self._observableName = "observable"
@@ -149,6 +151,9 @@ class InteractiveP09ProcessingControl():
         self._processParameters["calcfitpoints"] = gendatafromfunction.gendatafromfunction().getProcessDictionary()
         self._processParameters["trapint"] = trapezoidintegration.trapezoidintegration().getProcessDictionary()
         self._processParameters["finalize"] = iintfinalization.iintfinalization().getProcessDictionary()
+        self._processParameters["polana"] = iintpolarization.iintpolarization().getProcessDictionary()
+        self._processParameters["inspection"] = iintcontrolplots.iintcontrolplots().getProcessDictionary()
+        
         self._fitmodels = curvefitting.curvefitting().getFitModels()
 
     def _setupDefaultNames(self):
@@ -204,7 +209,15 @@ class InteractiveP09ProcessingControl():
         # finalization: saving files
         self._processParameters["finalize"]["specdataname"] = self._rawName
         self._processParameters["finalize"]["fitresult"] = self._fittedSignalName
-        
+        self._processParameters["finalize"]["trapintname"] = self._trapintName
+        # polarization analysis
+        self._processParameters["polana"]["specdataname"] = self._rawName
+        self._processParameters["polana"]["fitresult"] = self._fittedSignalName
+        self._processParameters["polana"]["trapintname"] = self._trapintName
+        # inspection plots
+        self._processParameters["inspection"]["specdataname"] = self._rawName
+        self._processParameters["inspection"]["fitresult"] = self._fittedSignalName
+        self._processParameters["inspection"]["trapintname"] = self._trapintName
 
     def getRawDataName(self):
         return self._rawName
@@ -313,10 +326,9 @@ class InteractiveP09ProcessingControl():
                     self._processParameters[proc][k]=v
             else:
                 print("Wrong configuration file, unrecognized process name/type: " + str(proc))
-        if "trapint" in execOrder:
-            self._notrapint = False
         if "despike" in execOrder:
             self._nodespike = False
+
         if "bkgsubtract" in execOrder:
             self._nobkg = False
 
@@ -343,9 +355,8 @@ class InteractiveP09ProcessingControl():
             processDict["bkgfit"] = ds[1]
             processDict["calcbkgpoints"] = ds[2]
             processDict["bkgsubtract"] = ds[3]
-        if not self._notrapint:
-            execlist.append("trapint")
-            processDict["trapint"] = self.getTrapIntDict()
+        execlist.append("trapint")
+        processDict["trapint"] = self.getTrapIntDict()
         execlist.append("signalcurvefit")
         processDict["signalcurvefit"] = self.getSIGDict()
         execlist.append("finalize")
@@ -412,8 +423,6 @@ class InteractiveP09ProcessingControl():
             return {}
 
     def getTrapIntDict(self):
-        if self._notrapint:
-            return {}
         try:
             return self._processParameters["trapint"]
         except KeyError:
@@ -447,6 +456,22 @@ class InteractiveP09ProcessingControl():
         except KeyError:
             return {}
 
+    def getPOLANADict(self):
+        try:
+            name, suff = self.proposeSaveFileName()
+            self._processParameters["polana"]["outputname"] = str(name+suff)
+            return self._processParameters["polana"]
+        except KeyError:
+            return {}
+
+    def getInspectionDict(self):
+        try:
+            name, suff = self.proposeSaveFileName()
+            self._processParameters["inspection"]["outputname"] = str(name+suff)
+            return self._processParameters["inspection"]
+        except KeyError:
+            return {}
+    
     def getFitModels(self):
         return curvefitting.curvefitting().getFitModels()
 
@@ -459,13 +484,10 @@ class InteractiveP09ProcessingControl():
         return self._processParameters["calcfitpoints"]
 
     def getTrapIntDict(self):
-        if(self._notrapint):
-            return {}
-        else:
-            return self._processParameters["trapint"]
+        return self._processParameters["trapint"]
 
     def getFinalizingDict(self):
-        tdl = ['scannumber', self._fittedSignalName] + self._processParameters["finalize"]["trackedData"]
+        tdl = ['scannumber', self._fittedSignalName, self._trapintName, self._trapintName+"_stderr"] + self._processParameters["finalize"]["trackedData"]
         self._processParameters["finalize"]["trackedData"] = tdl
         return self._processParameters["finalize"]
 
@@ -481,10 +503,6 @@ class InteractiveP09ProcessingControl():
 
     def useBKG(self, value):
         self._nobkg = not value
-        self.settingChoiceDesBkg()
-
-    def useTrapInt(self, value):
-        self._notrapint = not value
         self.settingChoiceDesBkg()
 
     def useDespike(self, value):
