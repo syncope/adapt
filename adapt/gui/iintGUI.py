@@ -470,7 +470,7 @@ class iintGUI(QtGui.QMainWindow):
 
     def _showInspectionPlots(self):
         tempDict = self._control.getInspectionDict()
-        filename = tempDict["pdffilename"] + '.pdf'
+        filename = tempDict["outputname"] + '_controlPlots.pdf'
         self.message("Generating temporary control plots ...")
         self._control.processAll(tempDict)
         self.message(" ... done.\n")

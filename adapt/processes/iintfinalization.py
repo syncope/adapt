@@ -141,7 +141,7 @@ class iintfinalization(IProcess):
         # determine number of figures
         nof = m.ceil(len(self._plotstuff)/9)
         for n in range(len(self._plotstuff)):
-            scannumber, motor, observable, fitresult, iint, iinterr= self._plotstuff[n]
+            scannumber, motor, observable, fitresult, iint, iinterr = self._plotstuff[n]
             fn, index, check = m.floor(n/9), int(n%9)+1, n/9.
             if check > fn*nof:
                 fn += 1
@@ -159,6 +159,7 @@ class iintfinalization(IProcess):
            
         self._pdfoutfile.savefig()
         self._pdfoutfile.close()
+        plt.close("all")
 
     def check(self, data):
         pass

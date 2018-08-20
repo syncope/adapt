@@ -34,6 +34,7 @@ from adapt.processes import backgroundsubtraction
 from adapt.processes import trapezoidintegration
 from adapt.processes import iintfinalization
 from adapt.processes import iintpolarization
+from adapt.processes import iintcontrolplots
 
 import numpy as np
 import datetime
@@ -73,7 +74,8 @@ class InteractiveP09ProcessingControl():
                                "calcfitpoints",
                                "trapint",
                                "finalize",
-                               "polana"]
+                               "polana",
+                               "inspection"]
         self._procRunList = []
         self._processParameters = {}
         self._setupProcessParameters()
@@ -150,7 +152,7 @@ class InteractiveP09ProcessingControl():
         self._processParameters["trapint"] = trapezoidintegration.trapezoidintegration().getProcessDictionary()
         self._processParameters["finalize"] = iintfinalization.iintfinalization().getProcessDictionary()
         self._processParameters["polana"] = iintpolarization.iintpolarization().getProcessDictionary()
-        self._processParameters["inspection"] = iintfinalization.iintfinalization().getProcessDictionary()
+        self._processParameters["inspection"] = iintcontrolplots.iintcontrolplots().getProcessDictionary()
         
         self._fitmodels = curvefitting.curvefitting().getFitModels()
 
@@ -208,13 +210,14 @@ class InteractiveP09ProcessingControl():
         self._processParameters["finalize"]["specdataname"] = self._rawName
         self._processParameters["finalize"]["fitresult"] = self._fittedSignalName
         self._processParameters["finalize"]["trapintname"] = self._trapintName
-        self._processParameters["inspection"]["specdataname"] = self._rawName
-        self._processParameters["inspection"]["fitresult"] = self._fittedSignalName
-        self._processParameters["inspection"]["trapintname"] = self._trapintName
         # polarization analysis
         self._processParameters["polana"]["specdataname"] = self._rawName
         self._processParameters["polana"]["fitresult"] = self._fittedSignalName
         self._processParameters["polana"]["trapintname"] = self._trapintName
+        # inspection plots
+        self._processParameters["inspection"]["specdataname"] = self._rawName
+        self._processParameters["inspection"]["fitresult"] = self._fittedSignalName
+        self._processParameters["inspection"]["trapintname"] = self._trapintName
 
     def getRawDataName(self):
         return self._rawName
@@ -230,7 +233,6 @@ class InteractiveP09ProcessingControl():
         self._processParameters["calcfitpoints"]["xdata"] = self._motorName
         self._processParameters["trapint"]["motor"] = self._motorName
         self._processParameters["finalize"]["motor"] = self._motorName
-        self._processParameters["inspection"]["motor"] = self._motorName
 
     def settingChoiceDesBkg(self):
         # four cases des-bkg: no-no yes-no no-yes and yes-yes
@@ -238,26 +240,22 @@ class InteractiveP09ProcessingControl():
             self._processParameters["trapint"]["observable"] = self._observableName
             self._processParameters["signalcurvefit"]["ydata"] = self._observableName
             self._processParameters["finalize"]["observable"] = self._observableName
-            self._processParameters["inspection"]["observable"] = self._observableName
         if not self._nodespike and self._nobkg:
             self._processParameters["trapint"]["observable"] = self._despObservableName
             self._processParameters["signalcurvefit"]["ydata"] = self._despObservableName
             self._processParameters["finalize"]["observable"] = self._despObservableName
-            self._processParameters["inspection"]["observable"] = self._despObservableName
         if self._nodespike and not self._nobkg:
             self._processParameters["bkgselect"]["input"] = [ self._observableName, self._motorName]
             self._processParameters["bkgsubtract"]["input"] =  self._observableName
             self._processParameters["trapint"]["observable"] = self._signalName
             self._processParameters["signalcurvefit"]["ydata"] = self._signalName
             self._processParameters["finalize"]["observable"] = self._signalName
-            self._processParameters["inspection"]["observable"] = self._signalName
         if not self._nodespike and not self._nobkg:
             self._processParameters["bkgselect"]["input"] = [ self._despObservableName, self._motorName]
             self._processParameters["bkgsubtract"]["input"] =  self._despObservableName
             self._processParameters["trapint"]["observable"] = self._signalName
             self._processParameters["signalcurvefit"]["ydata"] = self._signalName
             self._processParameters["finalize"]["observable"] = self._signalName
-            self._processParameters["inspection"]["observable"] = self._signalName
 
     def getObservableName(self):
         return self._observableName
@@ -465,6 +463,14 @@ class InteractiveP09ProcessingControl():
             return self._processParameters["polana"]
         except KeyError:
             return {}
+
+    def getInspectionDict(self):
+        try:
+            name, suff = self.proposeSaveFileName()
+            self._processParameters["inspection"]["outputname"] = str(name+suff)
+            return self._processParameters["inspection"]
+        except KeyError:
+            return {}
     
     def getFitModels(self):
         return curvefitting.curvefitting().getFitModels()
@@ -570,18 +576,6 @@ class InteractiveP09ProcessingControl():
     def setResultFilename(self, filename):
         self._processParameters["finalize"]["outfilename"] = filename + ".iint"
         self._processParameters["finalize"]["pdffilename"] = filename
-
-    def getInspectionDict(self):
-        import string
-        import random
-        def random_string(length):
-            return ''.join(random.choice(string.ascii_letters) for m in range(length))
-            
-        filename = "/tmp/" + random_string(8)
-        self._processParameters["inspection"]["trackedData"] = ['scannumber']
-        self._processParameters["inspection"]["outfilename"] = filename + ".iint"
-        self._processParameters["inspection"]["pdffilename"] = filename
-        return self._processParameters["inspection"]
 
 class trackedInformation():
     

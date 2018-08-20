@@ -25,6 +25,7 @@ from . import sliceprojection
 from . import iintdefinition
 from . import iintfinalization
 from . import iintpolarization
+from . import iintcontrolplots
 from . import filter1d
 from . import subsequenceselection
 from . import backgroundsubtraction
@@ -42,6 +43,7 @@ processTypeList = [
         "iintdefinition",
         "iintfinalization",
         "iintpolarization",
+        "iintcontrolplots",
         "filter1d",
         "subsequenceselection",
         "backgroundsubtraction",
