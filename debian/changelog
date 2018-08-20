@@ -1,3 +1,12 @@
+adapt (0.4.0-1+deb8u10~fsec) jessie; urgency=low
+
+  * Implemented several additional methods for iintGUI:
+    - polarizationAnalysis at single button push
+    - inspection of dependency on temperature and magnetic field 
+
+ -- Christoph Rosemann <christoph.rosemann@desy.de>  Mon, 20 Aug 2018 21:19:00 +0200
+
+
 adapt (0.3.7-1+deb8u10~fsec) jessie; urgency=low
 
   * Fixed installation and several open topic: tentatively stable release. 
