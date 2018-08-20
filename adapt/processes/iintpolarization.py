@@ -20,7 +20,9 @@
 
 import numpy as np
 from scipy.optimize import curve_fit
-from math import pi, cos, sin
+from math import pi, cos, sin, sqrt
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_pdf import PdfPages
 
 from adapt.iProcess import *
 
@@ -63,46 +65,97 @@ class iintpolarization(IProcess):
         self._storage["pr2chi"].append( data.getData(self._rawdata).getCustomVar('pr2chi') )
         self._storage["trapint"].append( data.getData(self._trapint) )
         self._storage["trapint_stderr"].append( data.getData(self._trapint + "_stderr") )
-        fitresult = (data.getData(self._fitresult)).best_fit
-        self._storage["gaussint"].append( fitresult['m0_amplitude'] )
-        self._storage["gaussint_stderr"].append( fitresult['m0_amplitude_stderr'] )
+        fitresult = data.getData(self._fitresult)
+        fitparams = fitresult.params
+        self._storage["gaussint"].append( fitparams['m0_amplitude'].value )
+        self._storage["gaussint_stderr"].append( fitparams['m0_amplitude'].stderr )
 
-        #~ eta = poldata["peta"][(index-1)*length:index*length]
-        #~ iint = poldata["trapezoidIntegral"][(index-1)*length:index*length]
-        #~ iinterr = poldata["trapezoidIntegral_stderr"][(index-1)*length:index*length]
-        #~ iintgauss = poldata["m0_amplitude"][(index-1)*length:index*length]
-        #~ iintgausserr = poldata["m0_amplitude_stderr"][(index-1)*length:index*length]
-        #~ pr2chi = np.mean(poldata["pr2chi"][(index-1)*length:index*length])
-        #~ pr1chi = np.mean(poldata["pr1chi"][(index-1)*length:index*length])
-        #~ polangle = 2*pr2chi
-        pass
-    
     def finalize(self, data):
-        pass
-        
-        # the name of the input file
-        infile = self._inputPar.get()
-        
-            # first obtain the layout of the file by parsing the header
-        with open(infile) as f:
-            first_line = f.readline()
-            # - remove the leading hash
-            line = first_line.split('# ')[1]
-            headers = [i for i in line.split('\t')]
-            # - remove the trailing newline
-            headers.remove('\n')
-        # parse the data file
-        rawdata = np.loadtxt(infile, unpack=True)
+        # the dictionary of all scan values
+        poldata = self._storage
+        fig_size = plt.rcParams["figure.figsize"]
+        fig_size[0] = 16
+        fig_size[1] = 12
+        plt.rcParams["figure.figsize"] = fig_size
         
         # and finally: build the associative data block
-        poldata = { headers[i]: rawdata[i] for i in range(len(headers)) }
+        pr1chiana = np.unique(np.asarray(poldata["pr1chi"], dtype=float))
+        pr2chiana = np.unique(np.asarray( poldata["pr2chi"], dtype=float))
+        petaana = np.unique(np.asarray(poldata["peta"], dtype=float))
+        self.tthana = np.mean( np.asarray(poldata["ptth"], dtype=float))
+        # check if it adds up
+        if len(petaana)*len(pr1chiana) != len(poldata["scannumber"]):
+            print("[iintPolar] Polarization analysis cannot be performed, the number of values doesn't match.")
 
-        pr1chiana = np.unique(poldata[self._pr1chiNamePar.get()])
-        pr2chiana = np.unique(poldata[self._pr2chiNamePar.get()])
-        petaana = np.unique(poldata[self._petaNamePar.get()])
+        def getValueRangeByIndex(index):
+            length = len(petaana)
+            eta = np.asarray(poldata["peta"], dtype=float)[(index-1)*length:index*length]
+            iint = np.asarray(poldata["trapint"], dtype=float)[(index-1)*length:index*length]
+            iinterr = np.asarray(poldata["trapint_stderr"], dtype=float)[(index-1)*length:index*length]
+            iintgauss = np.asarray(poldata["gaussint"], dtype=float)[(index-1)*length:index*length]
+            iintgausserr = np.asarray(poldata["gaussint_stderr"], dtype=float)[(index-1)*length:index*length]
+            pr2chi = np.mean(np.asarray(poldata["pr2chi"], dtype=float)[(index-1)*length:index*length])
+            pr1chi = np.mean(np.asarray(poldata["pr1chi"], dtype=float)[(index-1)*length:index*length])
+            polangle = 2*pr2chi
+            return eta, iint, iinterr, iintgauss, iintgausserr, pr1chi, pr2chi, polangle
 
-        tthana = np.mean(poldata[self._ptthNamePar.get()])
+        i=1
+        ifig=1
+        eta, iint, iinterr, iintgauss, iintgausserr, pr1chi, pr2chi, polangle = getValueRangeByIndex(i)
+        popt, pcov = curve_fit(self.fitfunc, eta, iint)
+        popt, pcov = curve_fit(self.fitfunc, eta, iint)
 
+        results = []
+
+        for i in range(len(pr1chiana)):
+            j = i + 1
+            eta, iint, iinterr, iintgauss, iintgausserr, pr1chi, pr2chi, polangle = getValueRangeByIndex(j)
+            for k in range(10):
+                popt, pcov = curve_fit(self.fitfunc, eta, iint, p0=[popt[0],popt[1],popt[2]])
+
+            fitresults=[pr1chi, pr2chi, polangle, popt[0], pcov[0,0]**0.5, popt[1], pcov[1,1]**0.5, popt[2], pcov[2,2]**0.5, sqrt(popt[1]**2+popt[2]**2)]
+            results.append(fitresults)
+
+            if i % 9 == 0:
+                ifig=ifig+1
+                isubpl=1	
+                plt.figure(ifig)
+            fig=plt.figure(ifig)
+            fig.suptitle('polarization analysis', fontsize=14, fontweight='bold')
+            plt.subplot(3,3,isubpl)
+            plt.errorbar(eta, iint, yerr=iinterr, fmt='ro', capsize=0, ls='none', color='blue', elinewidth=2, ecolor='black', label='iintsum')
+            plt.errorbar(eta, iintgauss, yerr=iintgausserr, fmt='r+', capsize=0, ls='none', color='blue', elinewidth=2, ecolor='black', label='iintgauss')
+            xfine = np.linspace(np.amin(petaana), np.amax(petaana), 100)  # define values to plot the function for
+            plt.plot(xfine, self.fitfunc(xfine, *popt), 'r-', label='fit')
+            plt.title('Scans #S'+str(int(poldata["scannumber"][(j-1)*len(petaana)]))+'_S'+str(int(poldata["scannumber"][j*len(petaana)-1]))+'\n'+' pr1chi = '+str(int(pr1chi))+'; pr2chi = '+str(int(pr2chi)),fontsize=9)
+            plt.legend(fontsize=9, loc=3)
+            isubpl=isubpl+1
+
+        b = np.vstack(results)
+        for i in range(1,ifig+1,1):
+            plt.figure(i)
+        output="testpola"+'.stokes'
+        np.savetxt(output, b, fmt='%14.4f')
+
+        fig_size[0] = 12
+        fig_size[1] = 9
+        plt.rcParams["figure.figsize"] = fig_size
+
+        a = np.transpose(results)
+        plt.figure(ifig+1)
+        plt.errorbar(a[2], a[5], yerr=a[6], fmt='bo-', ecolor='blue',label='P1')
+        plt.errorbar(a[2], a[7], yerr=a[8], fmt='ro-', ecolor='red',label='P2')
+        plt.errorbar(a[2], a[9], fmt='kx', label='Plin')
+        plt.legend(loc=3)
+        plt.title('Polarization analysis '+str("bla")+'_2.pdf', fontsize=10)
+        plt.ylabel('Stokes parameters')
+        plt.xlabel('Angle of linear polarization (degrees)')
+        output="testblabla"+'_2.pdf'
+        with PdfPages(output) as pdf:
+            for i in range(1,ifig+2):
+                pdf.savefig(plt.figure(i))
+        print("Fits plotted in :"+str(output))
+        plt.close("all")
 
     def check(self, data):
         pass
