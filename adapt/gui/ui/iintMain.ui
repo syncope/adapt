@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>236</width>
-    <height>98</height>
+    <width>153</width>
+    <height>100</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -68,7 +68,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>236</width>
+     <width>153</width>
      <height>19</height>
     </rect>
    </property>
@@ -77,6 +77,7 @@
      <string>&amp;File</string>
     </property>
     <addaction name="actionNew"/>
+    <addaction name="action_Open_SPEC_file"/>
     <addaction name="actionOpen_file"/>
     <addaction name="actionSave_file"/>
     <addaction name="separator"/>
@@ -95,6 +96,7 @@
     <property name="title">
      <string>&amp;Help</string>
     </property>
+    <addaction name="action_About"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menu_Information"/>
@@ -156,6 +158,19 @@
   <action name="action_Results_File">
    <property name="text">
     <string>&amp;Results File</string>
+   </property>
+  </action>
+  <action name="action_Open_SPEC_file">
+   <property name="text">
+    <string>&amp;Open SPEC file</string>
+   </property>
+  </action>
+  <action name="action_About">
+   <property name="text">
+    <string>&amp;About</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+A</string>
    </property>
   </action>
  </widget>

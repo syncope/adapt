@@ -37,6 +37,7 @@ from . import quitDialog
 from . import loggerBox
 from . import resetDialog
 from . import showFileContents
+from . import showAboutIintGUI
 from . import iintMultiTrackedDataView
 from . import iintInspectAnalyze
 from . import selectResultOutput
@@ -50,6 +51,7 @@ class iintGUI(QtGui.QMainWindow):
         uic.loadUi(getUIFile("iintMain.ui"), self)
 
         self.actionNew.triggered.connect(self._askReset)
+        self.action_Open_SPEC_file.triggered.connect(self.showSFRGUI)
         self.actionOpen_file.triggered.connect(self.choosefile)
         self.actionSave_file.triggered.connect(self._saveConfig)
         self.actionExit.triggered.connect(self._closeApp)
@@ -57,6 +59,7 @@ class iintGUI(QtGui.QMainWindow):
         self.action_Spec_File.triggered.connect(self._showSpecFile)
         self.action_Fit_Results.triggered.connect(self._showFitResults)
         self.action_Results_File.triggered.connect(self._showResultsFile)
+        self.action_About.triggered.connect(self._showIintGuiInfo)
 
         # the steering helper object
         self._control = interactiveP09ProcessingControl.InteractiveP09ProcessingControl()
@@ -112,7 +115,6 @@ class iintGUI(QtGui.QMainWindow):
         self.verticalLayout.addWidget(self._inspectAnalyze)
         self.verticalLayout.addWidget(self._loggingBox)
 
-        self._fileInfo.newspecfile.connect(self.showSFRGUI)
         self._sfrGUI.valuesSet.connect(self.runFileReader)
         self._obsDef.observableDicts.connect(self.runObservable)
         self._bkgHandling.bkgDicts.connect(self.runBkgProcessing)
@@ -188,7 +190,10 @@ class iintGUI(QtGui.QMainWindow):
 
     def _showFitResults(self):
         self._widgetList.append(showFileContents.ShowFileContents(''.join(self._control.getSignalFitResults())))
-        
+
+    def _showIintGuiInfo(self):
+        self._widgetList.append(showAboutIintGUI.ShowAboutIintGUI())
+
     def message(self, text):
         self._loggingBox.addText(text)
 
