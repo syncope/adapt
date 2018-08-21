@@ -50,6 +50,7 @@ class iintGUI(QtGui.QMainWindow):
         uic.loadUi(getUIFile("iintMain.ui"), self)
 
         self.actionNew.triggered.connect(self._askReset)
+        self.action_Open_SPEC_file.triggered.connect(self.showSFRGUI)
         self.actionOpen_file.triggered.connect(self.choosefile)
         self.actionSave_file.triggered.connect(self._saveConfig)
         self.actionExit.triggered.connect(self._closeApp)
@@ -112,7 +113,6 @@ class iintGUI(QtGui.QMainWindow):
         self.verticalLayout.addWidget(self._inspectAnalyze)
         self.verticalLayout.addWidget(self._loggingBox)
 
-        self._fileInfo.newspecfile.connect(self.showSFRGUI)
         self._sfrGUI.valuesSet.connect(self.runFileReader)
         self._obsDef.observableDicts.connect(self.runObservable)
         self._bkgHandling.bkgDicts.connect(self.runBkgProcessing)

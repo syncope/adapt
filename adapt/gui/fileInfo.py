@@ -29,7 +29,6 @@ class FileInfo(QtGui.QWidget):
         super(FileInfo, self).__init__(parent)
         self.setWindowTitle("File Display")
         uic.loadUi(getUIFile("fileInfo.ui"), self)
-        self.changeFile.clicked.connect(self.emitNew)
 
     def reset(self):
         self.fileLabel.setText("No File")
@@ -41,7 +40,3 @@ class FileInfo(QtGui.QWidget):
         self.fileLabel.setText(os.path.basename(f))
         self.fileLabel.setToolTip(f)
         self.scanSelectionDisplay.setText(s)
-
-    def emitNew(self):
-        self.newspecfile.emit()
-
