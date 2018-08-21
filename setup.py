@@ -10,11 +10,11 @@ from sphinx.setup_command import BuildDoc
 
 name='adapt'
 version='0'
-release='0.4.0'
+release='0.4.1'
 
 setup(
     name='adapt',
-    version='0.4.0',
+    version='0.4.1',
 
     description='ADAPT: a data processing toolkit.', 
     long_description=long_description,

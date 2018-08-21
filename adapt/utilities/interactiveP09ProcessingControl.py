@@ -124,6 +124,15 @@ class InteractiveP09ProcessingControl():
             except KeyError:
                 pass
 
+    def resetTRAPINTdata(self):
+        for elem in self._dataList:
+            try:
+                elem.clearCurrent(self._trapintName)
+                # ugly fix: there is also the error to be concerned
+                elem.clearCurrent(self._trapintName+"_stderr")
+            except KeyError:
+                pass
+
     def resetSIGdata(self):
         for elem in self._dataList:
             try:

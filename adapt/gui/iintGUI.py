@@ -361,6 +361,7 @@ class iintGUI(QtGui.QMainWindow):
 
     def runSignalProcessing(self, fitDict):
         self.message("Signal processing: first trapezoidal integration ...")
+        self._control.resetTRAPINTdata()
         self._control.createAndBulkExecute(self._control.getTrapIntDict())
         self.message(" ... done.")
         self.runSignalFitting(fitDict)
