@@ -37,6 +37,7 @@ from . import quitDialog
 from . import loggerBox
 from . import resetDialog
 from . import showFileContents
+from . import showAboutIintGUI
 from . import iintMultiTrackedDataView
 from . import iintInspectAnalyze
 from . import selectResultOutput
@@ -58,6 +59,7 @@ class iintGUI(QtGui.QMainWindow):
         self.action_Spec_File.triggered.connect(self._showSpecFile)
         self.action_Fit_Results.triggered.connect(self._showFitResults)
         self.action_Results_File.triggered.connect(self._showResultsFile)
+        self.action_About.triggered.connect(self._showIintGuiInfo)
 
         # the steering helper object
         self._control = interactiveP09ProcessingControl.InteractiveP09ProcessingControl()
@@ -188,7 +190,10 @@ class iintGUI(QtGui.QMainWindow):
 
     def _showFitResults(self):
         self._widgetList.append(showFileContents.ShowFileContents(''.join(self._control.getSignalFitResults())))
-        
+
+    def _showIintGuiInfo(self):
+        self._widgetList.append(showAboutIintGUI.ShowAboutIintGUI())
+
     def message(self, text):
         self._loggingBox.addText(text)
 
