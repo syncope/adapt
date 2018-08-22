@@ -48,7 +48,7 @@
        <item>
         <widget class="QPushButton" name="blacklistButton">
          <property name="text">
-          <string>Add to blacklist</string>
+          <string>Remove from display</string>
          </property>
         </widget>
        </item>

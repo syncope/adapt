@@ -251,9 +251,9 @@ class iintDataPlot(QtGui.QDialog):
 
     def _setBLB2Add(self):
         self.blacklistButton.setStyleSheet("color: white;background-color: green;")
-        self.blacklistButton.setText("Add to blacklist")
+        self.blacklistButton.setText("Remove from display")
 
     def _setBLB2Rm(self):
         self.blacklistButton.setStyleSheet("color: yellow;background-color: red;")
-        self.blacklistButton.setText("Remove from blacklist")
+        self.blacklistButton.setText("Add to display again")
 

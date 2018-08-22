@@ -346,7 +346,7 @@ class iintGUI(QtGui.QMainWindow):
                                         self._control.getFittedSignalName(),
                                         )
         self._simpleImageView.plot()
-        self.imageTabs.addTab(self._simpleImageView,"Image Display")
+        self.imageTabs.addTab(self._simpleImageView,"Scan display")
         self.imageTabs.show()
         self._simpleImageView.show()
 
@@ -386,7 +386,7 @@ class iintGUI(QtGui.QMainWindow):
         trackinfo = self._control.getDefaultTrackInformation()
         tdv = iintMultiTrackedDataView.iintMultiTrackedDataView(trackinfo)
         self._trackedDataDict[trackinfo.getName()] = trackinfo
-        self.imageTabs.addTab(tdv, trackinfo.getName())
+        self.imageTabs.addTab(tdv, ("Fit vs." +  trackinfo.getName()))
         tdv.pickedTrackedDataPoint.connect(self._setFocusToSpectrum)
         self.message(" ... done.\n")
         self._inspectAnalyze.activate()
