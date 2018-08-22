@@ -61,6 +61,18 @@ class iintDataPlot(QtGui.QDialog):
         self._logScale = False
         self._showsigfit = False
         self.setGeometry(640,1,840,840)
+        self.showID.setToolTip("Shows the number of the currently displayed scan.")
+        self.blacklistButton.setToolTip("Click here to toggle between showing or hiding the current scan. This affects ONLY the display of the data, not the processing.")
+        self.showPreviousBtn.setToolTip("Show the previous scan of the chosen list. If the first scan is shown, this will show the last entry.")
+        self.showNextBtn.setToolTip("Show the next scan of the chosen list. If the last scan is shown, this will show the first entry.")
+        self.logScale.setToolTip("Activate the check box to switch to logarithmic scale, an unchecked box means linear scaling. There is a minimum value of 10^-2 for the logarithmic scale.")
+        self.xPosition.setToolTip("Indicates the x position of a point if it is clicked somewhere in the scan display.")
+        self.yPosition.setToolTip("Indicates the yt position of a point if it is clicked somewhere in the scan display.")
+        self.showRAW.setToolTip("If checked, the raw data is shown; as computed from the application of the formula on the input.")
+        self.showDES.setToolTip("If despiking is performed, the display of the despiked data can be de-/activated with the check box.")
+        self.showBKG.setToolTip("If available, the display of the background of the data can be de-/activated with the check box. In case despiking has been applied this is taken as input; otherwise the raw data is taken.")
+        self.showSIG.setToolTip("If background is available, checking/unchecking the box will display/hide the background subtracted data.")
+        self.showFIT.setToolTip("If fit data is available, checking/unchecking the box will display/hide the fit result as curve.")
 
     def reset(self):
         self.showDES.setChecked(False)

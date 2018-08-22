@@ -28,3 +28,7 @@ class QuitDialog(QtGui.QDialog):
         super(QuitDialog, self).__init__(parent)
         uic.loadUi(getUIFile("quitDialog.ui"), self)
         self.cancel.clicked.connect(self.close)
+        self.label.setToolTip("Choose a button to perform the wanted action.")
+        self.quitandsave.setToolTip("Click to save the configuration and quit iint-gui.")
+        self.justquit.setToolTip("Click to quit iint-gui immediately.")
+        self.cancel.setToolTip("Click to abort quitting and return to iint-gui.")

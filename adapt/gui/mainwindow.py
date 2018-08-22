@@ -24,8 +24,6 @@ from PyQt4 import QtCore, QtGui
 
 from addprocess_widget import addProcess, removeProcess
 
-__version__ ="0.0.0a"
-
 
 
 class adaptmaingui(QtGui.QMainWindow):
@@ -44,8 +42,9 @@ class adaptmaingui(QtGui.QMainWindow):
         globallayout.addWidget(actionTabHandler())
         self._central.setLayout(globallayout)
         self.setCentralWidget(self._central)
-
         self.setWindowTitle("ADAPT")
+        #~ self.menuFile.setToolTip("The file menu, shortcut is <Alt-f>.")
+        self.actionNew.setToolTip("Select to reset all data and processing for a clean reset. Shortcut is <Crtl-n>.")
 
         
 class twobuttons(QtGui.QWidget):

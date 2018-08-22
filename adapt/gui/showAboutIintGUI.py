@@ -21,6 +21,7 @@
 from PyQt4 import QtCore, QtGui, uic
 from adapt.utilities import getUIFile
 from adapt import __version__ as ver
+from adapt import __iintguiversion__ as igver
 
 class ShowAboutIintGUI(QtGui.QDialog):
     
@@ -29,11 +30,12 @@ class ShowAboutIintGUI(QtGui.QDialog):
         uic.loadUi(getUIFile("about-iintgui.ui"), self)
         
         self.adaptText = '''iint-gui is an application built within the ADAPT framework.
-                          ADAPT is written and maintained by Christoph Rosemann (FS-EC @ DESY)
-                          mail address: christoph.rosemann@desy.de'''
-        self.iintText = '''iint-gui is based on iint, written by Sonia Francoual (beamline P09, FS-PEX @ DESY)'''
+        ADAPT is written and maintained by Christoph Rosemann (FS-EC @ DESY)
+        mail address: christoph.rosemann@desy.de'''
+        self.iintText = '''iint-gui is based on iint, written by Sonia Francoual (beamline P09, FS-PEX @ DESY)
+        mail address: sonia.francoual@desy.de'''
                             
-        self.infoText = 'This is version ' + str(ver) + ' of ADAPT'
+        self.infoText = 'This is version ' + str(ver) + ' of ADAPT and version ' + str(igver) + ' of iint-gui'
         self._setAndShow()
 
     def _setAndShow(self):

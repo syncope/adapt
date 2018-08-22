@@ -42,6 +42,19 @@ class iintSignalHandling(QtGui.QWidget):
         self.useSecond.stateChanged.connect(self._toggleSecond)
         self.useThird.stateChanged.connect(self._toggleThird)
         self.useFourth.stateChanged.connect(self._toggleFourth)
+        self.useFirst.setToolTip("Always checked, since there needs to be at least one model to fit.")
+        self.useSecond.setToolTip("Check to activate the options on the line, enabling the choice of a model and its configuration.")
+        self.useThird.setToolTip("Check to activate the options on the line, enabling the choice of a model and its configuration.")
+        self.useFourth.setToolTip("Check to activate the options on the line, enabling the choice of a model and its configuration.")
+        self.firstModelCB.setToolTip("Select a model from the drop down list.")
+        self.secondModelCB.setToolTip("Select a model from the drop down list.")
+        self.thirdModelCB.setToolTip("Select a model from the drop down list.")
+        self.fourthModelCB.setToolTip("Select a model from the drop down list.")
+        self.configureFirst.setToolTip("Click here to set the initial values for the chosen model from the drop down list.")
+        self.configureSecond.setToolTip("Click here to set the initial values for the chosen model from the drop down list.")
+        self.configureThird.setToolTip("Click here to set the initial values for the chosen model from the drop down list.")
+        self.configureFourth.setToolTip("Click here to set the initial values for the chosen model from the drop down list.")
+        self.performFitPushBtn.setToolTip("Press to run the fitting procedure. All chosen models must be configured first, otherwise fitting is not possible.")
 
     def reset(self):
         self._firstModelDict = {}

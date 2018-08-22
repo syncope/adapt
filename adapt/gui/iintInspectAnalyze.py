@@ -28,6 +28,11 @@ class iintInspectAnalyze(QtGui.QWidget):
     def __init__(self, parent=None):
         super(iintInspectAnalyze, self).__init__(parent)
         uic.loadUi(getUIFile("inspectAnalyze.ui"), self)
+        self.trackData.setToolTip("Open a dialog to select column and header data to be included in the output file.")
+        self.polAnalysis.setToolTip("Run a polarization analysis on the current data; non-interactive. A pdf file and a .stokes file with be created and saved. The pdf file will be opened in an external viewer.")
+        self.saveResults.setToolTip("Opens a dialog to allow the saving of the output file. The file automatically contains the scan number, all fit parameters and the iint sum including their errors. In addition the data is included that has been selected in the 'Choose data to track' dialog.")
+        self.inspectionPlots.setToolTip("Create and save a pdf file that shows the temperature and magnetic field dependence of the fit parameters and the calculated iint sum. Non-interactive. Will open an external pdf viewer showing the created pdf file.")
+
 
     def activate(self):
         self.trackData.setDisabled(False)

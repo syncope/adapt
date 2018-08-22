@@ -57,6 +57,12 @@ class iintTrackedDataChoice(QtGui.QWidget):
         self._currentSelectedItemColumns  = 0
         self._currentUnSelectedItemHeaders  = 0
         self._currentSelectedItemHeaders  = 0
+        self.listAllColumns.setToolTip("A list of available column data that has not yet been selected for tracking.\n Select by double-clicking or by selecting via single mouse click and then using the button '>>'.")
+        self.listSelectedColumns.setToolTip("The list of already selected column data to be included in the output file.\n De-select by double-clicking or by selecting via single mouse click and then using the button '<<'.")
+        self.listAllHeaders.setToolTip("A list of available header data that has not yet been selected for tracking.\n Select by double-clicking or by selecting via single mouse click and then using the button '>>'.")
+        self.listSelectedHeaders.setToolTip("The list of already selected header data to be included in the output file.\n De-select by double-clicking or by selecting via single mouse click and then using the button '<<'.")
+        self.okButton.setToolTip("Click 'OK' to store the current choice of tracked data.")
+        self.cancelButton.setToolTip("Click 'Cancel' to disregard the current changes in tracked data.")
         self.show()
 
     def _fillLists(self, namelist):
