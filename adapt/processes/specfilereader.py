@@ -90,6 +90,9 @@ class specfilereaderGUI(QtGui.QWidget):
         self._file = None
 
     def reset(self):
+        self.inputFileLE.setText('')
+        self.scanSelectionInput.setText('')
+        self.okBtn.setDisabled(True)
         self._file = None
         self._specReaderDict.clear()
 

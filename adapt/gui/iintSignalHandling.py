@@ -64,10 +64,6 @@ class iintSignalHandling(QtGui.QWidget):
         self.performFitPushBtn.setDisabled(True)
         self.configureFirst.setDisabled(True)
 
-    def activate(self):
-        self.activateConfiguration()
-        self.activateFitting()
-
     def activateConfiguration(self):
         self.firstModelCB.setDisabled(False)
         self.configureFirst.setDisabled(False)
@@ -106,9 +102,9 @@ class iintSignalHandling(QtGui.QWidget):
         self.fourthModelCB.addItems(self._modelnames)
 
     def emitfirstmodelconfig(self):
+        self.activateFitting()
         index = self.firstModelCB.currentIndex()
         self.modelcfg.emit(self._modelnames[index], 0)
-        self.activateFitting()
 
     def emitsecondmodelconfig(self):
         index = self.secondModelCB.currentIndex()
