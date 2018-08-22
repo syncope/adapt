@@ -24,6 +24,9 @@
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
          <widget class="QCheckBox" name="useBkg">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>Use</string>
           </property>
@@ -38,6 +41,9 @@
         </item>
         <item>
          <widget class="QRadioButton" name="linearBkg">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>Linear</string>
           </property>
@@ -48,6 +54,9 @@
         </item>
         <item>
          <widget class="QRadioButton" name="constBkg">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>Const</string>
           </property>
@@ -98,7 +107,11 @@
              </spacer>
             </item>
             <item>
-             <widget class="QSpinBox" name="bkgStartPointsSB"/>
+             <widget class="QSpinBox" name="bkgStartPointsSB">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+             </widget>
             </item>
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_10">
@@ -136,7 +149,11 @@
                </spacer>
               </item>
               <item>
-               <widget class="QSpinBox" name="bkgEndPointsSB"/>
+               <widget class="QSpinBox" name="bkgEndPointsSB">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+               </widget>
               </item>
              </layout>
             </item>

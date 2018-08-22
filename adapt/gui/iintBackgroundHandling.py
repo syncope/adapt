@@ -55,8 +55,18 @@ class iintBackgroundHandling(QtGui.QWidget):
         self.bkgStartPointsSB.setValue(3)
         self.bkgEndPointsSB.setValue(3)
         self.fitBkg.setDisabled(True)
+        self.bkgEndPointsSB.setDisabled(True)
+        self.bkgStartPointsSB.setDisabled(True)
+        self.linearBkg.setDisabled(True)
+        self.constBkg.setDisabled(True)
+        self.useBkg.setDisabled(True)
 
     def activate(self):
+        self.bkgEndPointsSB.setDisabled(False)
+        self.bkgStartPointsSB.setDisabled(False)
+        self.linearBkg.setDisabled(False)
+        self.constBkg.setDisabled(False)
+        self.useBkg.setDisabled(False)
         self.fitBkg.setDisabled(False)
 
     def _toggle(self):
