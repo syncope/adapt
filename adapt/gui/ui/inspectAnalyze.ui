@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>296</width>
+    <width>335</width>
     <height>125</height>
    </rect>
   </property>
@@ -30,7 +30,7 @@
              <bool>false</bool>
             </property>
             <property name="text">
-             <string>Inspection plots</string>
+             <string>Show T/B dependence</string>
             </property>
            </widget>
           </item>
@@ -61,7 +61,7 @@
              <bool>false</bool>
             </property>
             <property name="text">
-             <string>Data to track</string>
+             <string>Choose data to track</string>
             </property>
             <property name="default">
              <bool>true</bool>
