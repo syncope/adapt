@@ -33,7 +33,7 @@ class iintSignalHandling(QtGui.QWidget):
         self.configureSecond.clicked.connect(self.emitsecondmodelconfig)
         self.configureThird.clicked.connect(self.emitthirdmodelconfig)
         self.configureFourth.clicked.connect(self.emitfourthmodelconfig)
-        self._inactive = [ False, True, True, True ]
+        self._inactive = [ True, True, True, True ]
         self._firstModelDict = {}
         self._secondModelDict = {}
         self._thirdModelDict = {}
@@ -42,6 +42,19 @@ class iintSignalHandling(QtGui.QWidget):
         self.useSecond.stateChanged.connect(self._toggleSecond)
         self.useThird.stateChanged.connect(self._toggleThird)
         self.useFourth.stateChanged.connect(self._toggleFourth)
+        self.useFirst.setToolTip("Always checked, since there needs to be at least one model to fit.")
+        self.useSecond.setToolTip("Check to activate the options on the line, enabling the choice of a model and its configuration.")
+        self.useThird.setToolTip("Check to activate the options on the line, enabling the choice of a model and its configuration.")
+        self.useFourth.setToolTip("Check to activate the options on the line, enabling the choice of a model and its configuration.")
+        self.firstModelCB.setToolTip("Select a model from the drop down list.")
+        self.secondModelCB.setToolTip("Select a model from the drop down list.")
+        self.thirdModelCB.setToolTip("Select a model from the drop down list.")
+        self.fourthModelCB.setToolTip("Select a model from the drop down list.")
+        self.configureFirst.setToolTip("Click here to set the initial values for the chosen model from the drop down list.")
+        self.configureSecond.setToolTip("Click here to set the initial values for the chosen model from the drop down list.")
+        self.configureThird.setToolTip("Click here to set the initial values for the chosen model from the drop down list.")
+        self.configureFourth.setToolTip("Click here to set the initial values for the chosen model from the drop down list.")
+        self.performFitPushBtn.setToolTip("Press to run the fitting procedure. All chosen models must be configured first, otherwise fitting is not possible.")
 
     def reset(self):
         self._firstModelDict = {}
@@ -52,7 +65,14 @@ class iintSignalHandling(QtGui.QWidget):
         self.configureFirst.setDisabled(True)
 
     def activate(self):
+        self.activateConfiguration()
+        self.activateFitting()
+
+    def activateConfiguration(self):
+        self.firstModelCB.setDisabled(False)
         self.configureFirst.setDisabled(False)
+
+    def activateFitting(self):
         self.performFitPushBtn.setDisabled(False)
 
     def _toggleFirst(self):
@@ -88,6 +108,7 @@ class iintSignalHandling(QtGui.QWidget):
     def emitfirstmodelconfig(self):
         index = self.firstModelCB.currentIndex()
         self.modelcfg.emit(self._modelnames[index], 0)
+        self.activateFitting()
 
     def emitsecondmodelconfig(self):
         index = self.secondModelCB.currentIndex()

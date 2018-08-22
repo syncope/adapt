@@ -27,6 +27,7 @@ class LoggerBox(QtGui.QWidget):
     def __init__(self, parent=None):
         super(LoggerBox, self).__init__(parent)
         uic.loadUi(getUIFile("logBOX.ui"), self)
+        self.messageWindow.setToolTip("Contains the logging output of iint-gui.")
 
     def addText(self,text):
         self.messageWindow.append(text)

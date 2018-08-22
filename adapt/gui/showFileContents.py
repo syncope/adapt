@@ -28,4 +28,5 @@ class ShowFileContents(QtGui.QDialog):
         super(ShowFileContents, self).__init__(parent)
         uic.loadUi(getUIFile("fileDisplay.ui"), self)
         self.textEdit.setText(text)
+        self.textEdit.setToolTip("The contents of the chosen object.")
         self.show()

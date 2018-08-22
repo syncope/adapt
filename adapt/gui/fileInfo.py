@@ -29,6 +29,8 @@ class FileInfo(QtGui.QWidget):
         super(FileInfo, self).__init__(parent)
         self.setWindowTitle("File Display")
         uic.loadUi(getUIFile("fileInfo.ui"), self)
+        self.fileLabel.setToolTip("If a SPEC file has been selected, the name is shown here.")
+        self.scanSelectionDisplay.setToolTip("The actual selection of scans in the given SPEC file.")
 
     def reset(self):
         self.fileLabel.setText("No File")

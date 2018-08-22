@@ -30,8 +30,9 @@ class ResetDialog(QtGui.QDialog):
         uic.loadUi(getUIFile("resetDialog.ui"), self)
         self.cancelButton.clicked.connect(self.close)
         self.okButton.clicked.connect(self._returnOK)
+        self.okButton.setToolTip("Click here to reset all processing and stored data.")
+        self.cancelButton.setToolTip("Click here to keep all processed data and settings.")
 
     def _returnOK(self):
         self.resetOK.emit(0)
         self.close()
-
