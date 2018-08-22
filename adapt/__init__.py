@@ -28,3 +28,4 @@ from . import processingControl
 from . import valueMap
 
 __version__ = '0.4.1'
+__iintguiversion__ = "0.4.0"
