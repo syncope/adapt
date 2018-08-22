@@ -26,6 +26,9 @@
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
            <widget class="QCheckBox" name="useFirst">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="text">
              <string/>
             </property>
@@ -35,7 +38,11 @@
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="firstModelCB"/>
+           <widget class="QComboBox" name="firstModelCB">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+           </widget>
           </item>
           <item>
            <spacer name="horizontalSpacer_2">

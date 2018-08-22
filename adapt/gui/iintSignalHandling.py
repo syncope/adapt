@@ -33,7 +33,7 @@ class iintSignalHandling(QtGui.QWidget):
         self.configureSecond.clicked.connect(self.emitsecondmodelconfig)
         self.configureThird.clicked.connect(self.emitthirdmodelconfig)
         self.configureFourth.clicked.connect(self.emitfourthmodelconfig)
-        self._inactive = [ False, True, True, True ]
+        self._inactive = [ True, True, True, True ]
         self._firstModelDict = {}
         self._secondModelDict = {}
         self._thirdModelDict = {}
@@ -52,7 +52,14 @@ class iintSignalHandling(QtGui.QWidget):
         self.configureFirst.setDisabled(True)
 
     def activate(self):
+        self.activateConfiguration()
+        self.activateFitting()
+
+    def activateConfiguration(self):
+        self.firstModelCB.setDisabled(False)
         self.configureFirst.setDisabled(False)
+
+    def activateFitting(self):
         self.performFitPushBtn.setDisabled(False)
 
     def _toggleFirst(self):
@@ -88,6 +95,7 @@ class iintSignalHandling(QtGui.QWidget):
     def emitfirstmodelconfig(self):
         index = self.firstModelCB.currentIndex()
         self.modelcfg.emit(self._modelnames[index], 0)
+        self.activateFitting()
 
     def emitsecondmodelconfig(self):
         index = self.secondModelCB.currentIndex()

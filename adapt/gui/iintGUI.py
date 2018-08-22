@@ -306,7 +306,7 @@ class iintGUI(QtGui.QMainWindow):
             if( self._simpleImageView != None):
                 self._simpleImageView.update("des")
         self._bkgHandling.activate()
-        self._signalHandling.activate()
+        self._signalHandling.activateConfiguration()
         self.message(" done.\n")
 
     def runBkgProcessing(self, selDict, fitDict, calcDict, subtractDict):
