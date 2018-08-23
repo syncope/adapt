@@ -34,9 +34,9 @@ class iintTrackedDataChoice(QtGui.QWidget):
         for elem in list(self._data.getCustomKeys()):
             self._initialNamesHeaders.append(elem)
         self._fillLists(namelist)
-        self.okBtn.clicked.connect(self._emitTrackedData)
-        self.okBtn.clicked.connect(self.reset)
-        self.cancel.clicked.connect(self.reset)
+        self.okButton.clicked.connect(self._emitTrackedData)
+        self.okButton.clicked.connect(self.reset)
+        self.cancelButton.clicked.connect(self.reset)
         self.addToListColumns.setDisabled(True)
         self.addToListHeaders.setDisabled(True)
         self.addToListColumns.clicked.connect(self._moveButtonToSelectedColumns)
