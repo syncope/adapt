@@ -1,4 +1,25 @@
-adapt (0.4.2-1+deb9u5~fsec) stretch; urgency=low
+adapt (0.4.4-2+deb8u10~fsec) jessie; urgency=low
+
+  * Rebuild after change, broken file. 
+
+ -- Christoph Rosemann <christoph.rosemann@desy.de>  Thu, 23 Aug 2018 11:34:00 +0200
+
+
+adapt (0.4.4-1+deb8u10~fsec) jessie; urgency=low
+
+  * Changes to the debian build and install configuration. 
+
+ -- Christoph Rosemann <christoph.rosemann@desy.de>  Thu, 23 Aug 2018 11:17:00 +0200
+
+
+adapt (0.4.3-1+deb8u10~fsec) jessie; urgency=low
+
+  * Fixed fit button logic; plus additional bug in the SFR display. 
+
+ -- Christoph Rosemann <christoph.rosemann@desy.de>  Wed, 22 Aug 2018 20:42:00 +0200
+
+
+adapt (0.4.2-1+deb8u10~fsec) jessie; urgency=low
 
   * Added lots of tooltips for iint-gui
   * Fixed issue with external reader library (psio) when failing to load spec files.
