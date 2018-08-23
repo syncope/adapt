@@ -309,7 +309,7 @@ class iintGUI(QtGui.QMainWindow):
         self._signalHandling.activateConfiguration()
         self.message(" done.\n")
         self._bkgHandling.activate()
-        self._signalHandling.activate()
+        self._signalHandling.activateConfiguration()
 
     def runBkgProcessing(self, selDict, fitDict, calcDict, subtractDict):
         self._inspectAnalyze.reset()
