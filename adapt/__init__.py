@@ -27,5 +27,5 @@ from . import processingConfiguration
 from . import processingControl
 from . import valueMap
 
-__version__ = '0.4.4'
+__version__ = '0.4.5'
 __iintguiversion__ = "0.3.4"
