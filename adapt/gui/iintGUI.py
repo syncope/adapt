@@ -146,6 +146,7 @@ class iintGUI(QtGui.QMainWindow):
         self._sfrGUI.reset()
         self.resetTabs()
         self._inspectAnalyze.reset()
+        self.message("Cleared all data and processing configuration.")
 
     def resetTabs(self, keepSpectra=False):
         self._control.resetTrackedData()
@@ -218,7 +219,6 @@ class iintGUI(QtGui.QMainWindow):
             self._resetAll()
         else:
             self._resetQuestion.show()
-            self.message("Cleared all data and processing configuration.")
 
     def showSFRGUI(self):
         self._sfrGUI.show()
