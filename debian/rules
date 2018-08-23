@@ -1,0 +1,24 @@
+#!/usr/bin/make -f
+
+override_dh_auto_build:
+
+override_dh_auto_install:
+	python3  setup.py install --no-compile --install-layout=deb --root=$(shell pwd)/debian/tmp
+
+override_dh_auto_clean:
+	python3  setup.py clean
+	rm -rf adapt.egg-info
+	rm -rf build
+ 
+	#mkdir -p debian/python3-adapt/usr/local/bin/
+	#ln -s /usr/lib/python3/dist-packages/adapt/bin/adapt  debian/python3-adapt/usr/local/bin/adapt
+	#ln -s /usr/lib/python3/dist-packages/adapt/bin/iint-gui  debian/python3-adapt/usr/local/bin/iint-gui
+
+%:
+	dh $@ --with python3
+# alternative:
+#~ export PYBUILD_NAME=adapt
+#~ PYTHON3_VERSIONS = python3
+#~ 
+#~ %:
+#~ 	dh $@ --with python3 --buildsystem=pybuild
