@@ -35,8 +35,9 @@ class iintTrackedDataChoice(QtGui.QWidget):
             self._initialNamesHeaders.append(elem)
         self._fillLists(namelist)
         self.okButton.clicked.connect(self._emitTrackedData)
-        self.okButton.clicked.connect(self.reset)
-        self.cancelButton.clicked.connect(self.reset)
+        self.cancelButton.clicked.connect(self.close)
+        #~ self.okButton.clicked.connect(self.reset)
+        #~ self.cancelButton.clicked.connect(self.reset)
         self.addToListColumns.setDisabled(True)
         self.addToListHeaders.setDisabled(True)
         self.addToListColumns.clicked.connect(self._moveButtonToSelectedColumns)
@@ -64,6 +65,10 @@ class iintTrackedDataChoice(QtGui.QWidget):
         self.okButton.setToolTip("Click 'OK' to store the current choice of tracked data.")
         self.cancelButton.setToolTip("Click 'Cancel' to disregard the current changes in tracked data.")
         self.show()
+
+    def closeEvent(self, evnt):
+        evnt.ignore()
+        self.hide()
 
     def _fillLists(self, namelist):
         self._untrackedDataColumns = sorted(self._initialNamesColumns[:])
@@ -179,3 +184,4 @@ class iintTrackedDataChoice(QtGui.QWidget):
     def _emitTrackedData(self):
         emitterData = self._trackedDataColumns + self._trackedDataHeaders
         self.trackedData.emit(emitterData)
+        self.hide()

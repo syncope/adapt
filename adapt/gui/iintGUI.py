@@ -434,11 +434,24 @@ class iintGUI(QtGui.QMainWindow):
 
     def _dataToTrack(self):
         rawScanData = self._control.getDataList()[0].getData(self._control.getRawDataName())
-        self._trackedDataChoice = iintTrackedDataChoice.iintTrackedDataChoice(rawScanData,self._control.getTrackedData() )
-        self._trackedDataChoice.trackedData.connect(self._showTracked)
+        try:
+            self._trackedDataChoice.show()
+        except AttributeError:
+            self._trackedDataChoice = iintTrackedDataChoice.iintTrackedDataChoice(rawScanData,self._control.getTrackedData() )
         self._trackedDataChoice.trackedData.connect(self._control.setTrackedData)
+        self._trackedDataChoice.trackedData.connect(self._showTracked)
 
-    def _showTracked(self, namelist):
+    def _showTracked(self):
+        #~ print("tracked data is: " + str(self._trackedDataDict))
+        #~ print("there are " + str(self.imageTabs.__len__()) + " tabs in total")
+        # prepare the tabs and dict of tracked data for re-display
+        for name in list(self._trackedDataDict.keys()):
+            if name != "ScanNumber":
+                del self._trackedDataDict[name]
+        for index in range(self.imageTabs.__len__(),1,-1):
+            self.imageTabs.removeTab(index)
+
+        namelist = self._control.getTrackedData()
         for name in namelist:
             trackinfo = self._control.getTrackInformation(name)
             tdv = iintMultiTrackedDataView.iintMultiTrackedDataView(trackinfo, self._blacklist)
