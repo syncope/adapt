@@ -1,3 +1,10 @@
+adapt (0.4.7-4+deb8u10~fsec) jessie; urgency=low
+
+  * four times will create a working package.  
+
+ -- Christoph Rosemann <christoph.rosemann@desy.de>  Tue, 28 Aug 2018 17:21:00 +0200
+
+
 adapt (0.4.7-3+deb8u10~fsec) jessie; urgency=low
 
   * another try for today: will it work??  
