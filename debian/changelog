@@ -1,3 +1,10 @@
+adapt (0.4.7-2+deb8u10~fsec) jessie; urgency=low
+
+  * Unusual failure to create the correctly named libraries...?  
+
+ -- Christoph Rosemann <christoph.rosemann@desy.de>  Tue, 28 Aug 2018 16:59:00 +0200
+
+
 adapt (0.4.7-1+deb8u10~fsec) jessie; urgency=low
 
   * Two bugs fixed: result of 'data to track' button and viewing the config file in program. 

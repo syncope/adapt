@@ -10,9 +10,9 @@ override_dh_auto_clean:
 	rm -rf adapt.egg-info
 	rm -rf build
  
-	#mkdir -p debian/python3-adapt/usr/local/bin/
-	#ln -s /usr/lib/python3/dist-packages/adapt/bin/adapt  debian/python3-adapt/usr/local/bin/adapt
-	#ln -s /usr/lib/python3/dist-packages/adapt/bin/iint-gui  debian/python3-adapt/usr/local/bin/iint-gui
+	mkdir -p debian/python3-adapt/usr/local/bin/
+	ln -s /usr/lib/python3/dist-packages/adapt/bin/adapt  debian/python3-adapt/usr/local/bin/adapt
+	ln -s /usr/lib/python3/dist-packages/adapt/bin/iint-gui  debian/python3-adapt/usr/local/bin/iint-gui
 
 %:
 	dh $@ --with python3
