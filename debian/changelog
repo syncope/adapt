@@ -1,5 +1,12 @@
 adapt (0.4.7-2+deb8u10~fsec) jessie; urgency=low
 
+  * final check for today: will it work??  
+
+ -- Christoph Rosemann <christoph.rosemann@desy.de>  Tue, 28 Aug 2018 17:05:00 +0200
+
+
+adapt (0.4.7-2+deb8u10~fsec) jessie; urgency=low
+
   * Unusual failure to create the correctly named libraries...?  
 
  -- Christoph Rosemann <christoph.rosemann@desy.de>  Tue, 28 Aug 2018 16:59:00 +0200
