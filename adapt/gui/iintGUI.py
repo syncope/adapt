@@ -211,6 +211,7 @@ class iintGUI(QtGui.QMainWindow):
         savename, timesuffix  = self._control.proposeSaveFileName('')
         self._control.saveConfig(savename+".icfg")
         self._control.saveConfig(savename+timesuffix+".icfg")
+        self._file = savename+timesuffix+".icfg"
         self.message("Saved config file " + str(savename) + ".\n")
         return
 
