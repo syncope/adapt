@@ -27,6 +27,7 @@ except ImportError:
     print("[proc::curvefitting] library pensant not found; no curvefitting will be available!")
     pass
 
+
 class curvefitting(IProcess):
 
     def __init__(self, ptype="curvefitting"):
@@ -46,9 +47,9 @@ class curvefitting(IProcess):
 
     def initialize(self):
         self._usePreviousResult = self._usePreviousResultPar.get()
-        if ( self._usePreviousResult != 0 ):
+        if (self._usePreviousResult != 0):
             self._usePreviousResult = True
-        else: 
+        else:
             self._usePreviousResult = False
         self._firstguess = True
         # first set up the fit model with the given information
@@ -95,7 +96,7 @@ class curvefitting(IProcess):
         # first level are the models, second layer are the attributes:
         # name and as another dictionary info on the parameters of that model
         for model, mdesc in modelDict.items():
-            prefix=model
+            prefix = model
             try:
                 m = mdesc['modeltype']
             except KeyError:

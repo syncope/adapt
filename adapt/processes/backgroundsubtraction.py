@@ -20,6 +20,7 @@
 
 from adapt.iProcess import *
 
+
 class backgroundsubtraction(IProcess):
 
     def __init__(self, ptype="backgroundsubtraction"):
@@ -39,7 +40,7 @@ class backgroundsubtraction(IProcess):
     def execute(self, data):
         element = data.getData(self._in)
         background = data.getData(self._bkg)
-        
+
         data.addData(self._output, (element - background))
 
     def finalize(self, data):

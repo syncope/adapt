@@ -26,6 +26,7 @@ from . import iProcess
 from . import processData
 from . import processBuilder
 
+
 class ProcessingControl():
     '''The central control object for batch processing.
        It holds the elements to build processes from their description,
@@ -49,7 +50,7 @@ class ProcessingControl():
         pDefs = processConfig.getProcessDefinitions()
 
         for pname in execOrder:
-            self._batchExecutionlist.append( self._procBuilder.createProcessFromDictionary(pDefs[pname]) )
+            self._batchExecutionlist.append(self._procBuilder.createProcessFromDictionary(pDefs[pname]))
 
     def execute(self):
         self._runInitialization()

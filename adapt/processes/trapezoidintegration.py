@@ -29,7 +29,6 @@ except ImportError:
 from adapt.iProcess import *
 
 
-
 class trapezoidintegration(IProcess):
 
     def __init__(self, ptype="trapezoidintegration"):
@@ -51,15 +50,15 @@ class trapezoidintegration(IProcess):
         observable = data.getData(self._observable)
 
         # calculate trapezoid sum
-        integral=0
-        for point in range(0,len(motor)-1):
-            integral=integral+0.5*(observable[point+1]+observable[point])*fabs(motor[point+1]-motor[point])
+        integral = 0
+        for point in range(0, len(motor) - 1):
+            integral = integral + 0.5 * (observable[point + 1] + observable[point]) * fabs(motor[point + 1] - motor[point])
 
         #  estimate error bar
         try:
             fn10 = interp1d(motor, observable, kind='cubic')
         except np.linalg.linalg.LinAlgError:
-            # there is an error ocurring, which I don't understand. 
+            # there is an error ocurring, which I don't understand.
             # fix code for now as circumvention
             print("[trapInt]: Matrix inversion error while trying to interpolate. Trying to continue.")
             data.addData(self._output, [integral, integral])
@@ -67,11 +66,11 @@ class trapezoidintegration(IProcess):
 
         xnew = np.linspace(motor[0], motor[len(motor)-1], 10*len(motor))
         fnew = fn10(xnew)
-        integraln10=0
-        for p in range(0,len(xnew)-1):
-            integraln10=integraln10+0.5*(fnew[p+1]+fnew[p])*fabs(xnew[p+1]-xnew[p])
-        integral_stderr=integraln10-integral
-        
+        integraln10 = 0
+        for p in range(0, len(xnew) - 1):
+            integraln10 = integraln10 + 0.5*(fnew[p+1]+fnew[p])*fabs(xnew[p+1]-xnew[p])
+        integral_stderr = integraln10 - integral
+
         data.addData(self._output, integral)
         data.addData(self._output + "_stderr", integral_stderr)
 

@@ -27,7 +27,6 @@ from matplotlib.backends.backend_pdf import PdfPages
 from adapt.iProcess import *
 
 
-
 class iintpolarization(IProcess):
 
     def __init__(self, ptype="iintpolarization"):
@@ -58,17 +57,17 @@ class iintpolarization(IProcess):
         self._storage["gaussint_stderr"] = []
 
     def execute(self, data):
-        self._storage["scannumber"].append( int(data.getData("scannumber")) )
-        self._storage["peta"].append( data.getData(self._rawdata).getCustomVar('peta') )
-        self._storage["ptth"].append( data.getData(self._rawdata).getCustomVar('ptth') )
-        self._storage["pr1chi"].append( data.getData(self._rawdata).getCustomVar('pr1chi') )
-        self._storage["pr2chi"].append( data.getData(self._rawdata).getCustomVar('pr2chi') )
-        self._storage["trapint"].append( data.getData(self._trapint) )
-        self._storage["trapint_stderr"].append( data.getData(self._trapint + "_stderr") )
+        self._storage["scannumber"].append(int(data.getData("scannumber")))
+        self._storage["peta"].append(data.getData(self._rawdata).getCustomVar('peta'))
+        self._storage["ptth"].append(data.getData(self._rawdata).getCustomVar('ptth'))
+        self._storage["pr1chi"].append(data.getData(self._rawdata).getCustomVar('pr1chi'))
+        self._storage["pr2chi"].append(data.getData(self._rawdata).getCustomVar('pr2chi'))
+        self._storage["trapint"].append(data.getData(self._trapint))
+        self._storage["trapint_stderr"].append(data.getData(self._trapint + "_stderr"))
         fitresult = data.getData(self._fitresult)
         fitparams = fitresult.params
-        self._storage["gaussint"].append( fitparams['m0_amplitude'].value )
-        self._storage["gaussint_stderr"].append( fitparams['m0_amplitude'].stderr )
+        self._storage["gaussint"].append(fitparams['m0_amplitude'].value)
+        self._storage["gaussint_stderr"].append(fitparams['m0_amplitude'].stderr)
 
     def finalize(self, data):
         # the dictionary of all scan values
@@ -77,12 +76,12 @@ class iintpolarization(IProcess):
         fig_size[0] = 16
         fig_size[1] = 12
         plt.rcParams["figure.figsize"] = fig_size
-        
+
         # and finally: build the associative data block
         pr1chiana = np.unique(np.asarray(poldata["pr1chi"], dtype=float))
-        pr2chiana = np.unique(np.asarray( poldata["pr2chi"], dtype=float))
+        pr2chiana = np.unique(np.asarray(poldata["pr2chi"], dtype=float))
         petaana = np.unique(np.asarray(poldata["peta"], dtype=float))
-        self.tthana = np.mean( np.asarray(poldata["ptth"], dtype=float))
+        self.tthana = np.mean(np.asarray(poldata["ptth"], dtype=float))
         # check if it adds up
         if len(petaana)*len(pr1chiana) != len(poldata["scannumber"]):
             print("[iintPolar] Polarization analysis cannot be performed, the number of values doesn't match.")
@@ -99,8 +98,8 @@ class iintpolarization(IProcess):
             polangle = 2*pr2chi
             return eta, iint, iinterr, iintgauss, iintgausserr, pr1chi, pr2chi, polangle
 
-        i=1
-        ifig=0
+        i = 1
+        ifig = 0
         eta, iint, iinterr, iintgauss, iintgausserr, pr1chi, pr2chi, polangle = getValueRangeByIndex(i)
         popt, pcov = curve_fit(self.fitfunc, eta, iint)
         popt, pcov = curve_fit(self.fitfunc, eta, iint)
@@ -111,30 +110,30 @@ class iintpolarization(IProcess):
             j = i + 1
             eta, iint, iinterr, iintgauss, iintgausserr, pr1chi, pr2chi, polangle = getValueRangeByIndex(j)
             for k in range(10):
-                popt, pcov = curve_fit(self.fitfunc, eta, iint, p0=[popt[0],popt[1],popt[2]])
+                popt, pcov = curve_fit(self.fitfunc, eta, iint, p0=[popt[0], popt[1], popt[2]])
 
-            fitresults=[pr1chi, pr2chi, polangle, popt[0], pcov[0,0]**0.5, popt[1], pcov[1,1]**0.5, popt[2], pcov[2,2]**0.5, sqrt(popt[1]**2+popt[2]**2)]
+            fitresults = [pr1chi, pr2chi, polangle, popt[0], pcov[0, 0]**0.5, popt[1], pcov[1, 1]**0.5, popt[2], pcov[2, 2]**0.5, sqrt(popt[1]**2+popt[2]**2)]
             results.append(fitresults)
 
             if i % 9 == 0:
-                ifig=ifig+1
-                isubpl=1	
+                ifig = ifig + 1
+                isubpl = 1
                 plt.figure(ifig)
-            fig=plt.figure(ifig)
+            fig = plt.figure(ifig)
             fig.suptitle('Polarization Analysis', fontsize=14, fontweight='bold')
-            plt.subplot(3,3,isubpl)
+            plt.subplot(3, 3, isubpl)
             plt.errorbar(eta, iint, yerr=iinterr, fmt='ro', capsize=0, ls='none', color='blue', elinewidth=2, ecolor='black', label='iintsum')
             plt.errorbar(eta, iintgauss, yerr=iintgausserr, fmt='r+', capsize=0, ls='none', color='blue', elinewidth=2, ecolor='black', label='iintgauss')
             xfine = np.linspace(np.amin(petaana), np.amax(petaana), 100)  # define values to plot the function for
             plt.plot(xfine, self.fitfunc(xfine, *popt), 'r-', label='fit')
-            plt.title('Scans #S'+str(int(poldata["scannumber"][(j-1)*len(petaana)]))+'_S'+str(int(poldata["scannumber"][j*len(petaana)-1]))+'\n'+' pr1chi = '+str(int(pr1chi))+'; pr2chi = '+str(int(pr2chi)),fontsize=9)
+            plt.title('Scans #S'+str(int(poldata["scannumber"][(j-1)*len(petaana)]))+'_S'+str(int(poldata["scannumber"][j*len(petaana)-1]))+'\n'+' pr1chi = '+str(int(pr1chi))+'; pr2chi = '+str(int(pr2chi)), fontsize=9)
             plt.legend(fontsize=9, loc=3)
-            isubpl=isubpl+1
+            isubpl = isubpl + 1
 
         b = np.vstack(results)
-        for i in range(1,ifig+1,1):
+        for i in range(1, ifig + 1, 1):
             plt.figure(i)
-        np.savetxt(self._output +'.stokes', b, fmt='%14.4f')
+        np.savetxt(self._output + '.stokes', b, fmt='%14.4f')
 
         fig_size[0] = 12
         fig_size[1] = 9
@@ -142,20 +141,18 @@ class iintpolarization(IProcess):
 
         a = np.transpose(results)
         plt.figure(ifig+1)
-        plt.errorbar(a[2], a[5], yerr=a[6], fmt='bo-', ecolor='blue',label='P1')
-        plt.errorbar(a[2], a[7], yerr=a[8], fmt='ro-', ecolor='red',label='P2')
+        plt.errorbar(a[2], a[5], yerr=a[6], fmt='bo-', ecolor='blue', label='P1')
+        plt.errorbar(a[2], a[7], yerr=a[8], fmt='ro-', ecolor='red', label='P2')
         plt.errorbar(a[2], a[9], fmt='kx', label='Plin')
         plt.legend(loc=3)
-        plt.title('Polarization analysis ' + self._output , fontsize=10)
+        plt.title('Polarization analysis ' + self._output, fontsize=10)
         plt.ylabel('Stokes parameters')
         plt.xlabel('Angle of linear polarization (degrees)')
         outputfilename = self._output + '_polarizationAnalysis.pdf'
         with PdfPages(outputfilename) as pdf:
-            for i in range(1,ifig+2):
+            for i in range(1, ifig+2):
                 pdf.savefig(plt.figure(i))
         plt.close("all")
-        #~ from subprocess import call
-        #~ call(["evince", outputfilename])
 
     def check(self, data):
         pass
@@ -164,4 +161,4 @@ class iintpolarization(IProcess):
         data.clearCurrent(self._output)
 
     def fitfunc(self, x, a0, a1, a2):
-        return (a0/2.)*( 1. + ( cos(self.tthana*pi/180.) )**2 + ( (sin(self.tthana*pi/180.))**2 ) * ( a1*np.cos(2*(x)*pi/180.) + a2*np.sin(2*(x)*pi/180.) ))
+        return (a0/2.) * (1. + (cos(self.tthana * pi/180.))**2 + ((sin(self.tthana * pi/180.))**2) * (a1*np.cos(2 * (x) * pi/180.) + a2 * np.sin(2 * (x) * pi/180.)))
