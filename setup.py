@@ -10,11 +10,11 @@ from sphinx.setup_command import BuildDoc
 
 name='adapt'
 version='0'
-release='0.4.7'
+release='0.5.0'
 
 setup(
     name='adapt',
-    version='0.4.7',
+    version='0.5.0',
 
     description='ADAPT: a data processing toolkit.', 
     long_description=long_description,
@@ -45,7 +45,7 @@ setup(
     package_dir = { 'adapt':'adapt',},
     include_package_data=True,
 
-    scripts = ['adapt/bin/adapt','adapt/bin/iint-gui'],
+    scripts = ['adapt/bin/adapt'],
     
     
     cmdclass={'build_sphinx': BuildDoc,},
