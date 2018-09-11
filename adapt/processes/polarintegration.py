@@ -21,7 +21,7 @@
 try:
     import pyFAI
 except ImportError:
-    print("pyFAI is not installed, azimuthal integration is not available.")
+    # ("pyFAI is not installed, azimuthal integration is not available.")
     pass
 
 from adapt.iProcess import *
