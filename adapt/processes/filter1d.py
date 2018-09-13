@@ -118,6 +118,7 @@ class filter1d(IProcess):
         else:
             return medianfilter1d(inputarr)
 
+
 class filter1dGUI(QtGui.QWidget):
     execute = QtCore.pyqtSignal(int)
 

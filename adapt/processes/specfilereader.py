@@ -46,7 +46,7 @@ class specfilereader(IProcess):
         self.dataIterator = iter(self.data)
 
     def execute(self, data):
-        # read next entry from spec file, 
+        # read next entry from spec file,
         # put scandata object to common memory
         try:
             data.addData(self._outPar.get(), next(self.dataIterator))
@@ -68,7 +68,6 @@ class specfilereader(IProcess):
 
     def getConfigGUI(self):
         return specfilereaderGUI()
-
 
 
 class specfilereaderGUI(QtGui.QWidget):
@@ -102,7 +101,7 @@ class specfilereaderGUI(QtGui.QWidget):
 
     def getParameterDict(self):
         self._specReaderDict["type"] = "specfilereader"
-        self._specReaderDict["filename"] =  self._file
+        self._specReaderDict["filename"] = self._file
         self._specReaderDict["scanlist"] = self.scanSelectionInput.text()
         self._specReaderDict["outputdata"] = "default"
         return self._specReaderDict

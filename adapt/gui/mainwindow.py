@@ -25,7 +25,6 @@ from PyQt4 import QtCore, QtGui
 from addprocess_widget import addProcess, removeProcess
 
 
-
 class adaptmaingui(QtGui.QMainWindow):
     '''Base definition of the main window display for adapt'''
 
@@ -33,7 +32,7 @@ class adaptmaingui(QtGui.QMainWindow):
         super(adaptmaingui, self).__init__(parent)
 
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
-        
+
         # define global layout: horizontal division
         self._central = QtGui.QWidget()
         globallayout = QtGui.QHBoxLayout()
@@ -43,10 +42,10 @@ class adaptmaingui(QtGui.QMainWindow):
         self._central.setLayout(globallayout)
         self.setCentralWidget(self._central)
         self.setWindowTitle("ADAPT")
-        #~ self.menuFile.setToolTip("The file menu, shortcut is <Alt-f>.")
+        # self.menuFile.setToolTip("The file menu, shortcut is <Alt-f>.")
         self.actionNew.setToolTip("Select to reset all data and processing for a clean reset. Shortcut is <Crtl-n>.")
 
-        
+
 class twobuttons(QtGui.QWidget):
     def __init__(self, parent=None):
         super(twobuttons, self).__init__(parent)
@@ -63,9 +62,10 @@ class twobuttons(QtGui.QWidget):
         self._removeButton.clicked.connect(self._removeProcess.show)
 
     def enableRemove(self, arg=None):
-        if(arg != None):
+        if(arg is not None):
             self._removeButton.setEnabled(True)
             self._removeProcess.setIdentifier(arg.listWidget().currentRow())
+
 
 class listHandler(QtGui.QVBoxLayout):
 
@@ -87,8 +87,9 @@ class listHandler(QtGui.QVBoxLayout):
     def removeProcess(self, identifier):
         self._listHandle.remove(identifier)
 
+
 class guiListHandler(QtGui.QListWidget):
-    
+
     def __init__(self, parent=None):
         super(guiListHandler, self).__init__(parent)
         self._list = []
@@ -100,33 +101,37 @@ class guiListHandler(QtGui.QListWidget):
         it = self.takeItem(elem)
         it = None
 
+
 class actionTabHandler(QtGui.QTabWidget):
     def __init__(self, parent=None):
         super(actionTabHandler, self).__init__(parent)
-        self.addTab(parameterConfigDisplay(self),"Process configuration")
-        self.addTab(runControl(self),"Run control")
-        self.addTab(runControl(self),"Visualization")
+        self.addTab(parameterConfigDisplay(self), "Process configuration")
+        self.addTab(runControl(self), "Run control")
+        self.addTab(runControl(self), "Visualization")
+
 
 class parameterConfigDisplay(QtGui.QWidget):
     def __init__(self, parent=None):
         super(parameterConfigDisplay, self).__init__(parent)
 
+
 class runControl(QtGui.QWidget):
     def __init__(self, parent=None):
         super(runControl, self).__init__(parent)
-                
+
+
 class visualizationHelpers(QtGui.QWidget):
     def __init__(self, parent=None):
         super(visualizationHelpers, self).__init__(parent)
 
 
 def main():
-    
+
     app = QtGui.QApplication(sys.argv)
     ex = adaptmaingui()
     ex.show()
     sys.exit(app.exec_())
-    
+
+
 if __name__ == '__main__':
     main()
-

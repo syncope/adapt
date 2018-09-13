@@ -18,6 +18,7 @@
 
 # a class to create an abstract definition of a process parameter
 
+
 class ProcessParameter():
     '''An object to hold all information needed for parameters.'''
 
@@ -47,13 +48,14 @@ class ProcessParameter():
 
     def dump(self):
         return (self.name, self._type, self.value, self.optional)
-        
+
+
 class ProcessParameters(dict):
-    
-    def __init__(self,*arg,**kw):
+
+    def __init__(self, *arg, **kw):
         super(ProcessParameters, self).__init__(*arg, **kw)
 
-    def add(self, pp : ProcessParameter):
+    def add(self, pp: ProcessParameter):
         self[pp.name] = pp
 
     def setValue(self, name, value):

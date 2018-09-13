@@ -41,7 +41,7 @@ class gendatafromfunction(IProcess):
         fitresult = data.getData(self._fitresult)
         xdata = data.getData(self._xdata)
         data.addData(self._output, fitresult.eval(x=xdata))
-        
+
     def finalize(self, data):
         pass
 

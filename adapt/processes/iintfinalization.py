@@ -60,7 +60,7 @@ class iintfinalization(IProcess):
         self._pdfmotor = self._pdfmotorPar.get()
         self._pdfobservable = self._pdfobservablePar.get()
         self._pdffitresult = self._pdffitresultPar.get()
-        try: 
+        try:
             self._trapintname = self._trapintPar.get()
         except:
             self._trapintname = "trapezoidIntegral"
@@ -84,7 +84,7 @@ class iintfinalization(IProcess):
                 except KeyError:
                     try:
                         datum = data.getData(self._rawdata).getCustomVar(name)
-                    except: 
+                    except:
                         print("Could not retrieve the data to track. Name: " + str(name))
                         continue
             if isinstance(datum, np.ndarray):
@@ -124,7 +124,7 @@ class iintfinalization(IProcess):
     def finalize(self, data):
         import math as m
         fig_size = plt.rcParams["figure.figsize"]
-        #print "Current size:", fig_size
+        # print "Current size:", fig_size
         fig_size[0] = 16
         fig_size[1] = 12
         plt.rcParams["figure.figsize"] = fig_size
@@ -142,7 +142,7 @@ class iintfinalization(IProcess):
         nof = m.ceil(len(self._plotstuff)/9)
         for n in range(len(self._plotstuff)):
             scannumber, motor, observable, fitresult, iint, iinterr = self._plotstuff[n]
-            fn, index, check = m.floor(n/9), int(n%9)+1, n/9.
+            fn, index, check = m.floor(n/9), int(n % 9) + 1, n/9.
             if check > fn*nof:
                 fn += 1
             if index == 1:
@@ -151,12 +151,12 @@ class iintfinalization(IProcess):
                 figure = plt.figure(fn)
                 figure.suptitle('Fit data with peak function & Integrated intensities', fontsize=14, fontweight='bold')
 
-            figure.add_subplot(3,3,index)
-            plt.axis([motor[0], motor[-1], 0, 1.2*np.amax(observable)])
-            plt.plot(motor,observable,'b+')
+            figure.add_subplot(3, 3, index)
+            plt.axis([motor[0], motor[-1], 0, 1.2 * np.amax(observable)])
+            plt.plot(motor, observable, 'b+')
             plt.plot(motor, fitresult, 'r-')
             plt.title("Scan: #" + str(scannumber))
-           
+
         self._pdfoutfile.savefig()
         self._pdfoutfile.close()
         plt.close("all")

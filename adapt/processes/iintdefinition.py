@@ -62,7 +62,7 @@ class iintdefinition(IProcess):
         time = datum.getArray(self._exposure_time)
         mean_monitor = np.mean(monitor)
         if self._attfac:
-            attenfac = datum.getArray(self._attfac) 
+            attenfac = datum.getArray(self._attfac)
         else:
             attenfac = 1.
 
@@ -129,7 +129,7 @@ class iintdefinitionGUI(QtGui.QWidget):
         return self._iintDefDict
 
     def setParameterDict(self, paramDict):
-         self._iintDefDict = paramDict
+        self._iintDefDict = paramDict
 
     def emittit(self):
         self._iintDefDict["type"] = "iintdefinition"

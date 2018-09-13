@@ -32,7 +32,7 @@ class ProcessBuilder():
             processType = pDict["type"]
         except:
             print("[ProcessBuilder] Cannot build the specified type of process: " + str(processType))
-        process =  getattr(getattr(processes, processType), processType)() 
+        process = getattr(getattr(processes, processType), processType)()
         process.setParameterValues(pDict)
         return process
 

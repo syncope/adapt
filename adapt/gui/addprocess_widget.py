@@ -23,8 +23,9 @@ import sys
 
 from adapt import steering
 
+
 class addProcess(QtGui.QDialog):
-    
+
     processHeader = QtCore.pyqtSignal(str, str)
 
     def __init__(self, parent=None):
@@ -47,7 +48,7 @@ class addProcess(QtGui.QDialog):
         layout.addWidget(self.add, 2, 0)
         layout.addWidget(self.cancel, 2, 1)
         self.setLayout(layout)
-        
+
         self.cancel.clicked.connect(self.close)
         self.add.clicked.connect(self.emitProcessHeader)
 
@@ -58,12 +59,13 @@ class addProcess(QtGui.QDialog):
             self.close()
         else:
             self.name.setStyleSheet("color: yellow;"
-                                   "background-color: red;")
+                                    "background-color: red;")
+
 
 class removeProcess(QtGui.QDialog):
-    
+
     rmProc = QtCore.pyqtSignal(int)
-    
+
     def __init__(self, parent=None):
         super(removeProcess, self).__init__(parent)
         self.identifier = None
@@ -73,7 +75,7 @@ class removeProcess(QtGui.QDialog):
         layout.addWidget(self.remove)
         layout.addWidget(self.cancel)
         self.setLayout(layout)
-        
+
         self.cancel.clicked.connect(self.close)
         self.remove.clicked.connect(self.emitRemoval)
 

@@ -19,9 +19,10 @@
 # a simple representation of a map -- a dictionary
 # exchange object for persistency
 
+
 class ValueMap():
     '''A simple exchange object, basically a dictionary'''
-    
+
     def __init__(self):
         self._map = {}
 

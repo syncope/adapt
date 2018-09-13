@@ -33,22 +33,20 @@ from . import curvefitting
 from . import trapezoidintegration
 from . import gendatafromfunction
 
-processTypeList = [ 
-        "globaldata",
-        "datainfo",
-        "stdreader",
-        "specfilereader",
-        "polarintegration",
-        "sliceprojection",
-        "iintdefinition",
-        "iintfinalization",
-        "iintpolarization",
-        "iintcontrolplots",
-        "filter1d",
-        "subsequenceselection",
-        "backgroundsubtraction",
-        "curvefitting",
-        "trapezoidintegration",
-        "gendatafromfunction",
-        ]
-    
+processTypeList = ["globaldata",
+                   "datainfo",
+                   "stdreader",
+                   "specfilereader",
+                   "polarintegration",
+                   "sliceprojection",
+                   "iintdefinition",
+                   "iintfinalization",
+                   "iintpolarization",
+                   "iintcontrolplots",
+                   "filter1d",
+                   "subsequenceselection",
+                   "backgroundsubtraction",
+                   "curvefitting",
+                   "trapezoidintegration",
+                   "gendatafromfunction",
+                   ]

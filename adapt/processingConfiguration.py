@@ -23,7 +23,7 @@
 
 class ProcessingConfiguration():
 
-    def __init__(self, execList = [], pDefDict={}):
+    def __init__(self, execList=[], pDefDict={}):
         self._executionOrder = execList
         self._definitionDict = pDefDict
 

@@ -23,6 +23,7 @@ from . import configurationHandler
 from . import processingControl
 from . import processingConfiguration
 
+
 class BatchSteering():
 
     def __init__(self):
@@ -42,7 +43,7 @@ class BatchSteering():
 
     def createProcessingConfig(self):
         self._control.resetList()
-        self._control.build(self._processingConfig)        
+        self._control.build(self._processingConfig)
 
     def addProcess(self, process):
         self._processingConfig.addProcess(process)

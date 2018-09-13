@@ -21,7 +21,7 @@
 try:
     import pyFAI
 except ImportError:
-    print("pyFAI is not installed, azimuthal integration is not available.")
+    # ("pyFAI is not installed, azimuthal integration is not available.")
     pass
 
 from adapt.iProcess import *
@@ -36,21 +36,21 @@ class polarintegration(IProcess):
         self._detectornamePar = ProcessParameter("detectorname", str, None)
         self._custommaskPar = ProcessParameter("custommask", str, optional=True)
         self._poni1Par = ProcessParameter("poni1", float, optional=True)
-        self._poni2Par =  ProcessParameter("poni2", float, optional=True)
-        self._rot1Par =  ProcessParameter("rot1", float, optional=True)
-        self._rot2Par =  ProcessParameter("rot2", float, optional=True)
-        self._rot3Par =  ProcessParameter("rot3", float, optional=True)
-        self._fit2dstylePar =  ProcessParameter("fit2dstyle", bool, optional=True)
-        self._center1Par =  ProcessParameter("center1", int, optional=True)
-        self._center2Par =  ProcessParameter("center2", int, optional=True)
-        self._tiltPar =  ProcessParameter("tilt", float, optional=True)
-        self._tiltrotationPar =  ProcessParameter("tiltrotation", float, optional=True)
-        self._nbinsPar =  ProcessParameter("nbins", int)
-        self._methodPar =  ProcessParameter("method", str, "lut", optional=True)
-        self._aziminPar =  ProcessParameter("azimlowlim", float, optional=True)
-        self._azimaxPar =  ProcessParameter("azimhighlim", float, optional=True)
-        self._rminPar =  ProcessParameter("radiallowlim", float, optional=True)
-        self._rmaxPar =  ProcessParameter("radialhighlim", float, optional=True)
+        self._poni2Par = ProcessParameter("poni2", float, optional=True)
+        self._rot1Par = ProcessParameter("rot1", float, optional=True)
+        self._rot2Par = ProcessParameter("rot2", float, optional=True)
+        self._rot3Par = ProcessParameter("rot3", float, optional=True)
+        self._fit2dstylePar = ProcessParameter("fit2dstyle", bool, optional=True)
+        self._center1Par = ProcessParameter("center1", int, optional=True)
+        self._center2Par = ProcessParameter("center2", int, optional=True)
+        self._tiltPar = ProcessParameter("tilt", float, optional=True)
+        self._tiltrotationPar = ProcessParameter("tiltrotation", float, optional=True)
+        self._nbinsPar = ProcessParameter("nbins", int)
+        self._methodPar = ProcessParameter("method", str, "lut", optional=True)
+        self._aziminPar = ProcessParameter("azimlowlim", float, optional=True)
+        self._azimaxPar = ProcessParameter("azimhighlim", float, optional=True)
+        self._rminPar = ProcessParameter("radiallowlim", float, optional=True)
+        self._rmaxPar = ProcessParameter("radialhighlim", float, optional=True)
         self._parmaters.add(self._inputPar)
         self._parmaters.add(self._datanamePar)
         self._parmaters.add(self._detectornamePar)
@@ -81,9 +81,9 @@ class polarintegration(IProcess):
         _detector = self._detectornamePar.get()
         _wavelength = data.get("wavelength")
         _distance = data.get("sdd")
-        
+
         # distinguish between fit2d and pyFAI style
-        if(self._parameters["fit2dstyle"] == True):
+        if(self._parameters["fit2dstyle"] is True):
             self._AI = pyFAI.AzimuthalIntegrator(dist=_distance,
                                                  wavelength=_wavelength,
                                                  detector=_detector)
@@ -92,31 +92,26 @@ class polarintegration(IProcess):
                               self._parameters["center2"])
         else:
             self._AI = pyFAI.AzimuthalIntegrator(dist=_distance,
-                                                 poni1=self._parameters[
-                                                     "poni1"],
-                                                 poni2=self._parameters[
-                                                     "poni2"],
-                                                 rot1=self._parameters[
-                                                     "rot1"],
-                                                 rot2=self._parameters[
-                                                 "rot2"],
-                                                 rot3=self._parameters[
-                                                 "rot3"],
+                                                 poni1=self._parameters["poni1"],
+                                                 poni2=self._parameters["poni2"],
+                                                 rot1=self._parameters["rot1"],
+                                                 rot2=self._parameters["rot2"],
+                                                 rot3=self._parameters["rot3"],
                                                  wavelength=_wavelength,
                                                  detector=_detector)
 
     def execute(self, data):
-        self._AI.integrate1d(data.getData(self._input),  # data
-                             npt=self._nbins, # number of points in the output pattern 
-                             
-                             # correctSolidAngle=True, # correct for solid angle of each pixel if True
-                             # variance=None, # array containing the variance of the data. If not available, no error propagation is done
-                             # radial_range=(self.getOptionalParameterValue("radiallowlim"), self.getOptionalParameterValue("radialhighlim")), # The lower and upper range of the radial unit. If not provided, range is simply (data.min(), data.max()). Values outside the range are ignored.
-                             # azimuth_range=(self.getOptionalParameterValue("azimlowlim"), self.getOptionalParameterValue("azimhighlim")), # The lower and upper range of the azimuthal angle in degree. If not provided, range is simply (data.min(), data.max()). Values outside the range are ignored.
-                             # mask=self.getOptionalParameterValue("custommask"), # array (same size as image) with 1 for masked pixels, and 0 for valid pixels
-                             method=self._method, 
-                             unit=self._unit
-                             )
+        self._AI.integrate1d(  # data
+                               data.getData(self._input),
+                               # number of points in the output pattern
+                               npt=self._nbins,
+                               # correctSolidAngle=True, # correct for solid angle of each pixel if True
+                               # variance=None, # array containing the variance of the data. If not available, no error propagation is done
+                               # radial_range=(self.getOptionalParameterValue("radiallowlim"), self.getOptionalParameterValue("radialhighlim")), # The lower and upper range of the radial unit. If not provided, range is simply (data.min(), data.max()). Values outside the range are ignored.
+                               # azimuth_range=(self.getOptionalParameterValue("azimlowlim"), self.getOptionalParameterValue("azimhighlim")), # The lower and upper range of the azimuthal angle in degree. If not provided, range is simply (data.min(), data.max()). Values outside the range are ignored.
+                               # mask=self.getOptionalParameterValue("custommask"), # array (same size as image) with 1 for masked pixels, and 0 for valid pixels
+                               method=self._method,
+                               unit=self._unit)
 
     def finalize(self, data):
         pass

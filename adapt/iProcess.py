@@ -25,6 +25,7 @@ from PyQt4 import QtCore, QtGui, uic
 It defines functions that have to be present in any derived process.
 These are the functions, by which the framework executes actual work.'''
 
+
 class IProcess():
 
     def __init__(self, ptype):
@@ -33,7 +34,7 @@ class IProcess():
         self._parametersset = False
 
     def getProcessDictionary(self):
-        paramDict = { param : value.get() for param, value in self._parameters.items()}
+        paramDict = {param: value.get() for param, value in self._parameters.items()}
         paramDict["type"] = self._ptype
         return paramDict
 
@@ -79,7 +80,7 @@ class IProcess():
         for elem in datalist:
             self.execute(elem)
             if emitProgress:
-                d.setValue(int( 100*(  datalist.index(elem) / len(datalist) ) ))
+                d.setValue(int(100 * (datalist.index(elem)/len(datalist))))
         if emitProgress:
             d.close()
 
@@ -93,7 +94,7 @@ class IProcess():
             self.clearPreviousData(elem)
             self.execute(elem)
             if emitProgress:
-                d.setValue(int( 100*(  datalist.index(elem) / len(datalist) ) ))
+                d.setValue(int(100 * (datalist.index(elem)/len(datalist))))
         if emitProgress:
             d.close()
 
