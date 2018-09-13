@@ -1,3 +1,10 @@
+adapt (0.5.0-2+deb8u10~fsec) jessie; urgency=low
+
+  * severe mistake in package building; don't ever use the older one.  
+
+ -- Christoph Rosemann <christoph.rosemann@desy.de>  Fri, 07 Sep 2018 16:21:00 +0200
+
+
 adapt (0.5.0-1+deb8u10~fsec) jessie; urgency=low
 
   * repackaging after removal of specific gui parts; moved to different package  
