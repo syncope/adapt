@@ -44,6 +44,7 @@ class curvefitting(IProcess):
         self._parameters.add(self._usePreviousResultPar)
         self._parameters.add(self._modelPar)
         self._parameters.add(self._resultPar)
+        self._noerror = False
 
     def initialize(self):
         self._usePreviousResult = self._usePreviousResultPar.get()
@@ -65,6 +66,8 @@ class curvefitting(IProcess):
         dependentVariable = data.getData(self._ydataPar.get())
         errorname = self._yerrPar.get()
         if(errorname is None or errorname == 'None'):
+            self._noerror = True
+        elif (errorname == 'poisson'):
             variableWeight = np.sqrt(np.clip(dependentVariable, 0., None))
         else:
             variableWeight = 1./data.getData(errorname)
@@ -78,7 +81,10 @@ class curvefitting(IProcess):
                 print("The given model doesn't have a guess method implemented.")
 
         # fit the data using the guessed value
-        self._result = self.model.fit(dependentVariable, self.model.params, weights=variableWeight, x=independentVariable)
+        if self._noerror:
+            self._result = self.model.fit(dependentVariable, self.model.params, x=independentVariable)
+        else:
+            self._result = self.model.fit(dependentVariable, self.model.params, weights=variableWeight, x=independentVariable)
         data.addData(self._resultPar.get(), self._result)
 
     def finalize(self, data):
