@@ -31,10 +31,10 @@ from matplotlib.backends.backend_pdf import PdfPages
 from adapt.iProcess import *
 
 
-class iintcontrolplots(IProcess):
+class iintscanplot(IProcess):
 
-    def __init__(self, ptype="iintcontrolplots"):
-        super(iintcontrolplots, self).__init__(ptype)
+    def __init__(self, ptype="iintscanplot"):
+        super(iintfinalization, self).__init__(ptype)
         self._namesPar = ProcessParameter("trackedData", list)
         self._rawdataPar = ProcessParameter("specdataname", str)
         self._outfilenamePar = ProcessParameter("outfilename", str)

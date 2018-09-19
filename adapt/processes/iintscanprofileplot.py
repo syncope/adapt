@@ -1,4 +1,4 @@
-# Copyright (C) 2018  Christoph Rosemann, DESY, Notkestr. 85, D-22607 Hamburg
+# Copyright (C) 2017  Christoph Rosemann, DESY, Notkestr. 85, D-22607 Hamburg
 # email contact: christoph.rosemann@desy.de
 #
 # This program is free software; you can redistribute it and/or
@@ -31,10 +31,10 @@ from matplotlib.backends.backend_pdf import PdfPages
 from adapt.iProcess import *
 
 
-class iintcontrolplots(IProcess):
+class iintscanprofileplot(IProcess):
 
-    def __init__(self, ptype="iintcontrolplots"):
-        super(iintcontrolplots, self).__init__(ptype)
+    def __init__(self, ptype="iintscanprofileplot"):
+        super(iintscanprofileplot, self).__init__(ptype)
         self._namesPar = ProcessParameter("trackedData", list)
         self._rawdataPar = ProcessParameter("specdataname", str)
         self._outfilenamePar = ProcessParameter("outfilename", str)
