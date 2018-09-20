@@ -1,4 +1,4 @@
-# Copyright (C) 2017  Christoph Rosemann, DESY, Notkestr. 85, D-22607 Hamburg
+# Copyright (C) 2018  Christoph Rosemann, DESY, Notkestr. 85, D-22607 Hamburg
 # email contact: christoph.rosemann@desy.de
 #
 # This program is free software; you can redistribute it and/or
@@ -16,9 +16,15 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor,
 # Boston, MA  02110-1301, USA.
 
-# small helper class for plotting specific to beamline p09 @ DESY PS
+# collect tracked data, spectra and calculated values; plot and save file
 
 import numpy as np
+try:
+    import lmfit
+except ImportError:
+    print("lmfit package is not available, please install.")
+    pass
+
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 
@@ -29,104 +35,125 @@ class iintcontrolplots(IProcess):
 
     def __init__(self, ptype="iintcontrolplots"):
         super(iintcontrolplots, self).__init__(ptype)
-        self._outputNamePar = ProcessParameter("outputname", str)
+        self._trackedcolumnsPar = ProcessParameter("trackedColumns", list)
         self._rawdataPar = ProcessParameter("specdataname", str)
-        self._fitresultPar = ProcessParameter("fitresult", str)
-        self._trapintPar = ProcessParameter("trapintname", str)
-        self._parameters.add(self._outputNamePar)
+        self._pdfoutfilenamePar = ProcessParameter("outfilename", str)
+        self._pdfmotorPar = ProcessParameter("motor", str)
+        self._pdfobservablePar = ProcessParameter("observable", str)
+        self._pdffitresultPar = ProcessParameter("fitresult", str)
+        self._trapintPar = ProcessParameter("trapintname", str, optional=True)
+        self._parameters.add(self._trackedcolumnsPar)
         self._parameters.add(self._rawdataPar)
-        self._parameters.add(self._fitresultPar)
+        self._parameters.add(self._pdfoutfilenamePar)
+        self._parameters.add(self._pdfmotorPar)
+        self._parameters.add(self._pdfobservablePar)
+        self._parameters.add(self._pdffitresultPar)
         self._parameters.add(self._trapintPar)
 
     def initialize(self):
-        self._output = self._outputNamePar.get()
+        self._trackedColumns = self._trackedcolumnsPar.get()
         self._rawdata = self._rawdataPar.get()
-        self._fitresult = self._fitresultPar.get()
-        self._trapint = self._trapintPar.get()
-        self._storage = {}
-        self._storage["temperature"] = []
-        self._storage["temperature_stderr"] = []
-        self._storage["magneticfield"] = []
-        self._storage["magneticfield_stderr"] = []
-        self._storage["trapint"] = []
-        self._storage["trapint_stderr"] = []
-        self._storage["amplitude"] = []
-        self._storage["amplitude_stderr"] = []
-        self._storage["sigma"] = []
-        self._storage["sigma_stderr"] = []
-        self._storage["mean"] = []
-        self._storage["mean_stderr"] = []
+        self._pdfoutfilename = self._pdfoutfilenamePar.get()
+        self._pdfmotor = self._pdfmotorPar.get()
+        self._pdfobservable = self._pdfobservablePar.get()
+        self._pdffitresult = self._pdffitresultPar.get()
+        try:
+            self._trapintname = self._trapintPar.get()
+        except:
+            self._trapintname = "trapezoidIntegral"
+        # keep track of the data values per scan
+        self._dataKeeper = {}
+        self._dataKeeper[self._trapintname] = []
+        self._dataKeeper[self._trapintname + "_stderr"] = []
+        self._dataKeeper['fitamp'] = []
+        self._dataKeeper['fitamperr'] = []
+        self._dataKeeper['fitmean'] = []
+        self._dataKeeper['fitmeanerr'] = []
+        self._dataKeeper['fitsigma'] = []
+        self._dataKeeper['fitsigmaerr'] = []
+        self._pdfoutfile = PdfPages(self._pdfoutfilename)
+        self._names = []
 
     def execute(self, data):
-        self._storage["magneticfield"].append(np.mean(data.getData(self._rawdata).getArray('lks340_outputchannela')))
-        self._storage["magneticfield_stderr"].append(np.std(data.getData(self._rawdata).getArray('lks340_outputchannela')))
-        self._storage["temperature"].append(np.mean(data.getData(self._rawdata).getArray('lks340_outputchannelb')))
-        self._storage["temperature_stderr"].append(np.std(data.getData(self._rawdata).getArray('lks340_outputchannelb')))
+        if len(self._trackedColumns) > 0:
+            skip = True
+        for name in self._trackedColumns:
+            try:
+                datum = data.getData(name)
+            except KeyError:
+                try:
+                    datum = data.getData(self._rawdata).getArray(name)
+                    try:
+                        self._dataKeeper[name]
+                    except:
+                        self._dataKeeper[name] = []
+                        self._dataKeeper[name+"_stderr"] = []
+                except KeyError:
+                    continue
+            if isinstance(datum, np.ndarray):
+                self._names.append(name)
+                self._dataKeeper[name].append(np.mean(datum))
+                self._dataKeeper[name+"_stderr"].append(np.std(datum))
 
-        self._storage["trapint"].append(data.getData(self._trapint))
-        fitresult = data.getData(self._fitresult)
-        fitparams = fitresult.params
-        self._storage["amplitude"].append(fitparams['m0_amplitude'].value)
-        self._storage["sigma"].append(fitparams['m0_sigma'].value)
-        self._storage["mean"].append(fitparams['m0_center'].value)
+        pars = data.getData(self._pdffitresult).params
+        for parameter in pars:
+            pname = pars[parameter].name
+            val = pars[parameter].value
+            err = pars[parameter].stderr
+            if pname == "m0_amplitude":
+                self._dataKeeper['fitamp'].append(val)
+                self._dataKeeper['fitamperr'].append(err)
+            elif pname == "m0_center":
+                self._dataKeeper['fitmean'].append(val)
+                self._dataKeeper['fitmeanerr'].append(err)
+            elif pname == "m0_sigma":
+                self._dataKeeper['fitsigma'].append(val)
+                self._dataKeeper['fitsigmaerr'].append(err)
+        try:
+            self._dataKeeper[self._trapintname].append(data.getData(self._trapintname))
+            self._dataKeeper[self._trapintname + "_stderr"].append(data.getData(self._trapintname + "_stderr"))
+        except:
+            pass
 
     def finalize(self, data):
-        # the dictionary of all scan values
-        inspectdata = self._storage
+        self._columnNames = list(set(self._names))
+        import math as m
         fig_size = plt.rcParams["figure.figsize"]
+        # print "Current size:", fig_size
         fig_size[0] = 16
         fig_size[1] = 12
         plt.rcParams["figure.figsize"] = fig_size
 
-        magneticfield = np.asarray(inspectdata['magneticfield'], dtype=float)
-        magneticfielderr = np.asarray(inspectdata['magneticfield_stderr'], dtype=float)
-        temperature = np.asarray(inspectdata['temperature'], dtype=float)
-        temperatureerr = np.asarray(inspectdata['temperature_stderr'], dtype=float)
+        # plot the column data vs the fit result data (and trapezoidal integral)
+        for n in range(len(self._columnNames)):
+            name = self._columnNames[n]
+            plt.figure(n+1)
+            plt.title('Control plots #'+str(self._pdfoutfilename))
+            plt.subplot(3, 1, 1)
+            plt.errorbar(self._dataKeeper[name], self._dataKeeper['fitamp'], xerr=self._dataKeeper[name+"_stderr"], yerr=self._dataKeeper['fitamperr'],  fmt='co-', ecolor='cyan', label='gaussfit')
+            plt.errorbar(self._dataKeeper[name], self._dataKeeper[self._trapintname], xerr=self._dataKeeper[name+"_stderr"], yerr=self._dataKeeper[self._trapintname + "_stderr"], fmt='bo-', ecolor='blue', label='iint sum')
+            plt.legend(loc=3)
+            plt.subplot(3, 1, 2)
+            plt.errorbar(self._dataKeeper[name], self._dataKeeper['fitmean'], xerr=self._dataKeeper[name+"_stderr"], yerr=self._dataKeeper['fitmeanerr'],  fmt='co-', ecolor='cyan', label='gaussfit')
+            plt.legend(loc=3)
+            plt.subplot(3, 1, 3)
+            plt.errorbar(self._dataKeeper[name], self._dataKeeper['fitsigma'], xerr=self._dataKeeper[name+"_stderr"], yerr=self._dataKeeper['fitsigmaerr'],  fmt='co-', ecolor='cyan', label='gaussfit')
+            plt.legend(loc=3)
+            plt.xlabel('Values of ' + str(name))
+            self._pdfoutfile.savefig()
 
-        amplitude = np.asarray(inspectdata['amplitude'], dtype=float)
-        trapint = np.asarray(inspectdata['trapint'], dtype=float)
-        mean = np.asarray(inspectdata['mean'], dtype=float)
-        sigma = np.asarray(inspectdata['sigma'], dtype=float)
+        figure = plt.figure(len(self._columnNames)+2)
+        plt.scatter(self._dataKeeper['fitamp'], self._dataKeeper[self._trapintname])
+        plt.xlabel('Integral values of Gauss fit')
+        plt.ylabel('Interpolated trapezoid integration values')
+        figure.suptitle('Scatter plot of gauss integral result and trapezoid interpolation for integrated intensities', fontsize=14, fontweight='bold')
+        self._pdfoutfile.savefig()
 
-        plt.figure(0)
-        plt.subplot(3, 1, 1)
-        plt.errorbar(magneticfield, amplitude, xerr=magneticfielderr, fmt='co-', ecolor='cyan', label='gaussfit')
-        plt.errorbar(magneticfield, amplitude, xerr=magneticfielderr, fmt='bo-', ecolor='blue', label='iint sum')
-        plt.title('Data analysis #'+str(self._output))
-        plt.legend(loc=3)
-        plt.subplot(3, 1, 2)
-        plt.errorbar(magneticfield, mean, xerr=magneticfielderr, fmt='bo-', ecolor='blue', label='cen')
-        plt.legend(loc=3)
-        plt.subplot(3, 1, 3)
-        plt.errorbar(magneticfield, sigma, xerr=magneticfielderr, fmt='bo-', ecolor='blue', label='cen')
-        plt.legend(loc=3)
-        plt.xlabel('Magnetic Field (T)')
-
-        plt.figure(1)
-        plt.subplot(3, 1, 1)
-        plt.errorbar(temperature, amplitude, xerr=temperatureerr, fmt='co-', ecolor='cyan', label='gaussfit')
-        plt.errorbar(temperature, amplitude, xerr=temperatureerr, fmt='bo-', ecolor='blue', label='iint sum')
-        plt.legend(loc=3)
-        plt.title('Data analysis #'+str(self._output))
-        plt.subplot(3, 1, 2)
-        plt.errorbar(temperature, mean, xerr=temperatureerr, fmt='bo-', ecolor='blue', label='cen')
-        plt.legend(loc=3)
-        plt.subplot(3, 1, 3)
-        plt.errorbar(temperature, sigma, xerr=temperatureerr, fmt='bo-', ecolor='blue', label='cen')
-        plt.legend(loc=3)
-        plt.xlabel('Temperature (K)')
-
-        output = self._output + '_controlPlots.pdf'
-        with PdfPages(output) as pdf:
-            for i in [0, 1]:
-                pdf.savefig(plt.figure(i))
+        self._pdfoutfile.close()
         plt.close("all")
 
     def check(self, data):
         pass
 
     def clearPreviousData(self, data):
-        data.clearCurrent(self._output)
-
-    def fitfunc(self, x, a0, a1, a2):
-        return (a0/2.) * (1. + (cos(self.tthana*pi/180.))**2 + ((sin(self.tthana*pi/180.))**2) * (a1 * np.cos(2 * (x) * pi/180.) + a2 * np.sin(2 * (x) * pi/180.)))
+        data.clearCurrent(self._names)
