@@ -27,4 +27,4 @@ from . import processingConfiguration
 from . import processingControl
 from . import valueMap
 
-__version__ = '0.5.1'
+__version__ = '0.5.2'
