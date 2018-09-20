@@ -19,13 +19,13 @@
 # iintgui processing: collect raw observable spectra and stack them
 # create and save 2D plot
 
-import numpy as np
 try:
     import lmfit
 except ImportError:
     print("lmfit package is not available, please install.")
     pass
 
+import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 
@@ -68,7 +68,8 @@ class iintscanprofileplot(IProcess):
         plt.rcParams["figure.figsize"] = fig_size
 
         # create 2D array
-        self._mesh = np.stack(self._darray)
+        # self._mesh = np.stack(self._darray) # numpy v >= 1.10.
+        self._mesh = np.row_stack(self._darray)
 
         # display it:
         plt.matshow(self._mesh, cmap="jet")
