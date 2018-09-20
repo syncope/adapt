@@ -71,8 +71,9 @@ class iintscanprofileplot(IProcess):
         # self._mesh = np.stack(self._darray) # numpy v >= 1.10.
         self._mesh = np.row_stack(self._darray)
 
-        # display it:
-        plt.matshow(self._mesh, cmap="jet")
+        # display it: ( what's the difference between matshow and imshow?)
+        # plt.matshow(self._mesh, cmap="jet")
+        plt.imshow(self._mesh, cmap="jet")
         figure = plt.figure(1)
         figure.suptitle('Raw spectra vs. Scan number', fontsize=14, fontweight='bold')
 
