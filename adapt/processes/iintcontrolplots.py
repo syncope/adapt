@@ -37,7 +37,7 @@ class iintcontrolplots(IProcess):
         super(iintcontrolplots, self).__init__(ptype)
         self._trackedcolumnsPar = ProcessParameter("trackedColumns", list)
         self._rawdataPar = ProcessParameter("specdataname", str)
-        self._pdfoutfilenamePar = ProcessParameter("pdffilename", str)
+        self._pdfoutfilenamePar = ProcessParameter("outfilename", str)
         self._pdfmotorPar = ProcessParameter("motor", str)
         self._pdfobservablePar = ProcessParameter("observable", str)
         self._pdffitresultPar = ProcessParameter("fitresult", str)
@@ -53,7 +53,7 @@ class iintcontrolplots(IProcess):
     def initialize(self):
         self._trackedColumns = self._trackedcolumnsPar.get()
         self._rawdata = self._rawdataPar.get()
-        self._pdfoutfilename = self._pdfoutfilenamePar.get() + ".pdf"
+        self._pdfoutfilename = self._pdfoutfilenamePar.get()
         self._pdfmotor = self._pdfmotorPar.get()
         self._pdfobservable = self._pdfobservablePar.get()
         self._pdffitresult = self._pdffitresultPar.get()
