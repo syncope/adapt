@@ -65,10 +65,17 @@ class iintcontrolplots(IProcess):
         self._dataKeeper = {}
         self._dataKeeper[self._trapintname] = []
         self._dataKeeper[self._trapintname + "_stderr"] = []
+        self._dataKeeper['fitamp'] = []
+        self._dataKeeper['fitamperr'] = []
+        self._dataKeeper['fitmean'] = []
+        self._dataKeeper['fitmeanerr'] = []
+        self._dataKeeper['fitsigma'] = []
+        self._dataKeeper['fitsigmaerr'] = []
         self._pdfoutfile = PdfPages(self._pdfoutfilename)
+        self._names = []
 
     def execute(self, data):
-        if len(self._trackedData) > 0:
+        if len(self._trackedColumns) > 0:
             skip = True
         for name in self._trackedColumns:
             try:
@@ -78,38 +85,38 @@ class iintcontrolplots(IProcess):
                     datum = data.getData(self._rawdata).getArray(name)
                     try:
                         self._dataKeeper[name]
-                    except NameError:
+                    except:
                         self._dataKeeper[name] = []
-                        self._dataKeeper[name+"_stderr"] = []                       
+                        self._dataKeeper[name+"_stderr"] = []
                 except KeyError:
                     continue
             if isinstance(datum, np.ndarray):
+                self._names.append(name)
                 self._dataKeeper[name].append(np.mean(datum))
                 self._dataKeeper[name+"_stderr"].append(np.std(datum))
-            elif isinstance(datum, lmfit.model.ModelFit):
-                pars = datum.params
-                for parameter in pars:
-                    pname = pars[parameter].name
-                    pval = pars[parameter].value
-                    perr = pars[parameter].stderr
-                    try:
-                        self._dataKeeper[pname]
-                    except NameError:
-                        self._dataKeeper[pname] = []
-                        self._dataKeeper[pname + "_stderr"] = []
-                    self._dataKeeper[pname].append(pval)
-                    self._dataKeeper[pname + "_stderr"].append(perr)
-        self._values.append(tmpValues)
 
-        fitresult = data.getData(self._pdffitresult)
+        pars = data.getData(self._pdffitresult).params
+        for parameter in pars:
+            pname = pars[parameter].name
+            val = pars[parameter].value
+            err = pars[parameter].stderr
+            if pname == "m0_amplitude":
+                self._dataKeeper['fitamp'].append(val)
+                self._dataKeeper['fitamperr'].append(err)
+            elif pname == "m0_center":
+                self._dataKeeper['fitmean'].append(val)
+                self._dataKeeper['fitmeanerr'].append(err)
+            elif pname == "m0_sigma":
+                self._dataKeeper['fitsigma'].append(val)
+                self._dataKeeper['fitsigmaerr'].append(err)
         try:
-            trapint = data.getData(self._trapintname)
-            trapinterr = data.getData(self._trapintname+"_stderr")
+            self._dataKeeper[self._trapintname].append(data.getData(self._trapintname))
+            self._dataKeeper[self._trapintname + "_stderr"].append(data.getData(self._trapintname + "_stderr"))
         except:
             pass
-        self._plotstuff.append((fitresult.best_fit, trapint, trapinterr))
 
     def finalize(self, data):
+        self._columnNames = list(set(self._names))
         import math as m
         fig_size = plt.rcParams["figure.figsize"]
         # print "Current size:", fig_size
@@ -118,43 +125,23 @@ class iintcontrolplots(IProcess):
         plt.rcParams["figure.figsize"] = fig_size
 
         # plot the column data vs the fit result data (and trapezoidal integral)
-        for n in range(len(self._trackedColumns)):
-            plt.figure(0)
+        for n in range(len(self._columnNames)):
+            name = self._columnNames[n]
+            plt.figure(n+1)
+            plt.title('Control plots #'+str(self._pdfoutfilename))
             plt.subplot(3, 1, 1)
-            #~ plt.errorbar(magneticfield, amplitude, xerr=magneticfielderr, fmt='co-', ecolor='cyan', label='gaussfit')
-            #~ plt.errorbar(magneticfield, amplitude, xerr=magneticfielderr, fmt='bo-', ecolor='blue', label='iint sum')
-            #~ plt.title('Data analysis #'+str(self._output))
-            #~ plt.legend(loc=3)
-            #~ plt.subplot(3, 1, 2)
-            #~ plt.errorbar(magneticfield, mean, xerr=magneticfielderr, fmt='bo-', ecolor='blue', label='cen')
-            #~ plt.legend(loc=3)
-            #~ plt.subplot(3, 1, 3)
-            #~ plt.errorbar(magneticfield, sigma, xerr=magneticfielderr, fmt='bo-', ecolor='blue', label='cen')
-            #~ plt.legend(loc=3)
-            #~ plt.xlabel('Magnetic Field (T)')
-    
+            plt.errorbar(self._dataKeeper[name], self._dataKeeper['fitamp'], xerr=self._dataKeeper[name+"_stderr"], yerr=self._dataKeeper['fitamperr'],  fmt='co-', ecolor='cyan', label='gaussfit')
+            plt.errorbar(self._dataKeeper[name], self._dataKeeper[self._trapintname], xerr=self._dataKeeper[name+"_stderr"], yerr=self._dataKeeper[self._trapintname + "_stderr"], fmt='bo-', ecolor='blue', label='iint sum')
+            plt.legend(loc=3)
+            plt.subplot(3, 1, 2)
+            plt.errorbar(self._dataKeeper[name], self._dataKeeper['fitmean'], xerr=self._dataKeeper[name+"_stderr"], yerr=self._dataKeeper['fitmeanerr'],  fmt='co-', ecolor='cyan', label='gaussfit')
+            plt.legend(loc=3)
+            plt.subplot(3, 1, 3)
+            plt.errorbar(self._dataKeeper[name], self._dataKeeper['fitsigma'], xerr=self._dataKeeper[name+"_stderr"], yerr=self._dataKeeper['fitsigmaerr'],  fmt='co-', ecolor='cyan', label='gaussfit')
+            plt.legend(loc=3)
+            plt.xlabel('Values of ' + str(name))
+            self._pdfoutfile.savefig()
 
-        # plotstuff -- this must be the worst way to do it
-        # determine number of figures
-        #~ nof = m.ceil(len(self._plotstuff)/9)
-        #~ for n in range(len(self._plotstuff)):
-            #~ scannumber, motor, observable, fitresult, iint, iinterr = self._plotstuff[n]
-            #~ fn, index, check = m.floor(n/9), int(n % 9) + 1, n/9.
-            #~ if check > fn*nof:
-                #~ fn += 1
-            #~ if index == 1:
-                #~ if fn > 0:
-                    #~ self._pdfoutfile.savefig()
-                #~ figure = plt.figure(fn)
-                #~ figure.suptitle('Fit data with peak function & Integrated intensities', fontsize=14, fontweight='bold')
-
-            #~ figure.add_subplot(3, 3, index)
-            #~ plt.axis([motor[0], motor[-1], 0, 1.2 * np.amax(observable)])
-            #~ plt.plot(motor, observable, 'b+')
-            #~ plt.plot(motor, fitresult, 'r-')
-            #~ plt.title("Scan: #" + str(scannumber))
-
-        self._pdfoutfile.savefig()
         self._pdfoutfile.close()
         plt.close("all")
 
