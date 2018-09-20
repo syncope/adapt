@@ -142,6 +142,13 @@ class iintcontrolplots(IProcess):
             plt.xlabel('Values of ' + str(name))
             self._pdfoutfile.savefig()
 
+        figure = plt.figure(len(self._columnNames)+2)
+        plt.scatter(self._dataKeeper['fitamp'], self._dataKeeper[self._trapintname])
+        plt.xlabel('Integral values of Gauss fit')
+        plt.ylabel('Interpolated trapezoid integration values')
+        figure.suptitle('Scatter plot of gauss integral result and trapezoid interpolation for integrated intensities', fontsize=14, fontweight='bold')
+        self._pdfoutfile.savefig()
+
         self._pdfoutfile.close()
         plt.close("all")
 
