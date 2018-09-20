@@ -1,8 +1,8 @@
-adapt (0.5.0-2+deb8u10~fsec) jessie; urgency=low
+adapt (0.5.1-1+deb8u10~fsec) jessie; urgency=low
 
   * severe mistake in package building; don't ever use the older one.  
 
- -- Christoph Rosemann <christoph.rosemann@desy.de>  Fri, 07 Sep 2018 16:21:00 +0200
+ -- Christoph Rosemann <christoph.rosemann@desy.de>  Thu, 13 Sep 2018 12:15:00 +0200
 
 
 adapt (0.5.0-1+deb8u10~fsec) jessie; urgency=low
