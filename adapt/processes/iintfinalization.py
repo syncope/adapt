@@ -88,7 +88,7 @@ class iintfinalization(IProcess):
                 if not skip:
                     self._trackedData.append("mean_"+name)
                     self._trackedData.append("stderr_"+name)
-            elif isinstance(datum, lmfit.model.ModelFit):
+            elif isinstance(datum, lmfit.model.ModelResult):
                 pars = datum.params
                 for parameter in pars:
                     pname = pars[parameter].name
