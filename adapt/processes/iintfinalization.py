@@ -20,7 +20,7 @@
 
 import numpy as np
 try:
-    import lmfit
+    import pensant.plmfit as plmfit
 except ImportError:
     print("lmfit package is not available, please install.")
     pass
@@ -88,7 +88,7 @@ class iintfinalization(IProcess):
                 if not skip:
                     self._trackedData.append("mean_"+name)
                     self._trackedData.append("stderr_"+name)
-            elif isinstance(datum, lmfit.model.ModelResult):
+            elif isinstance(datum, plmfit.model.ModelResult):
                 pars = datum.params
                 for parameter in pars:
                     pname = pars[parameter].name

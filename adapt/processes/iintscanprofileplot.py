@@ -19,12 +19,6 @@
 # iintgui processing: collect raw observable spectra and stack them
 # create and save 2D plot
 
-try:
-    import lmfit
-except ImportError:
-    print("lmfit package is not available, please install.")
-    pass
-
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
