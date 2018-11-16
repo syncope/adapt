@@ -20,7 +20,7 @@
 
 import numpy as np
 try:
-    import lmfit
+    import pensant.plmfit
 except ImportError:
     print("lmfit package is not available, please install.")
     pass
