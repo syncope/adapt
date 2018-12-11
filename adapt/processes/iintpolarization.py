@@ -109,17 +109,15 @@ class iintpolarization(IProcess):
         for i in range(len(pr1chiana)):
             j = i + 1
             eta, iint, iinterr, iintgauss, iintgausserr, pr1chi, pr2chi, polangle = getValueRangeByIndex(j)
+            # add additional check if the amplitude changes at all during fitting
+            # introduced by request: fitting failes -- far too large values of amplitude
             prev = 1.0
             for k in range(10):
                 if k > 0:
                     prev = popt[0]
                 popt, pcov = curve_fit(self.fitfunc, eta, iint, p0=[popt[0], popt[1], popt[2]])
-                print("check:: " + str(popt[0]) + " and 10**k: " + str(10**k))
                 if prev == popt[0] and abs(popt[0] - 10**k) < 0.01:
-                    print("need to change the amplitude!!!")
                     popt[0] = popt[0]*10
-                print(" iteration: " + str(k) + " with amp: " + str(popt[0]))
-
             fitresults = [pr1chi, pr2chi, polangle, popt[0], pcov[0, 0]**0.5, popt[1], pcov[1, 1]**0.5, popt[2], pcov[2, 2]**0.5, sqrt(popt[1]**2+popt[2]**2)]
             results.append(fitresults)
 
