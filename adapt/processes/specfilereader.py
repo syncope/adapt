@@ -43,16 +43,11 @@ class specfilereader(IProcess):
     def initialize(self):
         self._scanlist = self._scanlistPar.get()
         self.data = dataHandler.DataHandler(self._inPar.get(), typehint="spec").getFileHandler().getAll(self._scanlist)
-        self.dataIterator = iter(self.data)
+        #~ self.dataIterator = iter(self.data)
 
     def execute(self, data):
-        # read next entry from spec file,
-        # put scandata object to common memory
-        try:
-            data.addData(self._outPar.get(), next(self.dataIterator))
-        except StopIteration:
-            print("---End of data reading from spec file ---")
-            raise StopIteration
+        # this part is never executed so far
+        pass
 
     def finalize(self, data):
         pass
