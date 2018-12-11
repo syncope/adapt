@@ -27,6 +27,7 @@ from . import iintfinalization
 from . import iintpolarization
 from . import iintcontrolplots
 from . import iintscanprofileplot
+from . import iintmcaplot
 from . import iintscanplot
 from . import filter1d
 from . import subsequenceselection
@@ -46,6 +47,7 @@ processTypeList = ["globaldata",
                    "iintpolarization",
                    "iintcontrolplots",
                    "iintscanprofileplot",
+                   "iintmcaplot",
                    "iintscanplot",
                    "filter1d",
                    "subsequenceselection",

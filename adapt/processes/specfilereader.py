@@ -43,16 +43,11 @@ class specfilereader(IProcess):
     def initialize(self):
         self._scanlist = self._scanlistPar.get()
         self.data = dataHandler.DataHandler(self._inPar.get(), typehint="spec").getFileHandler().getAll(self._scanlist)
-        self.dataIterator = iter(self.data)
+        #~ self.dataIterator = iter(self.data)
 
     def execute(self, data):
-        # read next entry from spec file,
-        # put scandata object to common memory
-        try:
-            data.addData(self._outPar.get(), next(self.dataIterator))
-        except StopIteration:
-            print("---End of data reading from spec file ---")
-            raise StopIteration
+        # this part is never executed so far
+        pass
 
     def finalize(self, data):
         pass
@@ -87,6 +82,14 @@ class specfilereaderGUI(QtGui.QWidget):
         self.okBtn.setDisabled(True)
         self._specReaderDict = {}
         self._file = None
+        self.chooseInputFileBtn.setToolTip("Click here to open a file dialog to select a spec file.")
+        self.inputFileLE.setToolTip("Here the name of the spec file can be typed; or it will be displayed after choosing by dialog.")
+        self.scanSelectionInput.setToolTip("Enter here the numbers of the scans of interest.\n" +
+                                           "The style follows printer dialogs. A comma ',' separates selections, a minus '-' defines ranges.\n" +
+                                           "A double colon ':' selects the step size.\n" + 
+                                           "Examples:\n" +
+                                           "'361-374:3' choses every third scan in the range between 361 and 374, and \n" +
+                                           "'361, 364, 367, 370, 373' selects the same scans." )
 
     def reset(self):
         self.inputFileLE.setText('')
