@@ -1,3 +1,10 @@
+adapt (0.5.5-1+deb9u5~fsec) stretch; urgency=low
+
+  * Changes to prepare for multi curve fitting in one datum; plus changes to iint polarization analysis.
+  ** Fixes out of bounds problem if values get too large.  
+
+ -- Christoph Rosemann <christoph.rosemann@desy.de>  Tue, 11 Dec 2018 17:30:00 +0100
+
 adapt (0.5.4-1+deb9u5~fsec) stretch; urgency=low
 
   * change lmfit version to the one included in pensant for compatibility.  
