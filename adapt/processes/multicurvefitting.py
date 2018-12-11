@@ -32,15 +32,12 @@ class multicurvefitting(IProcess):
 
     def __init__(self, ptype="multicurvefitting"):
         super(multicurvefitting, self).__init__(ptype)
-        self._xdataPar = ProcessParameter("xdata", str)
-        self._ydataPar = ProcessParameter("ydata", str)
-        self._yerrPar = ProcessParameter("error", str, None, optional=True)
+        self._spectraNamePar = ProcessParameter("spectraname", str)
+        self._xdataPar = ProcessParameter("xdata", str, '', optional=True)
         self._usePreviousResultPar = ProcessParameter("usepreviousresult", int, 0, optional=True)
         self._modelPar = ProcessParameter("model", dict)
         self._resultPar = ProcessParameter("result", str)
-        self._parameters.add(self._xdataPar)
-        self._parameters.add(self._ydataPar)
-        self._parameters.add(self._yerrPar)
+        self._parameters.add(self._spectraNamePar)
         self._parameters.add(self._usePreviousResultPar)
         self._parameters.add(self._modelPar)
         self._parameters.add(self._resultPar)
@@ -61,9 +58,14 @@ class multicurvefitting(IProcess):
         self._updateModel(self._modelPar.get())
 
     def execute(self, data):
-        # x and y data
-        independentVariable = data.getData(self._xdataPar.get())
-        dependentVariable = data.getData(self._ydataPar.get())
+        # getSpectra
+        spectradata = data.getData(self._spectraNamePar.get())
+        # check if x is defined
+        if self._xdataPar.get() != '':
+            xdata = data.getData(self._xdataPar.get())
+        # if not defined generate simple numerated list of appropriate length
+        else: 
+            xdata = np.asarray(range(len(spectradata[0])))
         errorname = self._yerrPar.get()
         if(errorname is None or errorname == 'None'):
             self._noerror = True
@@ -82,9 +84,9 @@ class multicurvefitting(IProcess):
 
         # fit the data using the guessed value
         if self._noerror:
-            self._result = self.model.fit(dependentVariable, self.model.params, x=independentVariable)
+            self._result = self.model.fit(dependentVariable, self.model.params, x=xdata)
         else:
-            self._result = self.model.fit(dependentVariable, self.model.params, weights=variableWeight, x=independentVariable)
+            self._result = self.model.fit(dependentVariable, self.model.params, weights=variableWeight, x=xdata)
         data.addData(self._resultPar.get(), self._result)
 
     def finalize(self, data):
