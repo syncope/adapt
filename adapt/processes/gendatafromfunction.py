@@ -40,7 +40,15 @@ class gendatafromfunction(IProcess):
     def execute(self, data):
         fitresult = data.getData(self._fitresult)
         xdata = data.getData(self._xdata)
-        data.addData(self._output, fitresult.eval(x=xdata))
+        # hacky, kludgy
+        # lmfit returns different types, depending on the model
+        import pensant
+        import numpy as np
+        if isinstance(fitresult.model, pensant.models.constant):
+            constant = fitresult.eval(x=xdata)
+            data.addData(self._output, np.asarray(len(xdata)*[constant]))
+        else:
+            data.addData(self._output, fitresult.eval(x=xdata))
 
     def finalize(self, data):
         pass
