@@ -43,9 +43,13 @@ class iintmcaplot(IProcess):
         self._outfile = PdfPages(self._outfilename)
 
     def execute(self, data):
-        datum = data.getData(self._input)
-        self._name = datum.getMCAName()
-        self._values = datum.getMCA()
+        try:
+            self._name = data.getData("MCAName")
+            self._values = data.getData("MCA")
+            print("i've got something: " + str(self._name))
+        except:
+            print("I've got nothing in the MCA department.")
+
 
     def finalize(self, data):
         import math as m
