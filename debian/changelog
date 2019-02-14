@@ -1,3 +1,9 @@
+adapt (0.5.6-1+deb9u5~fsec) stretch; urgency=low
+
+  * Add workaround against interface change in lmfit in function evaluation.
+
+ -- Christoph Rosemann <christoph.rosemann@desy.de>  Thu, 14 Feb 2019 9:50:00 +0100
+
 adapt (0.5.5-1+deb9u5~fsec) stretch; urgency=low
 
   * Changes to prepare for multi curve fitting in one datum; plus changes to iint polarization analysis.
