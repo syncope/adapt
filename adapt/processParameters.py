@@ -38,7 +38,10 @@ class ProcessParameter():
         if self.typecheck(val):
             self.value = val
         else:
-            raise ValueError("Can't set parameter " + str(self.name) + " because it's of the wrong data type.")
+            if self.optional and isinstance(type(val), type(None)):
+                pass
+            else:
+                raise ValueError("Can't set parameter " + str(self.name) + " because it's of the wrong data type.")
 
     def get(self):
         return self.value
