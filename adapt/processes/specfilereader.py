@@ -106,7 +106,7 @@ class specfilereaderGUI(QtGui.QWidget):
         self._specReaderDict["type"] = "specfilereader"
         self._specReaderDict["filename"] = self._file
         self._specReaderDict["scanlist"] = self.scanSelectionInput.text()
-        self._specReaderDict["outputdata"] = "default"
+        self._specReaderDict["output"] = "default"
         return self._specReaderDict
 
     def setParameterDict(self, paramDict):
