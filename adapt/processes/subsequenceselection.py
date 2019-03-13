@@ -63,16 +63,19 @@ class subsequenceselection(IProcess):
         for method in self._selectionmethods:
             if method not in self._methodDict:
                 raise NotImplementedError("[subsequenceselection] Method " + str(method) + " not implemented.")
-        if len(self._inputs) != len(self._output):
-            raise ValueError("[subsequenceselection] The number of inputs and outputs does not match.")
-        if "selectfromstart" in self._selectionmethods and not self._startpoints:
-            raise ValueError("[subsequenceselection] Method selectfromstart needs a startpointnumber.")
-        if "selectfromend" in self._selectionmethods and not self._endpoints:
-            raise ValueError("[subsequenceselection] Method selectfromend needs a endpointnumber.")
-        if "selectslice" in self._selectionmethods and self._slicestart is None or self._sliceend is None:
-            raise ValueError("[subsequenceselection] Method selectslice needs start and end values.")
-        if "selectslice" in self._selectionmethods and len(self._selectionmethods) > 1:
-            raise ValueError("[subsequenceselection] Method selectslice cannot be combined with another selection method.")
+        try:
+            if len(self._inputs) != len(self._output):
+                raise ValueError("[subsequenceselection] The number of inputs and outputs does not match.")
+            if "selectfromstart" in self._selectionmethods and not self._startpoints:
+                raise ValueError("[subsequenceselection] Method selectfromstart needs a startpointnumber.")
+            if "selectfromend" in self._selectionmethods and not self._endpoints:
+                raise ValueError("[subsequenceselection] Method selectfromend needs a endpointnumber.")
+            if "selectslice" in self._selectionmethods and ( self._slicestart is None or self._sliceend is None):
+                raise ValueError("[subsequenceselection] Method selectslice needs start and end values.")
+            if "selectslice" in self._selectionmethods and len(self._selectionmethods) > 1:
+                raise ValueError("[subsequenceselection] Method selectslice cannot be combined with another selection method.")
+        except:
+            pass
 
     def execute(self, data):
         # start or endselection:
@@ -95,7 +98,6 @@ class subsequenceselection(IProcess):
         elif "selectslice" in self._selectionmethods:
             for index in range(len(self._inputs)):
                 sequence = data.getData(self._inputs[index])
- 
 
     def finalize(self, data):
         pass
