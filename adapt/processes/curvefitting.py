@@ -36,12 +36,14 @@ class curvefitting(IProcess):
         self._ydataPar = ProcessParameter("ydata", str)
         self._yerrPar = ProcessParameter("error", str, None, optional=True)
         self._usePreviousResultPar = ProcessParameter("usepreviousresult", int, 0, optional=True)
+        self._useGuessingPar = ProcessParameter("useguessing", int, 0, optional=True)
         self._modelPar = ProcessParameter("model", dict)
         self._resultPar = ProcessParameter("result", str)
         self._parameters.add(self._xdataPar)
         self._parameters.add(self._ydataPar)
         self._parameters.add(self._yerrPar)
         self._parameters.add(self._usePreviousResultPar)
+        self._parameters.add(self._useGuessingPar)
         self._parameters.add(self._modelPar)
         self._parameters.add(self._resultPar)
         self._noerror = False
@@ -52,6 +54,12 @@ class curvefitting(IProcess):
             self._usePreviousResult = True
         else:
             self._usePreviousResult = False
+        self._useGuessing =self._useGuessingPar.get()
+        if (self._useGuessing != 0):
+            self._useGuessing = True
+        else:
+            self._useGuessing = False
+
         self._firstguess = True
         # first set up the fit model with the given information
         # the model is a map/dictionary:
@@ -65,6 +73,7 @@ class curvefitting(IProcess):
         independentVariable = data.getData(self._xdataPar.get())
         dependentVariable = data.getData(self._ydataPar.get())
         errorname = self._yerrPar.get()
+        isagauss = False
         if(errorname is None or errorname == 'None'):
             self._noerror = True
         elif (errorname == 'poisson'):
@@ -79,6 +88,12 @@ class curvefitting(IProcess):
                 self._firstguess = False
             except NotImplementedError:
                 print("The given model doesn't have a guess method implemented.")
+        elif self._useGuessing:
+            try:
+                self.model.params = self.model.gaussguess(independentVariable, dependentVariable)
+                isagauss = True
+            except:
+                pass
 
         # fit the data using the guessed value
         if self._noerror:
