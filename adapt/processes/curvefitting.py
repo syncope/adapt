@@ -82,7 +82,7 @@ class curvefitting(IProcess):
             variableWeight = 1./data.getData(errorname)
 
         # check if the previous result should be used OR if it's the first fit
-        if (not self._usePreviousResult) or self._firstguess:
+        if  not self._useGuessing and ( (not self._usePreviousResult) or self._firstguess):
             try:
                 self.model.params = self.model.guess(dependentVariable, x=independentVariable)
                 self._firstguess = False
