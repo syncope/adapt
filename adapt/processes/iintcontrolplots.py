@@ -35,14 +35,14 @@ class iintcontrolplots(IProcess):
 
     def __init__(self, ptype="iintcontrolplots"):
         super(iintcontrolplots, self).__init__(ptype)
-        self._trackedcolumnsPar = ProcessParameter("trackedColumns", list)
+        self.trackeddataPar = ProcessParameter("trackedData", list)
         self._rawdataPar = ProcessParameter("specdataname", str)
         self._pdfoutfilenamePar = ProcessParameter("outfilename", str)
         self._pdfmotorPar = ProcessParameter("motor", str)
         self._pdfobservablePar = ProcessParameter("observable", str)
         self._pdffitresultPar = ProcessParameter("fitresult", str)
         self._trapintPar = ProcessParameter("trapintname", str, optional=True)
-        self._parameters.add(self._trackedcolumnsPar)
+        self._parameters.add(self.trackeddataPar)
         self._parameters.add(self._rawdataPar)
         self._parameters.add(self._pdfoutfilenamePar)
         self._parameters.add(self._pdfmotorPar)
@@ -51,7 +51,7 @@ class iintcontrolplots(IProcess):
         self._parameters.add(self._trapintPar)
 
     def initialize(self):
-        self._trackedColumns = self._trackedcolumnsPar.get()
+        self._trackedData = self.trackeddataPar.get()
         self._rawdata = self._rawdataPar.get()
         self._pdfoutfilename = self._pdfoutfilenamePar.get()
         self._pdfmotor = self._pdfmotorPar.get()
@@ -75,9 +75,9 @@ class iintcontrolplots(IProcess):
         self._names = []
 
     def execute(self, data):
-        if len(self._trackedColumns) > 0:
+        if len(self._trackedData) > 0:
             skip = True
-        for name in self._trackedColumns:
+        for name in self._trackedData:
             try:
                 datum = data.getData(name)
             except KeyError:
