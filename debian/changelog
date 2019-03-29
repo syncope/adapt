@@ -1,3 +1,9 @@
+adapt (0.6.0-1+deb9u5~fsec) stretch; urgency=low
+
+  * Cumulative updates to iint specific parts; added functionality to curve fitting.
+
+ -- Christoph Rosemann <christoph.rosemann@desy.de>  Fri, 29 Mar 2019 10:28:00 +0100
+
 adapt (0.5.6-1+deb9u5~fsec) stretch; urgency=low
 
   * Add workaround against interface change in lmfit in function evaluation.
