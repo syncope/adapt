@@ -10,7 +10,7 @@ from sphinx.setup_command import BuildDoc
 
 name='adapt'
 version='0'
-release='0.5.6'
+release='0.6.0'
 
 setup(
     name='adapt',

@@ -1,4 +1,4 @@
-# Copyright (C) 2016-17  Christoph Rosemann, DESY, Notkestr. 85, D-22607 Hamburg
+# Copyright (C) 2016-19  Christoph Rosemann, DESY, Notkestr. 85, D-22607 Hamburg
 # email contact: christoph.rosemann@desy.de
 #
 # This program is free software; you can redistribute it and/or
@@ -27,4 +27,4 @@ from . import processingConfiguration
 from . import processingControl
 from . import valueMap
 
-__version__ = '0.5.6'
+__version__ = '0.6.0'
