@@ -42,12 +42,16 @@ class specfilereader(IProcess):
 
     def initialize(self):
         self._scanlist = self._scanlistPar.get()
+        self._outname = self._outPar.get()
         self.data = dataHandler.DataHandler(self._inPar.get(), typehint="spec").getFileHandler().getAll(self._scanlist)
-        #~ self.dataIterator = iter(self.data)
+        self.dataIterator = iter(self.data)
 
     def execute(self, data):
-        # this part is never executed so far
-        pass
+        currentdatum = self.dataIterator.__next__()
+        data.addData(self._outname, currentdatum)
+        if currentdatum.getMCAName() != '':
+            data.addData("MCAName", datum.getMCAName())
+            data.addData("MCA", datum.getMCA())
 
     def finalize(self, data):
         pass
@@ -106,7 +110,7 @@ class specfilereaderGUI(QtGui.QWidget):
         self._specReaderDict["type"] = "specfilereader"
         self._specReaderDict["filename"] = self._file
         self._specReaderDict["scanlist"] = self.scanSelectionInput.text()
-        self._specReaderDict["outputdata"] = "default"
+        self._specReaderDict["output"] = "default"
         return self._specReaderDict
 
     def setParameterDict(self, paramDict):

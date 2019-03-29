@@ -64,10 +64,15 @@ class iintscanprofileplot(IProcess):
         # create 2D array
         # self._mesh = np.stack(self._darray) # numpy v >= 1.10.
         self._mesh = np.row_stack(self._darray)
+        val1 = float(self._values[0][1][-1])
+        val2 = float(self._values[0][1][0])
+        val3 = float(self._values[-1][0])
+        val4 = float(self._values[0][0])
 
         # display it: ( what's the difference between matshow and imshow?)
-        # plt.matshow(self._mesh, cmap="jet")
-        plt.imshow(self._mesh, cmap="jet")
+        plt.imshow(self._mesh, cmap="jet", interpolation='none', aspect="auto", extent=[val1, val2, val3, val4])
+        plt.xlabel(self._pdfmotor)
+        plt.ylabel("ScanNumber")
         figure = plt.figure(1)
         figure.suptitle('Raw spectra vs. Scan number', fontsize=14, fontweight='bold')
 
