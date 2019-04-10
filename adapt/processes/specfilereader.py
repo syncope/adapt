@@ -70,7 +70,7 @@ class specfilereader(IProcess):
 
 
 class specfilereaderGUI(QtGui.QWidget):
-    valuesSet = QtCore.pyqtSignal()
+    valuesSet = QtCore.pyqtSignal(str)
 
     def __init__(self, parent=None):
         super(specfilereaderGUI, self).__init__(parent)
@@ -80,7 +80,7 @@ class specfilereaderGUI(QtGui.QWidget):
         uic.loadUi(formfile, self)
         self.chooseInputFileBtn.clicked.connect(self.getAndOpenFile)
         self.scanSelectionInput.textEdited.connect(self._checkValues)
-        self.okBtn.clicked.connect(self.valuesSet.emit)
+        self.okBtn.clicked.connect(self._doemit)
         self.okBtn.clicked.connect(self.close)
         self.cancel.clicked.connect(self.close)
         self.okBtn.setDisabled(True)
@@ -123,3 +123,6 @@ class specfilereaderGUI(QtGui.QWidget):
     def _checkValues(self):
         if self._file is not None and self.scanSelectionInput.text() != '':
             self.okBtn.setDisabled(False)
+
+    def _doemit(self):
+        self.valuesSet.emit("spec")
