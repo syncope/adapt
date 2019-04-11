@@ -17,7 +17,7 @@
 # Boston, MA  02110-1301, USA.
 
 
-# recent re-structuring: use psio library for reading spec files
+# recent re-structuring: use psio library for reading fio files
 
 try:
     from psio import dataHandler
@@ -77,37 +77,37 @@ class fiofilereaderGUI(QtGui.QWidget):
         self.okBtn.clicked.connect(self.close)
         self.cancel.clicked.connect(self.close)
         self.okBtn.setDisabled(True)
-        self._specReaderDict = {}
-        self._file = None
-        self.chooseInputFileBtn.setToolTip("Click here to open a file dialog to select a spec file.")
+        self._fioReaderDict = {}
+        self._files = None
+        self.chooseInputFileBtn.setToolTip("Click here to open a file dialog to select a fio file.")
         self.fileList.setToolTip("Here the names of the fio files will be displayed after choosing by dialog.")
 
     def reset(self):
         self.inputFileLE.setText('')
         self.okBtn.setDisabled(True)
-        self._file = None
-        self._specReaderDict.clear()
+        self._files = None
+        self._fioReaderDict.clear()
 
     def getAndOpenFile(self):
         self._files = QtGui.QFileDialog.getOpenFileNames(self, 'Choose FIO file(s)', '.', "FIO files (*.fio)")
         self.fileList.addItems(self._files)
+        self._checkValues()
 
     def getParameterDict(self):
-        self._specReaderDict["type"] = "fiofilereader"
-        self._specReaderDict["filename"] = self._file
-        self._specReaderDict["scanlist"] = self.scanSelectionInput.text()
-        self._specReaderDict["output"] = "default"
-        return self._specReaderDict
+        self._fioReaderDict["type"] = "fiofilereader"
+        self._fioReaderDict["filenames"] = self._files
+        self._fioReaderDict["output"] = "default"
+        return self._fioReaderDict
 
     def setParameterDict(self, paramDict):
-        self._specReaderDict = paramDict
-        self._file = self._specReaderDict["filename"]
+        self._fioReaderDict = paramDict
+        self._files = self._fioReaderDict["filenames"]
         # fio parts are missing
         #~ self.inputFileLE.setText(self._file)
         self.okBtn.setDisabled(False)
 
     def _checkValues(self):
-        if self._file is not None:
+        if self._files is not None:
             self.okBtn.setDisabled(False)
 
     def _doemit(self):
