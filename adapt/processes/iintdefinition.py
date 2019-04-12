@@ -87,59 +87,59 @@ class iintdefinition(IProcess):
         data.clearCurrent(self._id)
 
 
-class iintdefinitionGUI(QtGui.QWidget):
-    pDict = QtCore.pyqtSignal(dict)
+#~ class iintdefinitionGUI(QtGui.QWidget):
+    #~ pDict = QtCore.pyqtSignal(dict)
 
-    def __init__(self, parent=None):
-        super(iintdefinitionGUI, self).__init__(parent)
-        import os
-        dir_path = os.path.dirname(os.path.realpath(__file__)) + "/"
-        formfile = os.path.join(dir_path, "ui/iintdefinition.ui")
-        uic.loadUi(formfile, self)
-        self._det = ""
-        self._mon = ""
-        self._expt = ""
-        self._attF = ""
-        self.observableDetectorCB.activated.connect(self.setDet)
-        self.observableMonitorCB.activated.connect(self.setMon)
-        self.observableTimeCB.activated.connect(self.setExpT)
-        self._useAttenuationFactor = False
-        self.observableAttFaccheck.stateChanged.connect(self.toggleAttFac)
-        self.observableAttFacCB.setDisabled(True)
-        self.observableAttFacCB.activated.connect(self.setAttF)
-        self._iintDefDict = {}
+    #~ def __init__(self, parent=None):
+        #~ super(iintdefinitionGUI, self).__init__(parent)
+        #~ import os
+        #~ dir_path = os.path.dirname(os.path.realpath(__file__)) + "/"
+        #~ formfile = os.path.join(dir_path, "ui/iintdefinition.ui")
+        #~ uic.loadUi(formfile, self)
+        #~ self._det = ""
+        #~ self._mon = ""
+        #~ self._expt = ""
+        #~ self._attF = ""
+        #~ self.observableDetectorCB.activated.connect(self.setDet)
+        #~ self.observableMonitorCB.activated.connect(self.setMon)
+        #~ self.observableTimeCB.activated.connect(self.setExpT)
+        #~ self._useAttenuationFactor = False
+        #~ self.observableAttFaccheck.stateChanged.connect(self.toggleAttFac)
+        #~ self.observableAttFacCB.setDisabled(True)
+        #~ self.observableAttFacCB.activated.connect(self.setAttF)
+        #~ self._iintDefDict = {}
 
-    def setDet(self, index):
-        pass
+    #~ def setDet(self, index):
+        #~ pass
 
-    def setMon(self, index):
-        pass
+    #~ def setMon(self, index):
+        #~ pass
 
-    def setExpT(self, index):
-        pass
+    #~ def setExpT(self, index):
+        #~ pass
 
-    def toggleAttFac(self):
-        self.observableAttFacCB.setDisabled(self._useAttenuationFactor)
-        self._useAttenuationFactor = not self._useAttenuationFactor
+    #~ def toggleAttFac(self):
+        #~ self.observableAttFacCB.setDisabled(self._useAttenuationFactor)
+        #~ self._useAttenuationFactor = not self._useAttenuationFactor
 
-    def setAttF(self, index):
-        pass
+    #~ def setAttF(self, index):
+        #~ pass
 
-    def getParameterDict(self):
-        return self._iintDefDict
+    #~ def getParameterDict(self):
+        #~ return self._iintDefDict
 
-    def setParameterDict(self, paramDict):
-        self._iintDefDict = paramDict
+    #~ def setParameterDict(self, paramDict):
+        #~ self._iintDefDict = paramDict
 
-    def emittit(self):
-        self._iintDefDict["type"] = "iintdefinition"
-        self._iintDefDict["input"] = "default"
-        self._iintDefDict["motor_column"] = "motor"
-        self._iintDefDict["detector_column"] = self._det
-        self._iintDefDict["monitor_column"] = self._mon
-        self._iintDefDict["exposureTime_column"] = self._expt
-        if self._useAttenuationFactor:
-            self._iintDefDict["attenuationFactor_column"] = self._attF
-        self._iintDefDict["observableoutput"] = "default"
-        self._iintDefDict["id"] = "scannumber"
-        self.pDict.emit(self._iintDefDict)
+    #~ def emittit(self):
+        #~ self._iintDefDict["type"] = "iintdefinition"
+        #~ self._iintDefDict["input"] = "default"
+        #~ self._iintDefDict["motor_column"] = "motor"
+        #~ self._iintDefDict["detector_column"] = self._det
+        #~ self._iintDefDict["monitor_column"] = self._mon
+        #~ self._iintDefDict["exposureTime_column"] = self._expt
+        #~ if self._useAttenuationFactor:
+            #~ self._iintDefDict["attenuationFactor_column"] = self._attF
+        #~ self._iintDefDict["observableoutput"] = "default"
+        #~ self._iintDefDict["id"] = "scannumber"
+        #~ self.pDict.emit(self._iintDefDict)
