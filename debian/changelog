@@ -1,3 +1,9 @@
+adapt (0.6.2-1+deb9u5~fsec) stretch; urgency=low
+
+  * Added a fio file reader, cleaned up bits and pieces in the iint processes.
+
+ -- Christoph Rosemann <christoph.rosemann@desy.de>  Fri, 12 Apr 2019 19:28:00 +0100
+
 adapt (0.6.0-1+deb9u5~fsec) stretch; urgency=low
 
   * Cumulative updates to iint specific parts; added functionality to curve fitting.
