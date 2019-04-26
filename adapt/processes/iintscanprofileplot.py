@@ -36,6 +36,7 @@ class iintscanprofileplot(IProcess):
         self._parameters.add(self._pdfmotorPar)
         self._parameters.add(self._outfilenamePar)
         self._parameters.add(self._pdfobservablePar)
+        self._padded = False
 
     def initialize(self):
         self._outfilename = self._outfilenamePar.get()
@@ -61,6 +62,8 @@ class iintscanprofileplot(IProcess):
         fig_size[1] = 12
         plt.rcParams["figure.figsize"] = fig_size
 
+        # check if the arrays are of different size and correct, if needed
+        self._correctArraySize()
         # create 2D array
         # self._mesh = np.stack(self._darray) # numpy v >= 1.10.
         self._mesh = np.row_stack(self._darray)
@@ -74,7 +77,10 @@ class iintscanprofileplot(IProcess):
         plt.xlabel(self._pdfmotor)
         plt.ylabel("ScanNumber")
         figure = plt.figure(1)
-        figure.suptitle('Raw spectra vs. Scan number', fontsize=14, fontweight='bold')
+        if self._padded:
+            figure.suptitle('Raw spectra vs. Scan number\n NOTE: contains padded elements due to different scan commands!', fontsize=14, fontweight='bold')
+        else:
+            figure.suptitle('Raw spectra vs. Scan number', fontsize=14, fontweight='bold')
 
         self._outfile.savefig()
         self._outfile.close()
@@ -85,3 +91,21 @@ class iintscanprofileplot(IProcess):
 
     def clearPreviousData(self, data):
         data.clearCurrent(self._names)
+
+    def _correctArraySize(self):
+        # needed if the scans/the arrays have different length
+        # first map the sizes:
+        testmap = {len(obj) : True for obj in self._darray}
+        # if there is more than one length
+        if len(testmap) > 1:
+            # determine the length of the longest entry
+            padlength = max(testmap, key=int)
+            for elem in self._darray:
+                dl = padlength - len(elem)
+                if dl > 0:
+                    self._darray[self._darray.index(elem)] = np.pad(elem, (0, dl), 'constant', constant_values=(-10))
+                    self._padded = True
+        else: 
+            return
+            
+        
