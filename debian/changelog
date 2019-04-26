@@ -1,3 +1,10 @@
+adapt (0.6.3-1+deb9u5~fsec) stretch; urgency=low
+
+  * Bugfix for process iintscanprofileplot; add padding for mismatching scan
+    lengths.
+
+ -- Christoph Rosemann <christoph.rosemann@desy.de>  Fri, 26 Apr 2019 14:55:00 +0100
+
 adapt (0.6.2-1+deb9u5~fsec) stretch; urgency=low
 
   * Added a fio file reader, cleaned up bits and pieces in the iint processes.
