@@ -1,3 +1,10 @@
+adapt (0.6.4-1+deb9u5~fsec) stretch; urgency=low
+
+  * Feature request implementation in process iintscanprofileplot; change
+    padding to be at front and end.
+
+ -- Christoph Rosemann <christoph.rosemann@desy.de>  Mon, 29 Apr 2019 8:53:00 +0100
+
 adapt (0.6.3-1+deb9u5~fsec) stretch; urgency=low
 
   * Bugfix for process iintscanprofileplot; add padding for mismatching scan
