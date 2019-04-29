@@ -93,6 +93,7 @@ class iintscanprofileplot(IProcess):
         data.clearCurrent(self._names)
 
     def _correctArraySize(self):
+        import math as m
         # needed if the scans/the arrays have different length
         # first map the sizes:
         testmap = {len(obj) : True for obj in self._darray}
@@ -102,10 +103,10 @@ class iintscanprofileplot(IProcess):
             padlength = max(testmap, key=int)
             for elem in self._darray:
                 dl = padlength - len(elem)
+                dlfront = m.floor(dl/2)
+                dlback = m.ceil(dl/2)
                 if dl > 0:
-                    self._darray[self._darray.index(elem)] = np.pad(elem, (0, dl), 'constant', constant_values=(-10))
+                    self._darray[self._darray.index(elem)] = np.pad(elem, (dlfront, dlback), 'constant', constant_values=(-10))
                     self._padded = True
         else: 
             return
-            
-        
