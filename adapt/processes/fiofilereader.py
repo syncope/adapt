@@ -83,8 +83,8 @@ class fiofilereaderGUI(QtGui.QWidget):
         self.fileList.setToolTip("Here the names of the fio files will be displayed after choosing by dialog.")
 
     def reset(self):
-        self.inputFileLE.setText('')
         self.okBtn.setDisabled(True)
+        self.fileList.clear()
         self._files = None
         self._fioReaderDict.clear()
 
