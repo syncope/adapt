@@ -1,4 +1,4 @@
-# Copyright (C) 2016-19  Christoph Rosemann, DESY, Notkestr. 85, D-22607 Hamburg
+# Copyright (C) 2019  Christoph Rosemann, DESY, Notkestr. 85, D-22607 Hamburg
 # email contact: christoph.rosemann@desy.de
 #
 # This program is free software; you can redistribute it and/or
@@ -16,16 +16,13 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor,
 # Boston, MA  02110-1301, USA.
 
-from . import iConfigurationHandler
-from . import configurationHandler
-from . import iProcess
-from . import processData
-from . import processParameters
-from . import processDefinitionFactory
-from . import processBuilder
-from . import processingConfiguration
-from . import processingControl
-from . import valueMap
-from . import adaptException
 
-__version__ = '0.6.4'
+class AdaptException(Exception):
+    """Base class for exceptions in this module."""
+    pass
+
+
+
+class AdaptProcessException(AdaptException):
+    '''Exception raised by processes in adapt.'''
+    pass

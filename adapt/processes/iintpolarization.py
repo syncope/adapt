@@ -25,7 +25,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 
 from adapt.iProcess import *
-
+from adapt.adaptException import AdaptProcessException
 
 class iintpolarization(IProcess):
 
@@ -84,7 +84,9 @@ class iintpolarization(IProcess):
         self.tthana = np.mean(np.asarray(poldata["ptth"], dtype=float))
         # check if it adds up
         if len(petaana)*len(pr1chiana) != len(poldata["scannumber"]):
-            print("[iintPolar] Polarization analysis cannot be performed, the number of values doesn't match.")
+           # raise exception
+           raise AdaptProcessException()
+            #~ print("[iintPolar] Polarization analysis cannot be performed, the number of values doesn't match.")
 
         def getValueRangeByIndex(index):
             length = len(petaana)
