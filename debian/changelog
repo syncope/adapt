@@ -1,3 +1,9 @@
+adapt (0.6.5-1+deb9u5~fsec) stretch; urgency=low
+
+  * Several changes to processes, and a new one for feature requests.
+
+ -- Christoph Rosemann <christoph.rosemann@desy.de>  Tue, 7 May 2019 18:14:00 +0100
+
 adapt (0.6.4-1+deb9u5~fsec) stretch; urgency=low
 
   * Feature request implementation in process iintscanprofileplot; change
