@@ -10,7 +10,7 @@ from sphinx.setup_command import BuildDoc
 
 name='adapt'
 version='0'
-release='0.6.4'
+release='0.6.5'
 
 setup(
     name='adapt',
@@ -32,7 +32,6 @@ setup(
         'Topic :: Scientific/Engineering :: Physics',
         'Topic :: Software Development :: Libraries :: Python Modules',
         'License :: OSI Approved :: GNU General Public License v2 (GPLv2)',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
