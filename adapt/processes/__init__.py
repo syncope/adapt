@@ -1,4 +1,4 @@
-# Copyright (C) 2017  Christoph Rosemann, DESY, Notkestr. 85, D-22607 Hamburg
+# Copyright (C) 2017-19  Christoph Rosemann, DESY, Notkestr. 85, D-22607 Hamburg
 # email contact: christoph.rosemann@desy.de
 #
 # This program is free software; you can redistribute it and/or
@@ -35,6 +35,7 @@ from . import backgroundsubtraction
 from . import curvefitting
 from . import trapezoidintegration
 from . import gendatafromfunction
+from . import integratefitresult
 
 processTypeList = ["globaldata",
                    "datainfo",
@@ -55,4 +56,5 @@ processTypeList = ["globaldata",
                    "curvefitting",
                    "trapezoidintegration",
                    "gendatafromfunction",
+                   "integratefitresult"
                    ]
