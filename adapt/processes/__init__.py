@@ -22,6 +22,13 @@ from . import stdreader
 from . import specfilereader
 from . import polarintegration
 from . import sliceprojection
+from . import iintdefinition
+from . import iintfinalization
+from . import iintpolarization
+from . import iintcontrolplots
+from . import iintscanprofileplot
+from . import iintmcaplot
+from . import iintscanplot
 from . import filter1d
 from . import subsequenceselection
 from . import backgroundsubtraction
@@ -36,6 +43,13 @@ processTypeList = ["globaldata",
                    "specfilereader",
                    "polarintegration",
                    "sliceprojection",
+                   "iintdefinition",
+                   "iintfinalization",
+                   "iintpolarization",
+                   "iintcontrolplots",
+                   "iintscanprofileplot",
+                   "iintmcaplot",
+                   "iintscanplot",
                    "filter1d",
                    "subsequenceselection",
                    "backgroundsubtraction",
