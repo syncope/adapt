@@ -125,7 +125,14 @@ class curvefitting(IProcess):
                 exit()
             try:
                 tmpparamnames = FitModels[str(m)]().param_names
-                tmpmodel = FitModels[str(m)](prefix=prefix)
+                try:
+                    # some fit models do not support prefixing -- check if it's only one
+                    tmpmodel = FitModels[str(m)](prefix=prefix)
+                except Warning:
+                    if len(modelDict) is 1:
+                        tmpmodel = FitModels[str(m)]()
+                    else:
+                        raise Warning("There is more than one model; which clashes with the requirement of no prefix allowed.")
             except KeyError:
                 print("[EXCEPTION::curvefitting] Building FitModel " + str(m) + " failed, the model is undefined.")
                 print("Available models are: " + repr(FitModels.keys()))

@@ -26,3 +26,8 @@ class AdaptException(Exception):
 class AdaptProcessException(AdaptException):
     '''Exception raised by processes in adapt.'''
     pass
+
+
+class AdaptCalculationException(AdaptException):
+    '''Exception raised by calculation in adapt.'''
+    pass
