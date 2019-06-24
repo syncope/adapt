@@ -76,6 +76,7 @@ class iintscanprofileplot(IProcess):
         plt.imshow(self._mesh, cmap="jet", interpolation='none', aspect="auto", extent=[val1, val2, val3, val4])
         plt.xlabel(self._pdfmotor)
         plt.ylabel("ScanNumber")
+        plt.colorbar()
         figure = plt.figure(1)
         if self._padded:
             figure.suptitle('Raw spectra vs. Scan number\n NOTE: contains padded elements due to different scan commands!', fontsize=14, fontweight='bold')
