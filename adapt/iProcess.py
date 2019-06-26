@@ -19,6 +19,7 @@
 from . import processData
 from . import processParameters
 from .processParameters import ProcessParameter
+from . import adaptException
 from PyQt4 import QtCore, QtGui, uic
 
 '''This is the abstract base class of a user programmable process.
@@ -75,7 +76,8 @@ class IProcess():
         if emitProgress:
             d = QtGui.QProgressDialog(labelText=self._ptype)
             d.setLabelText("Processing, please wait.")
-            d.setCancelButton(None)
+            d.setCancelButton(QtGui.QPushButton())
+            d.setCancelButtonText("Stop processing")
             d.show()
         for elem in datalist:
             self.execute(elem)
@@ -86,9 +88,7 @@ class IProcess():
 
     def loopExecuteWithOverwrite(self, datalist, emitProgress=False):
         if emitProgress:
-            d = QtGui.QProgressDialog(labelText=self._ptype)
-            d.setLabelText("Processing, please wait.")
-            d.setCancelButton(None)
+            d = QtGui.QProgressDialog("Processing, please wait.", "Stop processing", 0, 100)
             d.show()
         for elem in datalist:
             self.clearPreviousData(elem)
@@ -110,3 +110,6 @@ class IProcess():
 
     def check(self, data):
         pass
+
+    def _raiseProcessingStopException(self):
+        raise adaptException.AdaptProcessingStoppedException()
