@@ -34,9 +34,11 @@ class iintscanprofileplot(IProcess):
         self._xaxisPar = ProcessParameter("xaxis", str)
         self._yaxisPar = ProcessParameter("yaxis", str)
         self._zaxisPar = ProcessParameter("zaxis", str)
+        self._rawnamePar = ProcessParameter("rawdataname", str)
         self._parameters.add(self._xaxisPar)
         self._parameters.add(self._yaxisPar)
         self._parameters.add(self._zaxisPar)
+        self._parameters.add(self._rawnamePar)
         self._parameters.add(self._outfilenamePar)
         self._padded = False
 
@@ -45,6 +47,7 @@ class iintscanprofileplot(IProcess):
         self._xaxis = self._xaxisPar.get()
         self._yaxis = self._yaxisPar.get()
         self._zaxis = self._zaxisPar.get()
+        self._rawdataname = self._rawnamePar.get()
         self._darray = []
         self._values = []
         self._outfile = PdfPages(self._outfilename)
@@ -52,7 +55,13 @@ class iintscanprofileplot(IProcess):
     def execute(self, data):
         xdata = data.getData(self._xaxis)
         ydata = int(data.getData(self._yaxis))
-        zdata = data.getData(self._zaxis)
+        try:
+            zdata = data.getData(self._zaxis)
+        except KeyError:
+            try:
+                zdata = data.getData(self._rawdataname).get(self._zaxis)
+            except KeyError:
+                return
 
         self._values.append((ydata, xdata))
         self._darray.append(zdata)
