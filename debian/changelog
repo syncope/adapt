@@ -1,3 +1,9 @@
+adapt (0.6.6-1+deb9u5~fsec) stretch; urgency=low
+
+  * Add exception class for adapt, prepare for further changes.
+
+ -- Christoph Rosemann <christoph.rosemann@desy.de>  Thu, 20 Jun 2019 10:12:00 +0100
+
 adapt (0.6.5-1+deb9u5~fsec) stretch; urgency=low
 
   * Several changes to processes, and a new one for feature requests.
