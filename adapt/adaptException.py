@@ -31,3 +31,8 @@ class AdaptProcessException(AdaptException):
 class AdaptCalculationException(AdaptException):
     '''Exception raised by calculation in adapt.'''
     pass
+
+class AdaptProcessingStoppedException(AdaptException):
+    '''Exception raised by a stopped processing in adapt.'''
+    pass
+

@@ -31,28 +31,41 @@ class iintscanprofileplot(IProcess):
     def __init__(self, ptype="iintscanprofileplot"):
         super(iintscanprofileplot, self).__init__(ptype)
         self._outfilenamePar = ProcessParameter("outfilename", str)
-        self._pdfobservablePar = ProcessParameter("observable", str)
-        self._pdfmotorPar = ProcessParameter("motor", str)
-        self._parameters.add(self._pdfmotorPar)
+        self._xaxisPar = ProcessParameter("xaxis", str)
+        self._yaxisPar = ProcessParameter("yaxis", str)
+        self._zaxisPar = ProcessParameter("zaxis", str)
+        self._rawnamePar = ProcessParameter("rawdataname", str)
+        self._parameters.add(self._xaxisPar)
+        self._parameters.add(self._yaxisPar)
+        self._parameters.add(self._zaxisPar)
+        self._parameters.add(self._rawnamePar)
         self._parameters.add(self._outfilenamePar)
-        self._parameters.add(self._pdfobservablePar)
         self._padded = False
 
     def initialize(self):
         self._outfilename = self._outfilenamePar.get()
-        self._pdfobservable = self._pdfobservablePar.get()
-        self._pdfmotor = self._pdfmotorPar.get()
+        self._xaxis = self._xaxisPar.get()
+        self._yaxis = self._yaxisPar.get()
+        self._zaxis = self._zaxisPar.get()
+        self._rawdataname = self._rawnamePar.get()
         self._darray = []
         self._values = []
         self._outfile = PdfPages(self._outfilename)
 
     def execute(self, data):
-        scannumber = int(data.getData("scannumber"))
-        observable = data.getData(self._pdfobservable)
-        motor = data.getData(self._pdfmotor)
+        xdata = data.getData(self._xaxis)
+        ydata = int(data.getData(self._yaxis))
+        try:
+            zdata = data.getData(self._zaxis)
+        except KeyError:
+            try:
+                datum = data.getData(self._rawdataname)
+                zdata = datum.getArray(self._zaxis)
+            except KeyError:
+                return
 
-        self._values.append((scannumber, motor))
-        self._darray.append(observable)
+        self._values.append((ydata, xdata))
+        self._darray.append(zdata)
 
     def finalize(self, data):
         import math as m
@@ -74,13 +87,14 @@ class iintscanprofileplot(IProcess):
 
         # display it: ( what's the difference between matshow and imshow?)
         plt.imshow(self._mesh, cmap="jet", interpolation='none', aspect="auto", extent=[val1, val2, val3, val4])
-        plt.xlabel(self._pdfmotor)
-        plt.ylabel("ScanNumber")
+        plt.xlabel(self._xaxis)
+        plt.ylabel(self._yaxis)
+        plt.colorbar()
         figure = plt.figure(1)
         if self._padded:
-            figure.suptitle('Raw spectra vs. Scan number\n NOTE: contains padded elements due to different scan commands!', fontsize=14, fontweight='bold')
+            figure.suptitle(str(self._xaxis + ' vs. ' + self._yaxis) + '\n with z values: ' + str(self._zaxis) + '\n NOTE: contains padded elements due to different scan commands!', fontsize=14, fontweight='bold')
         else:
-            figure.suptitle('Raw spectra vs. Scan number', fontsize=14, fontweight='bold')
+            figure.suptitle(str(self._xaxis + ' vs. ' + self._yaxis) + '\n with z values: ' + str(self._zaxis), fontsize=14, fontweight='bold')
 
         self._outfile.savefig()
         self._outfile.close()
