@@ -1,3 +1,9 @@
+adapt (0.6.7-1+deb9u5~fsec) stretch; urgency=low
+
+  * Change processes for iint: broader interface for scan profile plot .
+
+ -- Christoph Rosemann <christoph.rosemann@desy.de>  Thu, 27 Jun 2019 17:17:00 +0100
+
 adapt (0.6.6-1+deb9u5~fsec) stretch; urgency=low
 
   * Add exception class for adapt, prepare for further changes.
