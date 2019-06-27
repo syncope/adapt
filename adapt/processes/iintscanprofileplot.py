@@ -59,7 +59,8 @@ class iintscanprofileplot(IProcess):
             zdata = data.getData(self._zaxis)
         except KeyError:
             try:
-                zdata = data.getData(self._rawdataname).get(self._zaxis)
+                datum = data.getData(self._rawdataname)
+                zdata = datum.getArray(self._zaxis)
             except KeyError:
                 return
 
