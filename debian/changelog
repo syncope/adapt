@@ -1,3 +1,9 @@
+adapt (0.6.8-1+deb9u5~fsec) stretch; urgency=low
+
+  * Implemented interactive stopping of processing; raises Execption. 
+
+ -- Christoph Rosemann <christoph.rosemann@desy.de>  Wed, 10 Jul 2019 14:27:00 +0100
+
 adapt (0.6.7-1+deb9u5~fsec) stretch; urgency=low
 
   * Change processes for iint: broader interface for scan profile plot .
