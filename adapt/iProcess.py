@@ -83,7 +83,7 @@ class IProcess():
                 d.setValue(int(100 * (datalist.index(elem)/len(datalist))))
                 if(d.isStopped()):
                     d.close()
-                    raise AdaptException.AdaptProcessingStoppedException()
+                    raise adaptException.AdaptProcessingStoppedException()
         if emitProgress:
             d.close()
 
@@ -98,7 +98,7 @@ class IProcess():
                 d.setValue(int(100 * (datalist.index(elem)/len(datalist))))
                 if(d.isStopped()):
                     d.close()
-                    raise AdaptException.AdaptProcessingStoppedException()
+                    raise adaptException.AdaptProcessingStoppedException()
         if emitProgress:
             d.close()
 
