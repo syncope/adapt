@@ -18,6 +18,7 @@
 
 from . import processData
 from . import processParameters
+from . import progressDialog
 from .processParameters import ProcessParameter
 from . import adaptException
 from PyQt4 import QtCore, QtGui, uic
@@ -74,27 +75,30 @@ class IProcess():
 
     def loopExecute(self, datalist, emitProgress=False):
         if emitProgress:
-            d = QtGui.QProgressDialog(labelText=self._ptype)
-            d.setLabelText("Processing, please wait.")
-            d.setCancelButton(QtGui.QPushButton())
-            d.setCancelButtonText("Stop processing")
+            d = progressDialog.ProgressDialog()
             d.show()
         for elem in datalist:
             self.execute(elem)
             if emitProgress:
                 d.setValue(int(100 * (datalist.index(elem)/len(datalist))))
+                if(d.isStopped()):
+                    d.close()
+                    raise AdaptException.AdaptProcessingStoppedException()
         if emitProgress:
             d.close()
 
     def loopExecuteWithOverwrite(self, datalist, emitProgress=False):
         if emitProgress:
-            d = QtGui.QProgressDialog("Processing, please wait.", "Stop processing", 0, 100)
+            d = progressDialog.ProgressDialog()
             d.show()
         for elem in datalist:
             self.clearPreviousData(elem)
             self.execute(elem)
             if emitProgress:
                 d.setValue(int(100 * (datalist.index(elem)/len(datalist))))
+                if(d.isStopped()):
+                    d.close()
+                    raise AdaptException.AdaptProcessingStoppedException()
         if emitProgress:
             d.close()
 
@@ -110,6 +114,3 @@ class IProcess():
 
     def check(self, data):
         pass
-
-    def _raiseProcessingStopException(self):
-        raise adaptException.AdaptProcessingStoppedException()
