@@ -102,6 +102,9 @@ class IProcess():
         if emitProgress:
             d.close()
 
+    def singleExecute(self, datum):
+        self.execute(datum)
+
     def clearPreviousData(self, data):
         pass
 
