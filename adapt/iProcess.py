@@ -102,7 +102,8 @@ class IProcess():
         if emitProgress:
             d.close()
 
-    def singleExecute(self, datum):
+    def executeWithOverwrite(self, datum):
+        self.clearPreviousData(datum)
         self.execute(datum)
 
     def clearPreviousData(self, data):
