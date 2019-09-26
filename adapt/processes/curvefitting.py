@@ -80,21 +80,19 @@ class curvefitting(IProcess):
             variableWeight = np.sqrt(np.clip(dependentVariable, 0., None))
         else:
             variableWeight = 1./data.getData(errorname)
-
         # check if the previous result should be used OR if it's the first fit
         if  not self._useGuessing and ( (not self._usePreviousResult) or self._firstguess):
             try:
                 self.model.params = self.model.guess(dependentVariable, x=independentVariable)
                 self._firstguess = False
             except NotImplementedError:
-                print("The given model doesn't have a guess method implemented.")
+                print("[FitInfo]:: The current model doesn't have a guess method implemented.")
         elif self._useGuessing:
             try:
                 self.model.params = self.model.gaussguess(independentVariable, dependentVariable)
                 isagauss = True
             except:
                 pass
-
         # fit the data using the guessed value
         if self._noerror:
             self._result = self.model.fit(dependentVariable, self.model.params, x=independentVariable)
