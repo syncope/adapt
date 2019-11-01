@@ -21,12 +21,13 @@
 
 try:
     from psio import dataHandler
+    from psio import psioException
 except ImportError:
     print("[proc:stdreader] library psio not found; it will not be available!")
     pass
 
 from adapt.iProcess import *
-
+from adapt.adaptException import AdaptFileReadException
 
 class specfilereader(IProcess):
 
@@ -43,7 +44,11 @@ class specfilereader(IProcess):
     def initialize(self):
         self._scanlist = self._scanlistPar.get()
         self._outname = self._outPar.get()
-        self.data = dataHandler.DataHandler(self._inPar.get(), typehint="spec").getFileHandler().getAll(self._scanlist)
+        try:
+            self.data = dataHandler.DataHandler(self._inPar.get(), typehint="spec").getFileHandler().getAll(self._scanlist)
+        except(psioException.PSIOException):
+            raise AdaptFileReadException
+            
         self.dataIterator = iter(self.data)
 
     def execute(self, data):

@@ -36,3 +36,7 @@ class AdaptProcessingStoppedException(AdaptException):
     '''Exception raised by a stopped processing in adapt.'''
     pass
 
+class AdaptFileReadException(AdaptException):
+    '''Exception raised by a failed file read process in adapt.'''
+    pass
+
