@@ -23,6 +23,7 @@ import numpy as np
 
 try:
     from pensant.models import FitModels
+    from pensant.models import CompositeModel
 except ImportError:
     print("[proc::curvefitting] library pensant not found; no curvefitting will be available!")
     pass
@@ -86,7 +87,10 @@ class curvefitting(IProcess):
                 self.model.params = self.model.guess(dependentVariable, x=independentVariable)
                 self._firstguess = False
             except NotImplementedError:
-                print("[FitInfo]:: The current model doesn't have a guess method implemented.")
+                if isinstance(self.model, CompositeModel):
+                    pass
+                else:
+                    print("[FitInfo]:: The current model doesn't have a guess method implemented.")
         elif self._useGuessing:
             try:
                 self.model.params = self.model.gaussguess(independentVariable, dependentVariable)
