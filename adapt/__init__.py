@@ -28,4 +28,4 @@ from . import processingControl
 from . import valueMap
 from . import adaptException
 
-__version__ = '0.6.8'
+__version__ = '0.6.9'
