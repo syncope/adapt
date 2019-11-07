@@ -130,15 +130,15 @@ if __name__ == "__main__":
 
 
 # create the detector for the pixel info and the mask (of present)
-#~ > self._detector = pyFAI.detector_factory(self._detectorname)
-#~ > self._AI = pyFAI.AzimuthalIntegrator(detector=self._detector)
-#~ > self._AI = pyFAI.AzimuthalIntegrator(dist=self._sdd, poni1=self._poni1, poni2=self._poni2,
+# > self._detector = pyFAI.detector_factory(self._detectorname)
+# > self._AI = pyFAI.AzimuthalIntegrator(detector=self._detector)
+# > self._AI = pyFAI.AzimuthalIntegrator(dist=self._sdd, poni1=self._poni1, poni2=self._poni2,
 # rot1=self._rot1, rot2=self._rot2, rot3=self._rot3, splineFile=None, wavelength=None, detector=self._detector)
-#~ > self._mask = self._AI.detector.mask
+# > self._mask = self._AI.detector.mask
 # add check if the detector mask exists
-#~ > self._combined_mask = numpy.logical_or(self._mask, self._custom_mask).astype("int8")
-#~ >
-#~ > self._AI.detector.mask = self._combined_mask
+# > self._combined_mask = numpy.logical_or(self._mask, self._custom_mask).astype("int8")
+# >
+# > self._AI.detector.mask = self._combined_mask
 # and finally put the calibration inside:
 # either by fit2d method:
 # self._AI.setFit2D( $sdd[mm], $pixelcenter1[int --

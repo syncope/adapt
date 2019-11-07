@@ -26,15 +26,16 @@ class XYZdef(iProcess.IProcessDefinition):
     def __init__(self):
         super(XYZdef, self).__init__()
         self._ptype = "XYZ"
-        #~ self.createParameter("@@@@@@@", "STRING")
-        #~ self.createParameter("@@@@@@@", "INT")
-        #~ self.createParameter("@@@@@@@", "FLOAT")
-        #~ self.createParameter("@@@@@@@", "BOOL")
-        #~ self.createParameter("@@@@@@@", "STRINGLIST")
-        #~ self.createParameter("@@@@@@@", "INTLIST")
-        #~ self.createParameter("@@@@@@@", "FLOATLIST")
-        #~ self.createParameter("@@@@@@@", "BOOLLIST")
-        #~ self.createParameter("@@@@@@@", "STRING", optional=True)
+        # self.createParameter("@@@@@@@", "STRING")
+        # self.createParameter("@@@@@@@", "INT")
+        # self.createParameter("@@@@@@@", "FLOAT")
+        # self.createParameter("@@@@@@@", "BOOL")
+        # self.createParameter("@@@@@@@", "STRINGLIST")
+        # self.createParameter("@@@@@@@", "INTLIST")
+        # self.createParameter("@@@@@@@", "FLOATLIST")
+        # self.createParameter("@@@@@@@", "BOOLLIST")
+        # self.createParameter("@@@@@@@", "STRING", optional=True)
+
 
 class XYZ(iProcess.IProcess):
 

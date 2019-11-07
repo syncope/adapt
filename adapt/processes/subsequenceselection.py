@@ -46,7 +46,7 @@ class subsequenceselection(IProcess):
 
         self._methodDict = {"selectfromstart": self._selectFromStart,
                             "selectfromend": self._selectFromEnd,
-                            "selectslice" : self._slice,
+                            "selectslice": self._slice,
                             }
 
     def initialize(self):
@@ -70,7 +70,7 @@ class subsequenceselection(IProcess):
                 raise ValueError("[subsequenceselection] Method selectfromstart needs a startpointnumber.")
             if "selectfromend" in self._selectionmethods and not self._endpoints:
                 raise ValueError("[subsequenceselection] Method selectfromend needs a endpointnumber.")
-            if "selectslice" in self._selectionmethods and ( self._slicestart is None or self._sliceend is None):
+            if "selectslice" in self._selectionmethods and (self._slicestart is None or self._sliceend is None):
                 raise ValueError("[subsequenceselection] Method selectslice needs start and end values.")
             if "selectslice" in self._selectionmethods and len(self._selectionmethods) > 1:
                 raise ValueError("[subsequenceselection] Method selectslice cannot be combined with another selection method.")

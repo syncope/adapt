@@ -74,6 +74,7 @@ class stdreader(IProcess):
     def clearPreviousData(self, data):
         data.clearCurrent(self._output)
 
+
 if __name__ == "__main__":
     sd = stdreaderdef()
     sd.setParameterValue("input", "BLBLA")

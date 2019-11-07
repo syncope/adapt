@@ -1,32 +1,31 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 
 from codecs import open
 from os import path
+from sphinx.setup_command import BuildDoc
 
 with open(path.join('.', 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
-from sphinx.setup_command import BuildDoc
-
-name='adapt'
-version='0'
-release='0.6.9'
+name = 'adapt'
+version = '0'
+release = '0.6.9'
 
 setup(
     name='adapt',
     version=release,
 
-    description='ADAPT: a data processing toolkit.', 
+    description='ADAPT: a data processing toolkit.',
     long_description=long_description,
 
     url='https://github.com/syncope/adapt',
 
     author='Ch.Rosemann',
     author_email='christoph.rosemann@desy.de',
-    
+
     license='GPLv2',
-    
-    classifiers = [
+
+    classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Science/Research',
         'Topic :: Scientific/Engineering :: Physics',
@@ -38,20 +37,16 @@ setup(
     ],
 
     keywords='photon science data processing analysis',
-    
-    packages=['adapt',],
-    
-    package_dir = { 'adapt':'adapt',},
+
+    packages=['adapt', ],
+    package_dir={'adapt': 'adapt', },
     include_package_data=True,
 
-    scripts = ['adapt/bin/adapt'],
-    
-    
-    cmdclass={'build_sphinx': BuildDoc,},
+    scripts=['adapt/bin/adapt'],
+    cmdclass={'build_sphinx': BuildDoc, },
     command_options={
         'build_sphinx': {
             'project': ('setup.py', name),
             'version': ('setup.py', version),
             'release': ('setup.py', release)}},
 )
-

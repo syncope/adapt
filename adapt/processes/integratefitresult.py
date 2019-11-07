@@ -47,8 +47,6 @@ class integratefitresult(IProcess):
         # first get the current fit result
         fitresult = data.getData(self._fitresult)
         xdata = data.getData(self._xdata)
-        import pensant
-        import numpy as np
         import scipy.integrate as integrate
         # then calculate the integral by calling a scipy function
         # first case: numpy array is given:
@@ -58,7 +56,7 @@ class integratefitresult(IProcess):
             if lowlim > uplim:
                 lowlim, uplim = uplim, lowlim
             integral = integrate.quad(lambda x: fitresult.eval(x=x), lowlim, uplim)
-        elif self._lowlim != None and self._uplim != None:
+        elif self._lowlim is not None and self._uplim is not None:
             integral = integrate.quad(lambda x: fitresult.eval(x=x), self._lowlim, self._uplim)
         else:
             integral = (0.0, 0.0)

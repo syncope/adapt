@@ -102,8 +102,6 @@ class fiofilereaderGUI(QtGui.QWidget):
     def setParameterDict(self, paramDict):
         self._fioReaderDict = paramDict
         self._files = self._fioReaderDict["filenames"]
-        # fio parts are missing
-        #~ self.inputFileLE.setText(self._file)
         self.okBtn.setDisabled(False)
 
     def _checkValues(self):

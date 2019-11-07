@@ -52,7 +52,7 @@ class IProcess():
                 if pparam.isOptional:
                     continue
                 else:
-                    raise ValueError("Can't set process parameters, value of name " + str(pp.name) + " is missing.")
+                    raise ValueError("Can't set process parameters, value of name " + str(pname) + " is missing.")
 
     def setParameterValue(self, name, value):
         '''Set an individual process parameter value by name.'''

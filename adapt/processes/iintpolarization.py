@@ -27,6 +27,7 @@ from matplotlib.backends.backend_pdf import PdfPages
 from adapt.iProcess import *
 from adapt.adaptException import AdaptProcessException
 
+
 class iintpolarization(IProcess):
 
     def __init__(self, ptype="iintpolarization"):
@@ -79,14 +80,13 @@ class iintpolarization(IProcess):
 
         # and finally: build the associative data block
         pr1chiana = np.unique(np.asarray(poldata["pr1chi"], dtype=float))
-        pr2chiana = np.unique(np.asarray(poldata["pr2chi"], dtype=float))
+        # pr2chiana = np.unique(np.asarray(poldata["pr2chi"], dtype=float))
         petaana = np.unique(np.asarray(poldata["peta"], dtype=float))
         self.tthana = np.mean(np.asarray(poldata["ptth"], dtype=float))
         # check if it adds up
         if len(petaana)*len(pr1chiana) != len(poldata["scannumber"]):
-           # raise exception
-           raise AdaptProcessException()
-            #~ print("[iintPolar] Polarization analysis cannot be performed, the number of values doesn't match.")
+            # raise exception
+            raise AdaptProcessException()
 
         def getValueRangeByIndex(index):
             length = len(petaana)
