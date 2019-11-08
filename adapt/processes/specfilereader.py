@@ -49,7 +49,6 @@ class specfilereader(IProcess):
             self.data = dataHandler.DataHandler(self._inPar.get(), typehint="spec").getFileHandler().getAll(self._scanlist)
         except(psioException.PSIOException):
             raise AdaptFileReadException
-
         self.dataIterator = iter(self.data)
 
     def execute(self, data):
