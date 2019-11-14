@@ -23,6 +23,7 @@ import numpy as np
 
 try:
     from pensant.models import FitModels
+    from pensant.models import CompositeModel
 except ImportError:
     print("[proc::curvefitting] library pensant not found; no curvefitting will be available!")
     pass
@@ -54,7 +55,7 @@ class curvefitting(IProcess):
             self._usePreviousResult = True
         else:
             self._usePreviousResult = False
-        self._useGuessing =self._useGuessingPar.get()
+        self._useGuessing = self._useGuessingPar.get()
         if (self._useGuessing != 0):
             self._useGuessing = True
         else:
@@ -73,28 +74,27 @@ class curvefitting(IProcess):
         independentVariable = data.getData(self._xdataPar.get())
         dependentVariable = data.getData(self._ydataPar.get())
         errorname = self._yerrPar.get()
-        isagauss = False
         if(errorname is None or errorname == 'None'):
             self._noerror = True
         elif (errorname == 'poisson'):
             variableWeight = np.sqrt(np.clip(dependentVariable, 0., None))
         else:
             variableWeight = 1./data.getData(errorname)
-
         # check if the previous result should be used OR if it's the first fit
-        if  not self._useGuessing and ( (not self._usePreviousResult) or self._firstguess):
+        if not self._useGuessing and ((not self._usePreviousResult) or self._firstguess):
             try:
                 self.model.params = self.model.guess(dependentVariable, x=independentVariable)
                 self._firstguess = False
             except NotImplementedError:
-                print("The given model doesn't have a guess method implemented.")
+                if isinstance(self.model, CompositeModel):
+                    pass
+                else:
+                    print("[FitInfo]:: The current model doesn't have a guess method implemented.")
         elif self._useGuessing:
             try:
                 self.model.params = self.model.gaussguess(independentVariable, dependentVariable)
-                isagauss = True
             except:
                 pass
-
         # fit the data using the guessed value
         if self._noerror:
             self._result = self.model.fit(dependentVariable, self.model.params, x=independentVariable)
@@ -152,7 +152,6 @@ class curvefitting(IProcess):
                     self._firstguess = False
                 except KeyError:
                     pass
-            tmppars = tmpmodel.make_params()
             mlist.append(tmpmodel)
         # build the model; start with the first one and then add from the list
         self.model = mlist.pop()

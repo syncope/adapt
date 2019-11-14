@@ -19,11 +19,6 @@
 # collect tracked data, spectra and calculated values; plot and save file
 
 import numpy as np
-try:
-    import pensant.plmfit
-except ImportError:
-    print("lmfit package is not available, please install.")
-    pass
 
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
@@ -75,8 +70,6 @@ class iintcontrolplots(IProcess):
         self._names = []
 
     def execute(self, data):
-        if len(self._trackedData) > 0:
-            skip = True
         for name in self._trackedData:
             try:
                 datum = data.getData(name)
@@ -117,7 +110,6 @@ class iintcontrolplots(IProcess):
 
     def finalize(self, data):
         self._columnNames = list(set(self._names))
-        import math as m
         fig_size = plt.rcParams["figure.figsize"]
         # print "Current size:", fig_size
         fig_size[0] = 16

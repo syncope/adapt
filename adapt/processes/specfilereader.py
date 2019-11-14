@@ -21,11 +21,13 @@
 
 try:
     from psio import dataHandler
+    from psio import psioException
 except ImportError:
     print("[proc:stdreader] library psio not found; it will not be available!")
     pass
 
 from adapt.iProcess import *
+from adapt.adaptException import AdaptFileReadException
 
 
 class specfilereader(IProcess):
@@ -43,7 +45,10 @@ class specfilereader(IProcess):
     def initialize(self):
         self._scanlist = self._scanlistPar.get()
         self._outname = self._outPar.get()
-        self.data = dataHandler.DataHandler(self._inPar.get(), typehint="spec").getFileHandler().getAll(self._scanlist)
+        try:
+            self.data = dataHandler.DataHandler(self._inPar.get(), typehint="spec").getFileHandler().getAll(self._scanlist)
+        except(psioException.PSIOException):
+            raise AdaptFileReadException
         self.dataIterator = iter(self.data)
 
     def execute(self, data):
@@ -90,10 +95,10 @@ class specfilereaderGUI(QtGui.QWidget):
         self.inputFileLE.setToolTip("Here the name of the spec file can be typed; or it will be displayed after choosing by dialog.")
         self.scanSelectionInput.setToolTip("Enter here the numbers of the scans of interest.\n" +
                                            "The style follows printer dialogs. A comma ',' separates selections, a minus '-' defines ranges.\n" +
-                                           "A double colon ':' selects the step size.\n" + 
+                                           "A double colon ':' selects the step size.\n" +
                                            "Examples:\n" +
                                            "'361-374:3' choses every third scan in the range between 361 and 374, and \n" +
-                                           "'361, 364, 367, 370, 373' selects the same scans." )
+                                           "'361, 364, 367, 370, 373' selects the same scans.")
 
     def reset(self):
         self.inputFileLE.setText('')

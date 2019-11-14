@@ -91,6 +91,7 @@ class sliceprojection(IProcess):
     def clearPreviousData(self, data):
         data.clearCurrent(self._output)
 
+
 if __name__ == "__main__":
     s = sliceprojection()
     for p, k in s._parameters.items():

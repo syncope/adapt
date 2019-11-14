@@ -25,9 +25,6 @@ except ImportError:
     print("lmfit package is not available, please install.")
     pass
 
-import matplotlib.pyplot as plt
-from matplotlib.backends.backend_pdf import PdfPages
-
 from adapt.iProcess import *
 
 
@@ -41,16 +38,12 @@ class iintfinalization(IProcess):
         self._pdfmotorPar = ProcessParameter("motor", str)
         self._pdfobservablePar = ProcessParameter("observable", str)
         self._pdffitresultPar = ProcessParameter("fitresult", str)
-        #~ self._trapintPar = ProcessParameter("trapintname", str, optional=True)
-        #~ self._bkgintegralPar = ProcessParameter("bkgintegralname", str, optional=True)
         self._parameters.add(self._namesPar)
         self._parameters.add(self._rawdataPar)
         self._parameters.add(self._outfilenamePar)
         self._parameters.add(self._pdfmotorPar)
         self._parameters.add(self._pdfobservablePar)
         self._parameters.add(self._pdffitresultPar)
-        #~ self._parameters.add(self._trapintPar)
-        #~ self._parameters.add(self._bkgintegralPar)
 
     def initialize(self):
         self._names = self._namesPar.get()
@@ -59,21 +52,12 @@ class iintfinalization(IProcess):
         self._pdfmotor = self._pdfmotorPar.get()
         self._pdfobservable = self._pdfobservablePar.get()
         self._pdffitresult = self._pdffitresultPar.get()
-        #~ try:
-            #~ self._trapintname = self._trapintPar.get()
-        #~ except:
-            #~ self._trapintname = "trapezoidIntegral"
-        #~ try:
-            #~ self._bkgintname = self._bkgintegralPar.get()
-        #~ except:
-            #~ self._bkgintname = "bkgIntegral"
         self._trackedData = []
         self._values = []
 
     def execute(self, data):
         skip = False
         tmpValues = []
-        scannumber = None
         if len(self._trackedData) > 0:
             skip = True
         for name in self._names:
@@ -110,20 +94,6 @@ class iintfinalization(IProcess):
                 if not skip:
                     self._trackedData.append(name)
         self._values.append(tmpValues)
-
-        #~ scannumber = int(data.getData("scannumber"))
-        #~ observable = data.getData(self._pdfobservable)
-        #~ motor = data.getData(self._pdfmotor)
-        #~ fitresult = data.getData(self._pdffitresult)
-        #~ try:
-            #~ trapint = data.getData(self._trapintname)
-            #~ trapinterr = data.getData(self._trapintname+"_stderr")
-        #~ except:
-            #~ pass
-        #~ try:
-            #~ bkgintegral = data.getData(self._bkgintname)
-        #~ except:
-            #~ pass
 
     def finalize(self, data):
         # output file stuff

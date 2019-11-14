@@ -64,7 +64,7 @@ class multicurvefitting(IProcess):
         if self._xdataPar.get() != '':
             xdata = data.getData(self._xdataPar.get())
         # if not defined generate simple numerated list of appropriate length
-        else: 
+        else:
             xdata = np.asarray(range(len(spectradata[0])))
         errorname = self._yerrPar.get()
         if(errorname is None or errorname == 'None'):

@@ -68,7 +68,6 @@ class iintscanprofileplot(IProcess):
         self._darray.append(zdata)
 
     def finalize(self, data):
-        import math as m
         fig_size = plt.rcParams["figure.figsize"]
         # print "Current size:", fig_size
         fig_size[0] = 16
@@ -110,7 +109,7 @@ class iintscanprofileplot(IProcess):
         import math as m
         # needed if the scans/the arrays have different length
         # first map the sizes:
-        testmap = {len(obj) : True for obj in self._darray}
+        testmap = {len(obj): True for obj in self._darray}
         # if there is more than one length
         if len(testmap) > 1:
             # determine the length of the longest entry
@@ -122,5 +121,5 @@ class iintscanprofileplot(IProcess):
                 if dl > 0:
                     self._darray[self._darray.index(elem)] = np.pad(elem, (dlfront, dlback), 'constant', constant_values=(-10))
                     self._padded = True
-        else: 
+        else:
             return

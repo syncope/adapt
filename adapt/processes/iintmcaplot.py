@@ -19,7 +19,6 @@
 # iintgui processing: collect raw observable spectra and stack them
 # create and save 2D plot
 
-import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 
@@ -50,7 +49,6 @@ class iintmcaplot(IProcess):
         except:
             print("I've got nothing in the MCA department.")
 
-
     def finalize(self, data):
         import math as m
         fig_size = plt.rcParams["figure.figsize"]
@@ -61,7 +59,6 @@ class iintmcaplot(IProcess):
 
         nof = m.ceil(len(self._values)/9)
         for n in range(len(self._values)):
-            histo = self._values[n]
             fn, index, check = m.floor(n/9), int(n % 9) + 1, n/9.
             if check > fn*nof:
                 fn += 1
@@ -69,13 +66,9 @@ class iintmcaplot(IProcess):
                 if fn > 0:
                     self._outfile.savefig()
                 figure = plt.figure(fn)
-                #~ figure.suptitle('Fit data with peak function & Integrated intensities', fontsize=14, fontweight='bold')
 
             figure.add_subplot(3, 3, index)
-            #~ plt.title("MCA of scanpoint " + str(n))
-            #~ plt.axis([0,len(histo), 0, 1.1 * np.amax(histo)])
             plt.plot(self._values[n])
-
 
         self._outfile.savefig()
         self._outfile.close()

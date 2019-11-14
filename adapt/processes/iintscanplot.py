@@ -19,11 +19,6 @@
 # collect and print all scans with their fits into a pdf file
 
 import numpy as np
-try:
-    import pensant.plmfit
-except ImportError:
-    print("lmfit package is not available, please install.")
-    pass
 
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages

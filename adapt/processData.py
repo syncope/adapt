@@ -30,7 +30,6 @@ class ProcessData():
         self.currentdata = {}
 
     def clearCurrent(self, name=None):
-        import collections
         if isinstance(name, list):
             for n in name:
                 self.clearCurrent(n)

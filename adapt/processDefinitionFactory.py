@@ -52,6 +52,7 @@ class ProcessDefinitionFactory():
     def createProcessDefinitionFromProcess(self, proc):
         pass
 
+
 if __name__ == "__main__":
     k = ProcessDefinitionFactory()
     d = {"type": "globaldata"}
