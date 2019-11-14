@@ -1,3 +1,10 @@
+adapt (0.6.9-1+deb9u5~fsec) stretch; urgency=low
+
+  * Implemented more excpetions for ascii data file reading; using PSIO
+    exceptions.
+
+ -- Christoph Rosemann <christoph.rosemann@desy.de>  Thu, 14 Nov 2019 16:46:00 +0100
+
 adapt (0.6.8-1+deb9u5~fsec) stretch; urgency=low
 
   * Implemented interactive stopping of processing; raises Execption. 
