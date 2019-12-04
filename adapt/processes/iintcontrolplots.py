@@ -30,14 +30,16 @@ class iintcontrolplots(IProcess):
 
     def __init__(self, ptype="iintcontrolplots"):
         super(iintcontrolplots, self).__init__(ptype)
-        self.trackeddataPar = ProcessParameter("trackedData", list)
+        self._trackedheaderPar = ProcessParameter("trackedHeaders", list)
+        self._trackedcolumnPar = ProcessParameter("trackedColumns", list)
         self._rawdataPar = ProcessParameter("specdataname", str)
         self._pdfoutfilenamePar = ProcessParameter("outfilename", str)
         self._pdfmotorPar = ProcessParameter("motor", str)
         self._pdfobservablePar = ProcessParameter("observable", str)
         self._pdffitresultPar = ProcessParameter("fitresult", str)
         self._trapintPar = ProcessParameter("trapintname", str, optional=True)
-        self._parameters.add(self.trackeddataPar)
+        self._parameters.add(self._trackedheaderPar)
+        self._parameters.add(self._trackedcolumnPar)
         self._parameters.add(self._rawdataPar)
         self._parameters.add(self._pdfoutfilenamePar)
         self._parameters.add(self._pdfmotorPar)
@@ -46,7 +48,8 @@ class iintcontrolplots(IProcess):
         self._parameters.add(self._trapintPar)
 
     def initialize(self):
-        self._trackedData = self.trackeddataPar.get()
+        self._trackedHeaders = self._trackedheaderPar.get()
+        self._trackedColumns = self._trackedcolumnPar.get()
         self._rawdata = self._rawdataPar.get()
         self._pdfoutfilename = self._pdfoutfilenamePar.get()
         self._pdfmotor = self._pdfmotorPar.get()
@@ -70,10 +73,12 @@ class iintcontrolplots(IProcess):
         self._names = []
 
     def execute(self, data):
-        for name in self._trackedData:
+        for name in self._trackedHeaders:
             try:
                 datum = data.getData(name)
             except KeyError:
+                continue
+        for name in self._trackedColumns:
                 try:
                     datum = data.getData(self._rawdata).getArray(name)
                     try:
