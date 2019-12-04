@@ -32,13 +32,17 @@ class iintfinalization(IProcess):
 
     def __init__(self, ptype="iintfinalization"):
         super(iintfinalization, self).__init__(ptype)
-        self._namesPar = ProcessParameter("trackedData", list)
+        self._trackedheaderPar = ProcessParameter("trackedHeaders", list)
+        self._trackedcolumnPar = ProcessParameter("trackedColumns", list)
+        self._fitresultPar = ProcessParameter("fitResult", str)
         self._rawdataPar = ProcessParameter("specdataname", str)
         self._outfilenamePar = ProcessParameter("outfilename", str)
         self._pdfmotorPar = ProcessParameter("motor", str)
         self._pdfobservablePar = ProcessParameter("observable", str)
         self._pdffitresultPar = ProcessParameter("fitresult", str)
-        self._parameters.add(self._namesPar)
+        self._parameters.add(self._trackedheaderPar)
+        self._parameters.add(self._trackedcolumnPar)
+        self._parameters.add(self._fitresultPar)
         self._parameters.add(self._rawdataPar)
         self._parameters.add(self._outfilenamePar)
         self._parameters.add(self._pdfmotorPar)
@@ -46,7 +50,10 @@ class iintfinalization(IProcess):
         self._parameters.add(self._pdffitresultPar)
 
     def initialize(self):
-        self._names = self._namesPar.get()
+        self._trackedHeaders = self._trackedheaderPar.get()
+        self._trackedColumns = self._trackedcolumnPar.get()
+        self._fitResult = self._fitresultPar.get()
+# self._names
         self._rawdata = self._rawdataPar.get()
         self._outfilename = self._outfilenamePar.get()
         self._pdfmotor = self._pdfmotorPar.get()
