@@ -17,6 +17,7 @@
 # Boston, MA  02110-1301, USA.
 
 # collect tracked data, spectra and calculated values; plot and save file
+# ONLY tracked columns!
 
 import numpy as np
 
@@ -30,7 +31,6 @@ class iintcontrolplots(IProcess):
 
     def __init__(self, ptype="iintcontrolplots"):
         super(iintcontrolplots, self).__init__(ptype)
-        self._trackedheaderPar = ProcessParameter("trackedHeaders", list)
         self._trackedcolumnPar = ProcessParameter("trackedColumns", list)
         self._rawdataPar = ProcessParameter("specdataname", str)
         self._pdfoutfilenamePar = ProcessParameter("outfilename", str)
@@ -38,7 +38,6 @@ class iintcontrolplots(IProcess):
         self._pdfobservablePar = ProcessParameter("observable", str)
         self._pdffitresultPar = ProcessParameter("fitresult", str)
         self._trapintPar = ProcessParameter("trapintname", str, optional=True)
-        self._parameters.add(self._trackedheaderPar)
         self._parameters.add(self._trackedcolumnPar)
         self._parameters.add(self._rawdataPar)
         self._parameters.add(self._pdfoutfilenamePar)
@@ -48,7 +47,6 @@ class iintcontrolplots(IProcess):
         self._parameters.add(self._trapintPar)
 
     def initialize(self):
-        self._trackedHeaders = self._trackedheaderPar.get()
         self._trackedColumns = self._trackedcolumnPar.get()
         self._rawdata = self._rawdataPar.get()
         self._pdfoutfilename = self._pdfoutfilenamePar.get()
@@ -73,21 +71,16 @@ class iintcontrolplots(IProcess):
         self._names = []
 
     def execute(self, data):
-        for name in self._trackedHeaders:
+        for name in self._trackedColumns:
             try:
-                datum = data.getData(name)
+                datum = data.getData(self._rawdata).getArray(name)
+                try:
+                    self._dataKeeper[name]
+                except:
+                    self._dataKeeper[name] = []
+                    self._dataKeeper[name+"_stderr"] = []
             except KeyError:
                 continue
-        for name in self._trackedColumns:
-                try:
-                    datum = data.getData(self._rawdata).getArray(name)
-                    try:
-                        self._dataKeeper[name]
-                    except:
-                        self._dataKeeper[name] = []
-                        self._dataKeeper[name+"_stderr"] = []
-                except KeyError:
-                    continue
             if isinstance(datum, np.ndarray):
                 self._names.append(name)
                 self._dataKeeper[name].append(np.mean(datum))

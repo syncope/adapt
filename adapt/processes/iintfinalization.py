@@ -34,7 +34,6 @@ class iintfinalization(IProcess):
         super(iintfinalization, self).__init__(ptype)
         self._trackedheaderPar = ProcessParameter("trackedHeaders", list)
         self._trackedcolumnPar = ProcessParameter("trackedColumns", list)
-        self._fitresultPar = ProcessParameter("fitResult", str)
         self._rawdataPar = ProcessParameter("specdataname", str)
         self._outfilenamePar = ProcessParameter("outfilename", str)
         self._pdfmotorPar = ProcessParameter("motor", str)
@@ -42,7 +41,6 @@ class iintfinalization(IProcess):
         self._pdffitresultPar = ProcessParameter("fitresult", str)
         self._parameters.add(self._trackedheaderPar)
         self._parameters.add(self._trackedcolumnPar)
-        self._parameters.add(self._fitresultPar)
         self._parameters.add(self._rawdataPar)
         self._parameters.add(self._outfilenamePar)
         self._parameters.add(self._pdfmotorPar)
@@ -52,54 +50,64 @@ class iintfinalization(IProcess):
     def initialize(self):
         self._trackedHeaders = self._trackedheaderPar.get()
         self._trackedColumns = self._trackedcolumnPar.get()
-        self._fitResult = self._fitresultPar.get()
-# self._names
         self._rawdata = self._rawdataPar.get()
         self._outfilename = self._outfilenamePar.get()
         self._pdfmotor = self._pdfmotorPar.get()
         self._pdfobservable = self._pdfobservablePar.get()
         self._pdffitresult = self._pdffitresultPar.get()
-        self._trackedData = []
+        self._trackedDataNames = []
         self._values = []
 
     def execute(self, data):
         skip = False
         tmpValues = []
-        if len(self._trackedData) > 0:
+        # check whether the name/s have already been set
+        # if they already have been set, then simply skip the addition
+        if len(self._trackedDataNames) > 0:
             skip = True
-        for name in self._names:
+
+        # go through header data
+        for header in self._trackedHeaders:
             try:
-                datum = data.getData(name)
+                datum = data.getData(header)
             except KeyError:
                 try:
-                    datum = data.getData(self._rawdata).getArray(name)
-                except KeyError:
-                    try:
-                        datum = data.getData(self._rawdata).getCustomVar(name)
-                    except:
-                        print("Could not retrieve the data to track. Name: " + str(name))
-                        continue
-            if isinstance(datum, np.ndarray):
-                tmpValues.append(np.mean(datum))
-                tmpValues.append(np.std(datum))
-                if not skip:
-                    self._trackedData.append("mean_"+name)
-                    self._trackedData.append("stderr_"+name)
-            elif isinstance(datum, plmfit.model.ModelResult):
-                pars = datum.params
-                for parameter in pars:
-                    pname = pars[parameter].name
-                    pval = pars[parameter].value
-                    perr = pars[parameter].stderr
-                    tmpValues.append(pval)
-                    tmpValues.append(perr)
-                    if not skip:
-                        self._trackedData.append(pname)
-                        self._trackedData.append(pname + "_stderr")
-            else:
-                tmpValues.append(float(datum))
-                if not skip:
-                    self._trackedData.append(name)
+                    datum = data.getData(self._rawdata).getCustomVar(header)
+                except:
+                    print("Could not retrieve the data to track. Name: " + str(header))
+                    continue
+            tmpValues.append(float(datum))
+            if not skip:
+                self._trackedDataNames.append(header)
+
+        # go through column data
+        for column in self._trackedColumns:
+            try:
+                datum = data.getData(self._rawdata).getArray(column)
+            except KeyError:
+                try:
+                    datum = data.getData(self._rawdata).getCustomVar(column)
+                except:
+                    print("Could not retrieve the data to track. Name: " + str(column))
+                    continue
+            tmpValues.append(np.mean(datum))
+            tmpValues.append(np.std(datum))
+            if not skip:
+                self._trackedData.append("mean_"+column)
+                self._trackedData.append("stderr_"+column)
+
+        # finally go through the fit result
+        pars = self._pdffitresult.params
+        for parameter in pars:
+            pname = pars[parameter].column
+            pval = pars[parameter].value
+            perr = pars[parameter].stderr
+            tmpValues.append(pval)
+            tmpValues.append(perr)
+            if not skip:
+                self._trackedData.append(pname)
+                self._trackedData.append(pname + "_stderr")
+
         self._values.append(tmpValues)
 
     def finalize(self, data):
@@ -115,4 +123,6 @@ class iintfinalization(IProcess):
         pass
 
     def clearPreviousData(self, data):
-        data.clearCurrent(self._names)
+        data.clearCurrent(self._trackedHeaders)
+        data.clearCurrent(self._trackedColumns)
+        data.clearCurrent(self._pdffitresult)
