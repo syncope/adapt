@@ -1,3 +1,9 @@
+adapt (0.6.10-1+deb9u5~fsec) stretch; urgency=low
+
+  * Updated process code to reflect distinction between different types of tracked data in iint-gui.
+
+ -- Christoph Rosemann <christoph.rosemann@desy.de>  Fri, 6 Dec 2019 13:27:00 +0100
+
 adapt (0.6.9-1+deb9u5~fsec) stretch; urgency=low
 
   * Implemented more excpetions for ascii data file reading; using PSIO
