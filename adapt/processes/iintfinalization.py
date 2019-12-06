@@ -32,8 +32,8 @@ class iintfinalization(IProcess):
 
     def __init__(self, ptype="iintfinalization"):
         super(iintfinalization, self).__init__(ptype)
-        self._trackedheaderPar = ProcessParameter("trackedHeaders", list)
-        self._trackedcolumnPar = ProcessParameter("trackedColumns", list)
+        self._trackedheaderPar = ProcessParameter("trackedHeaders", list, optional=True)
+        self._trackedcolumnPar = ProcessParameter("trackedColumns", list, optional=True)
         self._rawdataPar = ProcessParameter("specdataname", str)
         self._outfilenamePar = ProcessParameter("outfilename", str)
         self._pdfmotorPar = ProcessParameter("motor", str)
@@ -48,8 +48,14 @@ class iintfinalization(IProcess):
         self._parameters.add(self._pdffitresultPar)
 
     def initialize(self):
-        self._trackedHeaders = self._trackedheaderPar.get()
-        self._trackedColumns = self._trackedcolumnPar.get()
+        try:
+            self._trackedHeaders = self._trackedheaderPar.get()
+        except:
+            self._trackedHeaders = []
+        try:
+            self._trackedColumns = self._trackedcolumnPar.get()
+        except:
+            self._trackedColumns = []
         self._rawdata = self._rawdataPar.get()
         self._outfilename = self._outfilenamePar.get()
         self._pdfmotor = self._pdfmotorPar.get()
@@ -76,7 +82,16 @@ class iintfinalization(IProcess):
                 except:
                     print("Could not retrieve the data to track. Name: " + str(header))
                     continue
-            tmpValues.append(float(datum))
+            try:
+                tmpValues.append(float(datum))
+            except TypeError:
+                # probably the motor is also in the headers
+                try:
+                    datum = data.getData(self._rawdata).getCustomVar(header)
+                    tmpValues.append(float(datum))
+                except:
+                    # give up
+                    print("Could not retrieve the data to track. Name: " + str(header))
             if not skip:
                 self._trackedDataNames.append(header)
 
@@ -93,27 +108,27 @@ class iintfinalization(IProcess):
             tmpValues.append(np.mean(datum))
             tmpValues.append(np.std(datum))
             if not skip:
-                self._trackedData.append("mean_"+column)
-                self._trackedData.append("stderr_"+column)
+                self._trackedDataNames.append("mean_"+column)
+                self._trackedDataNames.append("stderr_"+column)
 
         # finally go through the fit result
-        pars = self._pdffitresult.params
+        pars = data.getData(self._pdffitresult).params
         for parameter in pars:
-            pname = pars[parameter].column
+            pname = pars[parameter].name
             pval = pars[parameter].value
             perr = pars[parameter].stderr
             tmpValues.append(pval)
             tmpValues.append(perr)
             if not skip:
-                self._trackedData.append(pname)
-                self._trackedData.append(pname + "_stderr")
+                self._trackedDataNames.append(pname)
+                self._trackedDataNames.append(pname + "_stderr")
 
         self._values.append(tmpValues)
 
     def finalize(self, data):
         # output file stuff
         header = ''
-        for elem in self._trackedData:
+        for elem in self._trackedDataNames:
             header += str(elem)
             header += "\t"
         valuearray = np.asarray(self._values)
