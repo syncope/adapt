@@ -32,13 +32,15 @@ class iintfinalization(IProcess):
 
     def __init__(self, ptype="iintfinalization"):
         super(iintfinalization, self).__init__(ptype)
-        self._namesPar = ProcessParameter("trackedData", list)
+        self._trackedheaderPar = ProcessParameter("trackedHeaders", list, optional=True)
+        self._trackedcolumnPar = ProcessParameter("trackedColumns", list, optional=True)
         self._rawdataPar = ProcessParameter("specdataname", str)
         self._outfilenamePar = ProcessParameter("outfilename", str)
         self._pdfmotorPar = ProcessParameter("motor", str)
         self._pdfobservablePar = ProcessParameter("observable", str)
         self._pdffitresultPar = ProcessParameter("fitresult", str)
-        self._parameters.add(self._namesPar)
+        self._parameters.add(self._trackedheaderPar)
+        self._parameters.add(self._trackedcolumnPar)
         self._parameters.add(self._rawdataPar)
         self._parameters.add(self._outfilenamePar)
         self._parameters.add(self._pdfmotorPar)
@@ -46,59 +48,87 @@ class iintfinalization(IProcess):
         self._parameters.add(self._pdffitresultPar)
 
     def initialize(self):
-        self._names = self._namesPar.get()
+        try:
+            self._trackedHeaders = self._trackedheaderPar.get()
+        except:
+            self._trackedHeaders = []
+        try:
+            self._trackedColumns = self._trackedcolumnPar.get()
+        except:
+            self._trackedColumns = []
         self._rawdata = self._rawdataPar.get()
         self._outfilename = self._outfilenamePar.get()
         self._pdfmotor = self._pdfmotorPar.get()
         self._pdfobservable = self._pdfobservablePar.get()
         self._pdffitresult = self._pdffitresultPar.get()
-        self._trackedData = []
+        self._trackedDataNames = []
         self._values = []
 
     def execute(self, data):
         skip = False
         tmpValues = []
-        if len(self._trackedData) > 0:
+        # check whether the name/s have already been set
+        # if they already have been set, then simply skip the addition
+        if len(self._trackedDataNames) > 0:
             skip = True
-        for name in self._names:
+
+        # go through header data
+        for header in self._trackedHeaders:
             try:
-                datum = data.getData(name)
+                datum = data.getData(header)
             except KeyError:
                 try:
-                    datum = data.getData(self._rawdata).getArray(name)
-                except KeyError:
-                    try:
-                        datum = data.getData(self._rawdata).getCustomVar(name)
-                    except:
-                        print("Could not retrieve the data to track. Name: " + str(name))
-                        continue
-            if isinstance(datum, np.ndarray):
-                tmpValues.append(np.mean(datum))
-                tmpValues.append(np.std(datum))
-                if not skip:
-                    self._trackedData.append("mean_"+name)
-                    self._trackedData.append("stderr_"+name)
-            elif isinstance(datum, plmfit.model.ModelResult):
-                pars = datum.params
-                for parameter in pars:
-                    pname = pars[parameter].name
-                    pval = pars[parameter].value
-                    perr = pars[parameter].stderr
-                    tmpValues.append(pval)
-                    tmpValues.append(perr)
-                    if not skip:
-                        self._trackedData.append(pname)
-                        self._trackedData.append(pname + "_stderr")
-            else:
+                    datum = data.getData(self._rawdata).getCustomVar(header)
+                except:
+                    print("Could not retrieve the data to track. Name: " + str(header))
+                    continue
+            try:
                 tmpValues.append(float(datum))
-                if not skip:
-                    self._trackedData.append(name)
+            except TypeError:
+                # probably the motor is also in the headers
+                try:
+                    datum = data.getData(self._rawdata).getCustomVar(header)
+                    tmpValues.append(float(datum))
+                except:
+                    # give up
+                    print("Could not retrieve the data to track. Name: " + str(header))
+            if not skip:
+                self._trackedDataNames.append(header)
+
+        # go through column data
+        for column in self._trackedColumns:
+            try:
+                datum = data.getData(self._rawdata).getArray(column)
+            except KeyError:
+                try:
+                    datum = data.getData(self._rawdata).getCustomVar(column)
+                except:
+                    print("Could not retrieve the data to track. Name: " + str(column))
+                    continue
+            tmpValues.append(np.mean(datum))
+            tmpValues.append(np.std(datum))
+            if not skip:
+                self._trackedDataNames.append("mean_"+column)
+                self._trackedDataNames.append("stderr_"+column)
+
+        # finally go through the fit result
+        pars = data.getData(self._pdffitresult).params
+        for parameter in pars:
+            pname = pars[parameter].name
+            pval = pars[parameter].value
+            perr = pars[parameter].stderr
+            tmpValues.append(pval)
+            tmpValues.append(perr)
+            if not skip:
+                self._trackedDataNames.append(pname)
+                self._trackedDataNames.append(pname + "_stderr")
+
         self._values.append(tmpValues)
 
     def finalize(self, data):
         # output file stuff
         header = ''
-        for elem in self._trackedData:
+        for elem in self._trackedDataNames:
             header += str(elem)
             header += "\t"
         valuearray = np.asarray(self._values)
@@ -108,4 +138,6 @@ class iintfinalization(IProcess):
         pass
 
     def clearPreviousData(self, data):
-        data.clearCurrent(self._names)
+        data.clearCurrent(self._trackedHeaders)
+        data.clearCurrent(self._trackedColumns)
+        data.clearCurrent(self._pdffitresult)

@@ -17,6 +17,7 @@
 # Boston, MA  02110-1301, USA.
 
 # collect tracked data, spectra and calculated values; plot and save file
+# ONLY tracked columns!
 
 import numpy as np
 
@@ -30,14 +31,14 @@ class iintcontrolplots(IProcess):
 
     def __init__(self, ptype="iintcontrolplots"):
         super(iintcontrolplots, self).__init__(ptype)
-        self.trackeddataPar = ProcessParameter("trackedData", list)
+        self._trackedcolumnPar = ProcessParameter("trackedColumns", list, optional=True)
         self._rawdataPar = ProcessParameter("specdataname", str)
         self._pdfoutfilenamePar = ProcessParameter("outfilename", str)
         self._pdfmotorPar = ProcessParameter("motor", str)
         self._pdfobservablePar = ProcessParameter("observable", str)
         self._pdffitresultPar = ProcessParameter("fitresult", str)
         self._trapintPar = ProcessParameter("trapintname", str, optional=True)
-        self._parameters.add(self.trackeddataPar)
+        self._parameters.add(self._trackedcolumnPar)
         self._parameters.add(self._rawdataPar)
         self._parameters.add(self._pdfoutfilenamePar)
         self._parameters.add(self._pdfmotorPar)
@@ -46,7 +47,10 @@ class iintcontrolplots(IProcess):
         self._parameters.add(self._trapintPar)
 
     def initialize(self):
-        self._trackedData = self.trackeddataPar.get()
+        try:
+            self._trackedColumns = self._trackedcolumnPar.get()
+        except:
+            self._trackedColumns = []
         self._rawdata = self._rawdataPar.get()
         self._pdfoutfilename = self._pdfoutfilenamePar.get()
         self._pdfmotor = self._pdfmotorPar.get()
@@ -70,19 +74,16 @@ class iintcontrolplots(IProcess):
         self._names = []
 
     def execute(self, data):
-        for name in self._trackedData:
+        for name in self._trackedColumns:
             try:
-                datum = data.getData(name)
-            except KeyError:
+                datum = data.getData(self._rawdata).getArray(name)
                 try:
-                    datum = data.getData(self._rawdata).getArray(name)
-                    try:
-                        self._dataKeeper[name]
-                    except:
-                        self._dataKeeper[name] = []
-                        self._dataKeeper[name+"_stderr"] = []
-                except KeyError:
-                    continue
+                    self._dataKeeper[name]
+                except:
+                    self._dataKeeper[name] = []
+                    self._dataKeeper[name+"_stderr"] = []
+            except KeyError:
+                continue
             if isinstance(datum, np.ndarray):
                 self._names.append(name)
                 self._dataKeeper[name].append(np.mean(datum))
