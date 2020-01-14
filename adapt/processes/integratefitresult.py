@@ -29,6 +29,7 @@ class integratefitresult(IProcess):
         self._fitresultPar = ProcessParameter("fitresult", str)
         self._lowlimPar = ProcessParameter("lowerbound", float, optional=True)
         self._uplimPar = ProcessParameter("upperbound", float, optional=True)
+        self._outputPar = ProcessParameter("output", str)
         self._parameters.add(self._xdataPar)
         self._parameters.add(self._fitresultPar)
         self._parameters.add(self._lowlimPar)
