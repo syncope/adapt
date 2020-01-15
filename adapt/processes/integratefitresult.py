@@ -29,11 +29,13 @@ class integratefitresult(IProcess):
         self._fitresultPar = ProcessParameter("fitresult", str)
         self._lowlimPar = ProcessParameter("lowerbound", float, optional=True)
         self._uplimPar = ProcessParameter("upperbound", float, optional=True)
+        self._rangePar = ProcessParameter("selectrange", float, optional=True)
         self._outputPar = ProcessParameter("output", str)
         self._parameters.add(self._xdataPar)
         self._parameters.add(self._fitresultPar)
         self._parameters.add(self._lowlimPar)
         self._parameters.add(self._uplimPar)
+        self._parameters.add(self._rangePar)        
         self._parameters.add(self._outputPar)
 
     def initialize(self):
@@ -41,6 +43,7 @@ class integratefitresult(IProcess):
         self._fitresult = self._fitresultPar.get()
         self._lowlim = self._lowlimPar.get()
         self._uplim = self._uplimPar.get()
+        self._range = self._rangePar.get()
         self._output = self._outputPar.get()
 
     def execute(self, data):
@@ -50,7 +53,7 @@ class integratefitresult(IProcess):
         import scipy.integrate as integrate
         # then calculate the integral by calling a scipy function
         # first case: numpy array is given:
-        if self._xdata is not None:
+        if self._range is None and self._lowlim is None:
             lowlim = xdata[0]
             uplim = xdata[-1]
             if lowlim > uplim:
@@ -58,6 +61,14 @@ class integratefitresult(IProcess):
             integral = integrate.quad(lambda x: fitresult.eval(x=x), lowlim, uplim)
         elif self._lowlim is not None and self._uplim is not None:
             integral = integrate.quad(lambda x: fitresult.eval(x=x), self._lowlim, self._uplim)
+        elif self._range is not None:
+            # get the range, check what the limits are
+            centralval = xdata[0]/2. + xdata[-1]/2.
+            lowlim = centralval - self._range/2.
+            uplim = centralval + self._range/2.
+            if lowlim > uplim:
+                lowlim, uplim = uplim, lowlim
+            integral = integrate.quad(lambda x: fitresult.eval(x=x), lowlim, uplim)
         else:
             integral = (0.0, 0.0)
         data.addData(self._output, integral[0])

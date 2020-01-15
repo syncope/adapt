@@ -33,6 +33,8 @@ class iintdefinition(IProcess):
         self._monitorPar = ProcessParameter("monitor_column", str)
         self._exposure_timePar = ProcessParameter("exposureTime_column", str)
         self._attfacPar = ProcessParameter("attenuationFactor_column", str, optional=True)
+        self._trackedheaderPar = ProcessParameter("trackedHeaders", list, optional=True)
+        self._trackedcolumnPar = ProcessParameter("trackedColumns", list, optional=True)
         self._observableoutputPar = ProcessParameter("output", str)
         self._idPar = ProcessParameter("id", str)
         self._parameters.add(self._inputPar)
@@ -41,6 +43,8 @@ class iintdefinition(IProcess):
         self._parameters.add(self._monitorPar)
         self._parameters.add(self._exposure_timePar)
         self._parameters.add(self._attfacPar)
+        self._parameters.add(self._trackedheaderPar)
+        self._parameters.add(self._trackedcolumnPar)
         self._parameters.add(self._observableoutputPar)
         self._parameters.add(self._idPar)
 
@@ -51,6 +55,14 @@ class iintdefinition(IProcess):
         self._monitor = self._monitorPar.get()
         self._exposure_time = self._exposure_timePar.get()
         self._attfac = self._attfacPar.get()
+        try:
+            self._trackedHeaders = self._trackedheaderPar.get()
+        except:
+            self._trackedHeaders = []
+        try:
+            self._trackedColumns = self._trackedcolumnPar.get()
+        except:
+            self._trackedColumns = []
         self._observableoutput = self._observableoutputPar.get()
         self._id = self._idPar.get()
 

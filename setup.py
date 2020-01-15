@@ -9,7 +9,7 @@ with open(path.join('.', 'README.rst'), encoding='utf-8') as f:
 
 name = 'adapt'
 version = '0'
-release = '0.6.10'
+release = '0.7.0'
 
 setup(
     name='adapt',
