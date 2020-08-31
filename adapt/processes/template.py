@@ -18,34 +18,23 @@
 
 # minimal template example
 
-from adapt import iProcess
+from adapt.iProcess import *
 
 
-class XYZdef(iProcess.IProcessDefinition):
+class processname(IProcess):
 
-    def __init__(self):
-        super(XYZdef, self).__init__()
-        self._ptype = "XYZ"
-        # self.createParameter("@@@@@@@", "STRING")
-        # self.createParameter("@@@@@@@", "INT")
-        # self.createParameter("@@@@@@@", "FLOAT")
-        # self.createParameter("@@@@@@@", "BOOL")
-        # self.createParameter("@@@@@@@", "STRINGLIST")
-        # self.createParameter("@@@@@@@", "INTLIST")
-        # self.createParameter("@@@@@@@", "FLOATLIST")
-        # self.createParameter("@@@@@@@", "BOOLLIST")
-        # self.createParameter("@@@@@@@", "STRING", optional=True)
+    def __init__(self, ptype="processname"):
+        super(processname, self).__init__(ptype)
 
-
-class XYZ(iProcess.IProcess):
-
-    def __init__(self, procDef):
-        super(XYZ, self).__init__(procDef)
+        #~ self._xxxPar = ProcessParameter("someName", someType)
+        #~ self._parameters.add(self._xxxPar)
 
     def initialize(self):
+        #~ self._xxx = self._xxxPar.get()
         pass
 
     def execute(self, data):
+        #~ datum = data.getData(arg)
         pass
 
     def finalize(self, data):
